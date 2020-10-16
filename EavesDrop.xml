@@ -386,7 +386,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igChatScrollDown");
+						PlaySound(827);
 						if IsShiftKeyDown() then
 		            EavesDrop:ScrollToBottom()
 		        elseif IsControlKeyDown() then
@@ -423,7 +423,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-							PlaySound("igChatScrollUp");
+							PlaySound(827);
 							if IsShiftKeyDown() then
 			            EavesDrop:ScrollToTop()
 			        elseif IsControlKeyDown() then
