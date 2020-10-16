@@ -119,6 +119,7 @@ local POWER_STRINGS = {
   [Enum.PowerType.Rage] = RAGE,
   [Enum.PowerType.Focus] = FOCUS,
   [Enum.PowerType.Energy] = ENERGY,
+  [Enum.PowerType.ComboPoints] = COMBO_POINTS,
   [Enum.PowerType.Runes] = RUNES,
   [Enum.PowerType.RunicPower] = RUNIC_POWER,
   [Enum.PowerType.SoulShards] = SHARDS,
