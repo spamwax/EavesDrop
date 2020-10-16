@@ -15,11 +15,11 @@ this .zip file with "Retain directory structure" enabled.
 ## Installation Instructions
 
   1. Go into your WoW installation folder
-     (e.g. C:\Program Files\World of Warcraft\)
+     (e.g. `C:\Program Files (x86)\World of Warcraft\_retail_`)
 
-  2. Go into the Interface sub-folder
+  2. Go into the `Interface` sub-folder
 
-  3. Go into the AddOns sub-folder (if you dont have one, create it)
+  3. Go into the `AddOns` sub-folder (if you dont have one, create it)
 
   4. Copy/Extract this addon's folder into the AddOns folder.
 
