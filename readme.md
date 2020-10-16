@@ -5,7 +5,7 @@ This is my attempt to get this addon going as I am kind of addicted to it since 
 
 The goal is to make it work under latest game version (currently 9.0)
 
-I haven't yet set this up with Curse/WoWInterface, hence it cannot be downloaded using AddOn tools such as Twitch or [WowUp](wowup.io).
+I haven't yet set this up with Curse/WoWInterface, hence it cannot be downloaded using AddOn tools such as Twitch or [WowUp](https://wowup.io/).
 
 For now you need to install it manually after downloading [a zip file](https://github.com/spamwax/EavesDrop/releases/latest).
 
