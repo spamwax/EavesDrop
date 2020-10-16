@@ -1041,5 +1041,6 @@ function EavesDrop:ShowHistory()
   else
     EavesDropHistoryFrame:Hide()
   end
-  PlaySound("igMainMenuOptionCheckBoxOn")
+  -- PlaySound("igMainMenuOptionCheckBoxOn")
+  PlaySound(888)
 end

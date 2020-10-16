@@ -5,15 +5,10 @@
   <Font name="EavesDropFontNormalSmall" inherits="GameFontNormalSmall" virtual="true"/>
 
 	<!-- EVENT TEMPLATE -->
-	<Frame name="EavesDropEventTemplate" virtual="true">
+	<Frame name="EavesDropEventTemplate" virtual="true" inherits="BackdropTemplate">
 		<Size>
 			<AbsDimension x="200" y="21"/>
 		</Size>
-		<Backdrop bgFile="Interface\QuestFrame\UI-QuestTitleHighlight">
-			<BackgroundInsets>
-				<AbsInset left="2" right="2" top="2" bottom="2"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Frames>
 			<!-- incoming texture -->
 			<Frame name="$parentIncoming">
@@ -83,7 +78,8 @@
 
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
+			    self:SetBackdrop({bgFile = "Interface\\QuestFrame\\UI-QuestTitleHighlight", insets={left=2, right=2, top=2, bottom=2}});
 				self:SetBackdropColor(0, 0, 0, 0);
 			</OnLoad>
 			<OnEnter>
@@ -110,15 +106,10 @@
 	</Frame>
 
 	<!-- EVENT HISTORY TEMPLATE -->
-	<Frame name="EavesDropHistoryEventTemplate" virtual="true">
+	<Frame name="EavesDropHistoryEventTemplate" virtual="true" inherits="BackdropTemplate">
 		<Size>
 			<AbsDimension x="200" y="20" />
 		</Size>
-		<Backdrop bgFile="Interface\QuestFrame\UI-QuestTitleHighlight">
-			<BackgroundInsets>
-				<AbsInset left="1" right="1" top="1" bottom="1"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parent_Texture">
@@ -158,7 +149,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
+				self:SetBackdrop({bgFile = "Interface\\QuestFrame\\UI-QuestTitleHighlight", insets={left=1, right=1, top=1, bottom=1}});
 				self:SetBackdropColor(0, 0, 0, .33);
 			</OnLoad>
 			<OnEnter>
@@ -202,7 +194,8 @@
 	</Button>
 
 	<!-- MAIN FRAME -->
-	<Frame name="EavesDropFrame" enableMouse="true" movable="true" frameStrata="LOW" parent="UIParent">
+	<Frame name="EavesDropFrame" enableMouse="true" movable="true" frameStrata="LOW" parent="UIParent" inherits="BackdropTemplate">
+		<!--
 		<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
@@ -214,6 +207,7 @@
 				<AbsInset left="5" right="5" top="5" bottom="5"/>
 			</BackgroundInsets>
 		</Backdrop>
+		-->
 		<Size>
 			<AbsDimension x="200" y="260"/>
 		</Size>
@@ -454,6 +448,13 @@
 
 		</Frames>
 		<Scripts>
+			<OnLoad inherit="prepend">
+			    self:OnBackdropLoaded()
+				self:SetBackdrop({bgFile = "Interface\\ChatFrame\\ChatFrameBackground", edgeFile="Interface\\Tooltips\\UI-Tooltip-Border", tile=true, tileSize=16, edgeSize=16, insets={left=5, right=5, top=5, bottom=5}});
+			</OnLoad>
+			<OnSizeChanged inherit="prepend">
+			    self:OnBackdropSizeChanged()
+			</OnSizeChanged>
 			<OnMouseWheel>
 				EavesDrop:Scroll(self, delta);
 			</OnMouseWheel>
@@ -606,7 +607,8 @@
 	</Button>
 
 	<!-- HISTORY FRAME -->
-	<Frame name="EavesDropHistoryFrame" enableMouse="true" movable="true" frameStrata="LOW" clampedToScreen="true" parent="UIParent" hidden="true">
+	<Frame name="EavesDropHistoryFrame" enableMouse="true" movable="true" frameStrata="LOW" clampedToScreen="true" parent="UIParent" hidden="true" inherits="BackdropTemplate">
+		<!--
 		<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
@@ -618,6 +620,7 @@
 				<AbsInset left="5" right="5" top="5" bottom="5"/>
 			</BackgroundInsets>
 		</Backdrop>
+		-->
 		<Size>
 			<AbsDimension x="230" y="250"/>
 		</Size>
@@ -861,7 +864,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
+				self:SetBackdrop({bgFile = "Interface\\ChatFrame\\ChatFrameBackground", edgeFile="Interface\\Tooltips\\UI-Tooltip-Border", tile=true, tileSize=16, edgeSize=16, insets={left=5, right=5, top=5, bottom=5}});
 				self:RegisterForDrag("LeftButton");
 			</OnLoad>
 			<OnDragStart>
