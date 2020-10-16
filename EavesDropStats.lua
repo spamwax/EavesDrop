@@ -41,6 +41,28 @@ local function copyTable(from, to)
 	return to
 end
 
+-- Keep track of active button and its texture to emulate button selection
+local activeHistoryButton = {}
+local function ChangeActiveButton(type, sub_type)
+  if type == OUTGOING and sub_type == "hit" then -- outgoing hit is selected
+    activeHistoryButton[1]:SetNormalTexture(activeHistoryButton[2])
+    activeHistoryButton = {EavesDropHistoryFrameOutgoingHit, "Interface\\Icons\\Ability_MeleeDamage"}
+    activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
+  elseif type == OUTGOING and sub_type == "heal" then -- outgoing heal is selected
+    activeHistoryButton[1]:SetNormalTexture(activeHistoryButton[2])
+    activeHistoryButton = {EavesDropHistoryFrameOutgoingHeal, "Interface\\Icons\\Spell_Nature_HealingTouch"}
+    activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
+  elseif type == INCOMING and sub_type == "hit" then -- incoming hit is selected
+    activeHistoryButton[1]:SetNormalTexture(activeHistoryButton[2])
+    activeHistoryButton = {EavesDropHistoryFrameIncomingHit, "Interface\\Icons\\Ability_Warrior_Rampage"}
+    activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
+  elseif type == INCOMING and sub_type == "heal" then -- incoming heal is selected
+    activeHistoryButton[1]:SetNormalTexture(activeHistoryButton[2])
+    activeHistoryButton = {EavesDropHistoryFrameIncomingHeal, "Interface\\Icons\\Spell_Nature_MagicImmunity"}
+    activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
+  end
+end
+
 ----------------------
 -- track highest stats
 function EavesDrop:SetDisplay(type, sub_type)
@@ -48,6 +70,7 @@ function EavesDrop:SetDisplay(type, sub_type)
   display_sub_type = sub_type
   --reset sorted table
   sort_table = nil
+  ChangeActiveButton(type, sub_type)
   FauxScrollFrame_SetOffset(EavesDropHistoryScrollBar,0)
   EavesDrop:ScrollBar_Update()
 end
@@ -185,6 +208,9 @@ function EavesDrop:SetupHistory()
   EavesDropHistoryFrameIncomingHeal.tooltipText = L["IncomingHeals"]
   EavesDropHistoryButton.tooltipText = L["History"]
   EavesDropHistoryFrameResetText:SetText(L["Reset"])
+  --Show outgoing hit as active button
+  activeHistoryButton = {EavesDropHistoryFrameOutgoingHit, "Interface\\Icons\\Ability_MeleeDamage"}
+  activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
   --Frame
   r,g,b,a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
   EavesDropHistoryFrame:SetBackdropColor(r, g, b, a)

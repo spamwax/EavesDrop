@@ -781,7 +781,7 @@
 					</Anchor>
 				</Anchors>
 				<NormalTexture file="Interface\Icons\Ability_MeleeDamage"/>
-				<PushedTexture file="Interface\Icons\Ability_MeleeDamage"/>
+				<PushedTexture file="Interface\Icons\spell_nature_wispsplode"/>
 				<Scripts>
 					<OnClick>
 						EavesDrop:SetDisplay(1, "hit")
@@ -794,7 +794,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentOutgoingHit" relativePoint="TOPRIGHT"/>
 				</Anchors>
 				<NormalTexture file="Interface\Icons\Spell_Nature_HealingTouch"/>
-				<PushedTexture file="Interface\Icons\Spell_Nature_HealingTouch"/>
+				<PushedTexture file="Interface\Icons\spell_nature_wispsplode"/>
 				<Scripts>
 					<OnClick>
 						EavesDrop:SetDisplay(1, "heal")
@@ -807,7 +807,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentOutgoingHeal" relativePoint="TOPRIGHT"/>
 				</Anchors>
 				<NormalTexture file="Interface\Icons\Ability_Warrior_Rampage"/>
-				<PushedTexture file="Interface\Icons\Ability_Warrior_Rampage"/>
+				<PushedTexture file="Interface\Icons\spell_nature_wispsplode"/>
 				<Scripts>
 					<OnClick>
 						EavesDrop:SetDisplay(-1, "hit")
@@ -820,7 +820,7 @@
 					<Anchor point="TOPLEFT" relativeTo="$parentIncomingHit" relativePoint="TOPRIGHT"/>
 				</Anchors>
 				<NormalTexture file="Interface\Icons\Spell_Nature_MagicImmunity"/>
-				<PushedTexture file="Interface\Icons\Spell_Nature_MagicImmunity"/>
+				<PushedTexture file="Interface\Icons\spell_nature_wispsplode"/>
 				<Scripts>
 					<OnClick>
 						EavesDrop:SetDisplay(-1, "heal");
