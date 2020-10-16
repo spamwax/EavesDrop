@@ -7,7 +7,7 @@ The goal is to make it work under latest game version (currently 9.0)
 
 I haven't yet set this up with Curse/WoWInterface, hence it cannot be downloaded using AddOn tools such as Twitch or [WowUp](https://wowup.io/).
 
-For now you need to install it manually after downloading [a zip file](https://github.com/spamwax/EavesDrop/releases/latest).
+For now you need to install it manually after downloading the EavesDrop.zip from [latest release page](https://github.com/spamwax/EavesDrop/releases/latest).
 
 These instructions assume you have extracted (or are about to extract)
 this .zip file with "Retain directory structure" enabled.
