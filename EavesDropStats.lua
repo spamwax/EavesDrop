@@ -44,23 +44,17 @@ end
 -- Keep track of active button and its texture to emulate button selection
 local activeHistoryButton = {}
 local function ChangeActiveButton(type, sub_type)
+  activeHistoryButton[1]:SetNormalTexture(activeHistoryButton[2])
   if type == OUTGOING and sub_type == "hit" then -- outgoing hit is selected
-    activeHistoryButton[1]:SetNormalTexture(activeHistoryButton[2])
     activeHistoryButton = {EavesDropHistoryFrameOutgoingHit, "Interface\\Icons\\Ability_MeleeDamage"}
-    activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
   elseif type == OUTGOING and sub_type == "heal" then -- outgoing heal is selected
-    activeHistoryButton[1]:SetNormalTexture(activeHistoryButton[2])
     activeHistoryButton = {EavesDropHistoryFrameOutgoingHeal, "Interface\\Icons\\Spell_Nature_HealingTouch"}
-    activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
   elseif type == INCOMING and sub_type == "hit" then -- incoming hit is selected
-    activeHistoryButton[1]:SetNormalTexture(activeHistoryButton[2])
     activeHistoryButton = {EavesDropHistoryFrameIncomingHit, "Interface\\Icons\\Ability_Warrior_Rampage"}
-    activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
   elseif type == INCOMING and sub_type == "heal" then -- incoming heal is selected
-    activeHistoryButton[1]:SetNormalTexture(activeHistoryButton[2])
     activeHistoryButton = {EavesDropHistoryFrameIncomingHeal, "Interface\\Icons\\Spell_Nature_MagicImmunity"}
-    activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
   end
+  activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
 end
 
 ----------------------
