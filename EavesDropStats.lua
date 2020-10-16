@@ -206,7 +206,7 @@ function EavesDrop:SetupHistory()
   activeHistoryButton = {EavesDropHistoryFrameOutgoingHit, "Interface\\Icons\\Ability_MeleeDamage"}
   activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
   --Frame
-  r,g,b,a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
+  local r,g,b,a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
   EavesDropHistoryFrame:SetBackdropColor(r, g, b, a)
   EavesDropHistoryTopBar:SetGradientAlpha("VERTICAL", r*.1, g*.1, b*.1, 0, r*.2, g*.2, b*.2, a)
   EavesDropHistoryBottomBar:SetGradientAlpha("VERTICAL", r*.2, g*.2, b*.2, a, r*.1, g*.1, b*.1, 0)
