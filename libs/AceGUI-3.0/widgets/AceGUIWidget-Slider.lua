@@ -108,7 +108,7 @@ local function EditBox_OnEnterPressed(frame)
 	end
 	
 	if value then
-		PlaySound("igMainMenuOptionCheckBoxOn")
+		PlaySound(856)
 		self.slider:SetValue(value)
 		self:Fire("OnMouseUp", value)
 	end

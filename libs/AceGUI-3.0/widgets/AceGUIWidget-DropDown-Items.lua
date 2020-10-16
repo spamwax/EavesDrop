@@ -345,7 +345,7 @@ do
 		if self.disabled then return end
 		self.value = not self.value
 		if self.value then
-			PlaySound("igMainMenuOptionCheckBoxOn")
+			PlaySound(856)
 		else
 			PlaySound("igMainMenuOptionCheckBoxOff")
 		end

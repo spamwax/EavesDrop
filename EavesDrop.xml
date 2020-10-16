@@ -785,7 +785,7 @@
 				<Scripts>
 					<OnClick>
 						EavesDrop:SetDisplay(1, "hit")
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(856);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -798,7 +798,7 @@
 				<Scripts>
 					<OnClick>
 						EavesDrop:SetDisplay(1, "heal")
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(856);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -811,7 +811,7 @@
 				<Scripts>
 					<OnClick>
 						EavesDrop:SetDisplay(-1, "hit")
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(856);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -824,7 +824,7 @@
 				<Scripts>
 					<OnClick>
 						EavesDrop:SetDisplay(-1, "heal");
-						PlaySound("igMainMenuOptionCheckBoxOn");
+						PlaySound(856);
 					</OnClick>
 				</Scripts>
 			</Button>
