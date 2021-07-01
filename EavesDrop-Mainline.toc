@@ -6,15 +6,14 @@
 ## Author: Grayhoof (Edited by Domzae, Updated for SL by spamwax)
 ## SavedVariables: EavesDropDB
 ## SavedVariablesPerCharacter: EavesDropStatsDB
-## X-Website: http://grayhoof.wowinterface.com/
+## X-Website: https://github.com/spamwax/EavesDrop
 ## X-Category: Combat
-## X-RelSite-WoWI: 5332
 ## X-Embeds: Ace3, LibSharedMedia-3.0
 ## OptionalDeps: Ace3, LibSharedMedia-3.0
 ## X-Curse-Packaged-Version: v2.80
-## X-Curse-Project-Name: EavesDrop
-## X-Curse-Project-ID: eaves-drop
-## X-Curse-Repository-ID: wow/eaves-drop/mainline
+## X-Curse-Project-Name: EavesDrop2
+## X-Curse-Project-ID: eaves-drop2
+## X-Curse-Repository-ID: wow/eaves-drop2/mainline
 
 embeds.xml
 
