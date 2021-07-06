@@ -3,7 +3,7 @@
 
 This is my attempt to get this addon going as I am kind of addicted to it since 2008!
 
-The goal is to make it work under latest game version (currently 9.0)
+The goal is to make it work under latest game version (currently 9.1)
 
 I haven't yet set this up with Curse/WoWInterface, hence it cannot be downloaded using AddOn tools such as Twitch or [WowUp](https://wowup.io/).
 
@@ -27,18 +27,17 @@ this .zip file with "Retain directory structure" enabled.
 
   The following folder paths will exist within your WoW Install directory:
 
-    EavesDrop:
     Interface\AddOns\EavesDrop\
     Interface\AddOns\EavesDrop\libs\
     Interface\AddOns\EavesDrop\locals\
 
   Look for the following (wrong) files as evidence of common mistakes:
 
-  * If you have Interface\AddOns\EavesDrop.toc
+  * If you have `Interface\AddOns\EavesDrop.toc`
     then you've extracted the zip file's contents without its
         folder structure, or copied the contents without the parent
         folder.
-  * If you have Interface\AddOns\EavesDrop\EavesDrop\EavesDrop.toc
+  * If you have `Interface\AddOns\EavesDrop\EavesDrop\EavesDrop.toc`
     ... then you've extracted the zip file into a folder an extra
         level deep. Move the files and any sub-folders up one level
         and remove the extra folder.
