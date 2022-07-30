@@ -1,4 +1,4 @@
-﻿--[[
+--[[
   ****************************************************************
   EavesDrop
 
@@ -488,6 +488,15 @@ function EavesDrop:CombatEvent(larg1, ...)
     if (blocked) then text = string_format("%s (%d)", text, shortenValue(blocked)) end
     if (absorbed) then text = string_format("%s (%d)", text, shortenValue(absorbed))end
 
+    if school ~= 1 then
+      school = school - 1
+    end
+    --[[     print("school", school)
+    print("fromPlayer", fromPlayer)
+    print("toPlayer", toPlayer)
+    print(amount)
+    DevTools_Dump(db[outtype])
+    print("-------------------") ]]
     if fromPlayer then
       if (self:TrackStat(inout, "hit", spellName, texture, SCHOOL_STRINGS[school], amount, critical, message)) then
         text = newhigh..text..newhigh
