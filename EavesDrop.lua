@@ -104,9 +104,13 @@ local COMBAT_EVENTS = {
   ["UNIT_DESTROYED"] = "DEATH",
 }
 
-LoadAddOn("Blizzard_DebugTools")
-local SCHOOL_STRINGS = _G["SCHOOL_STRINGS"]
+-- LoadAddOn("Blizzard_DebugTools")
+local SCHOOL_STRINGS = {}
+for index, value in ipairs(_G["SCHOOL_STRINGS"]) do
+  SCHOOL_STRINGS[2 ^ (index - 1)] = value
+end
 local SCHOOL_MASK_PHYSICAL = 1
+-- DevTools_Dump(SCHOOL_STRINGS)
 --[[ local SCHOOL_STRINGS = {
   [SCHOOL_MASK_PHYSICAL] = SPELL_SCHOOL0_CAP,
   [SCHOOL_MASK_HOLY] = SPELL_SCHOOL1_CAP,
@@ -494,14 +498,12 @@ function EavesDrop:CombatEvent(larg1, ...)
     if (blocked) then text = string_format("%s (%d)", text, shortenValue(blocked)) end
     if (absorbed) then text = string_format("%s (%d)", text, shortenValue(absorbed)) end
 
-    if school ~= 1 then
-      school = school - 1
-    end
     --[[     print("school", school)
     print("fromPlayer", fromPlayer)
     print("toPlayer", toPlayer)
     print(amount)
     DevTools_Dump(db[outtype])
+    DevTools_Dump(SCHOOL_STRINGS[school])
     print("-------------------") ]]
     if fromPlayer then
       if (self:TrackStat(inout, "hit", spellName, texture, SCHOOL_STRINGS[school], amount, critical, message)) then
@@ -554,7 +556,7 @@ function EavesDrop:CombatEvent(larg1, ...)
       if (critical) then text = critchar .. text .. critchar end
       if (db["HEALERID"] == true and not fromPlayer) then text = text .. " (" .. (sourceName or "Unknown") .. ")" end
       color = db["PHEAL"]
-      if fromPlayer then -- Show self healin under player columen & with correct color.
+      if fromPlayer then -- Show self healing under player columen & with correct color.
         color = db["THEAL"]
         inout = -inout
       end
