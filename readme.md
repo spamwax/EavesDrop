@@ -3,9 +3,13 @@
 
 This is my attempt to keep [Grayhoof](https://www.wowinterface.com/downloads/author-14368.html)'s addon going as I am kind of addicted to it since 2008!
 
-The goal is to make it work under latest game version (currently 9.2.5)
+The goal is to make it work under latest game version (currently 9.2.5). Please report any issues or bugs on the project's [Github pae](https://github.com/spamwax/EavesDrop).
 
-Please report any issues or bugs on the project's [Github pae](https://github.com/spamwax/EavesDrop).
+## What does it do?
+A simple combat log that shows events (such as damae, heal, buff/debuff...), using icons and colors to make it easy to find
+important information by a quick skim. It separates incoming events (left side) from outgoing events (right side) from misc. events (middle).
+
+Additionally, it keeps track of each spell's maximum *normal* and **critical** hits! :sunglasses:
 
 ## Installation
 ### Using wago.io app
