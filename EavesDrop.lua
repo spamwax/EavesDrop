@@ -521,10 +521,14 @@ function EavesDrop:CombatEvent(larg1, ...)
         text = newhigh .. text .. newhigh
       end
       if fromPet then
-        outtype = "PETI"
+        outtype = "PETO"
       end
       color = self:SpellColor(db[outtype], SCHOOL_STRINGS[school])
-      totDamageOut = totDamageOut + amount
+      if not toPlayer then -- Don't count self damag in total
+        totDamageOut = totDamageOut + amount
+      else
+        inout = -inout -- Show self damag under player column
+      end
     elseif toPlayer or toPet then
       local fake
       icon = texture
@@ -533,7 +537,7 @@ function EavesDrop:CombatEvent(larg1, ...)
         text = newhigh .. text .. newhigh
       end
       if toPet then
-        intype = "PETO"
+        intype = "PETI"
       end
       color = self:SpellColor(db[intype], SCHOOL_STRINGS[school])
       text = "-" .. text
@@ -580,7 +584,7 @@ function EavesDrop:CombatEvent(larg1, ...)
       if (self:TrackStat(inout, "heal", spellName, texture, SCHOOL_STRINGS[spellSchool], amount, critical, message)) then
         text = newhigh .. text .. newhigh
       end
-      if fromPlayer and not toPet then -- Show self healing under player columen & with correct color.
+      if fromPlayer and not toPet then -- Show self healing under player column & with correct color.
         color = db["THEAL"]
         inout = -inout
       end
@@ -612,7 +616,13 @@ function EavesDrop:CombatEvent(larg1, ...)
       tcolor = "TSPELL"
     end
     text = _G[missType]
-    if fromPlayer then
+    if toPet then
+      inout = INCOMING
+      color = db["PETO"]
+    elseif fromPet then
+      inout = OUTGOING
+      color = db["PETI"]
+    elseif fromPlayer then
       color = db[tcolor]
     elseif toPlayer then
       if missType == "REFLECT" then
