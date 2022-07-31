@@ -107,7 +107,7 @@ local COMBAT_EVENTS = {
 -- LoadAddOn("Blizzard_DebugTools")
 local SCHOOL_STRINGS = {}
 for index, value in ipairs(_G["SCHOOL_STRINGS"]) do
-  SCHOOL_STRINGS[2 ^ (index - 1)] = value
+  SCHOOL_STRINGS[bit.lshift(1, index - 1)] = value
 end
 local SCHOOL_MASK_PHYSICAL = 1
 -- DevTools_Dump(SCHOOL_STRINGS)
@@ -146,6 +146,28 @@ local POWER_STRINGS = {
 --set table default size sense table.insert no longer does
 for i = 1, arrMaxSize do
   arrEventData[i] = {}
+end
+
+--- Returns the core school type of a multi-school type `a`.
+---
+--- If `a` is one of the core schools, return value will be the same as `a`
+---
+--- Example: Chaos school type consists of types Arcane, Shadow, Nature and Holy.
+--- Since its bitmask is 106 (01101010), then its core school is (01000000) which
+--- is the same as Arcane. Thus getSpellSchoolCoreType(106) will return 64.
+---@param a number
+---@return number
+local function getSpellSchoolCoreType(a)
+  local count = 0
+  while true do
+    a = bit.rshift(a, 1)
+    if a == 0 then
+      break
+    end
+    count = count + 1
+  end
+  local stype = bit.lshift(1, count)
+  return stype
 end
 
 local function convertRGBtoHEXString(color, text)
@@ -498,6 +520,12 @@ function EavesDrop:CombatEvent(larg1, ...)
     if (blocked) then text = string_format("%s (%d)", text, shortenValue(blocked)) end
     if (absorbed) then text = string_format("%s (%d)", text, shortenValue(absorbed)) end
 
+    local school_new = getSpellSchoolCoreType(school or 1)
+    --[[     if school_new ~= school then
+      print("converted", school, school_new)
+    end ]]
+    school = school_new
+
     --[[     print("school", school)
     print("fromPlayer", fromPlayer)
     print("toPlayer", toPlayer)
@@ -512,6 +540,7 @@ function EavesDrop:CombatEvent(larg1, ...)
     end
     print("from pet:", fromPet, "outtype:", outtype)
     DevTools_Dump(db[outtype]) ]]
+
     local icon
     if fromPlayer or fromPet then
       local fake
