@@ -16,18 +16,20 @@ end
 
 local function getColorOption(info)
   local key = info.arg or info[#info]
-  return EavesDrop.db.profile[key].r, EavesDrop.db.profile[key].g, EavesDrop.db.profile[key].b, EavesDrop.db.profile[key].a
+  return EavesDrop.db.profile[key].r, EavesDrop.db.profile[key].g, EavesDrop.db.profile[key].b,
+      EavesDrop.db.profile[key].a
 end
 
 local function setColorOption(info, r, g, b, a)
   local key = info.arg or info[#info]
-  EavesDrop.db.profile[key].r, EavesDrop.db.profile[key].g, EavesDrop.db.profile[key].b, EavesDrop.db.profile[key].a = r, g, b, a
+  EavesDrop.db.profile[key].r, EavesDrop.db.profile[key].g, EavesDrop.db.profile[key].b, EavesDrop.db.profile[key].a = r
+      , g, b, a
   EavesDrop:PerformDisplayOptions()
 end
 
 function EavesDrop:SetupOptions()
   self.options = {
-    type="group",
+    type = "group",
     name = "EavesDrop",
     childGroups = "tab",
     plugins = {},
@@ -166,7 +168,7 @@ function EavesDrop:SetupOptions()
         desc = L["Colors"],
         type = "group",
         order = 2,
-        childGroups="tree",
+        childGroups = "tree",
         args = {
           icolor = {
             name = L["IColors"],
@@ -179,64 +181,64 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = L["ICHitsD"],
                 order = 1,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               PMISS = {
                 name = L["ICMiss"],
                 type = "color",
                 desc = L["ICMissD"],
                 order = 2,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               PHEAL = {
                 name = L["ICHeals"],
                 type = "color",
                 desc = L["ICHealsD"],
                 order = 3,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               PSPELL = {
                 name = L["ICSpells"],
                 type = "color",
                 desc = L["ICSpellsD"],
                 order = 4,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
-              PGAIN= {
+              PGAIN = {
                 name = L["EPower"],
                 type = "color",
                 desc = L["ICGainsD"],
                 order = 5,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
-              PBUFF= {
+              PBUFF = {
                 name = L["EBuffs"],
                 type = "color",
                 desc = L["ICBuffsD"],
                 order = 6,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
-              PDEBUFF= {
+              PDEBUFF = {
                 name = L["EDebuffs"],
                 type = "color",
                 desc = L["ICDebuffsD"],
                 order = 7,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               PETO = {
                 name = L["EPet"],
                 type = "color",
                 desc = L["ICPetD"],
                 order = 8,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
             },
           },
@@ -251,32 +253,32 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = L["OCHitsD"],
                 order = 1,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               TSPELL = {
                 name = L["ICSpells"],
                 type = "color",
                 desc = L["OCSpellsD"],
                 order = 2,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               THEAL = {
                 name = L["ICHeals"],
                 type = "color",
                 desc = L["OCHealsD"],
                 order = 3,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               PETI = {
                 name = L["EPet"],
                 type = "color",
                 desc = L["OCPetD"],
                 order = 4,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
             },
           },
@@ -292,8 +294,8 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = SPELL_SCHOOL0_CAP,
                 order = 1,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               SPELL_SCHOOL1_CAP = {
                 arg = SPELL_SCHOOL1_CAP,
@@ -301,8 +303,8 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = SPELL_SCHOOL1_CAP,
                 order = 2,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               SPELL_SCHOOL2_CAP = {
                 arg = SPELL_SCHOOL2_CAP,
@@ -310,8 +312,8 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = SPELL_SCHOOL2_CAP,
                 order = 3,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               SPELL_SCHOOL3_CAP = {
                 arg = SPELL_SCHOOL3_CAP,
@@ -319,8 +321,8 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = SPELL_SCHOOL3_CAP,
                 order = 4,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               SPELL_SCHOOL4_CAP = {
                 arg = SPELL_SCHOOL4_CAP,
@@ -328,8 +330,8 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = SPELL_SCHOOL4_CAP,
                 order = 5,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               SPELL_SCHOOL5_CAP = {
                 arg = SPELL_SCHOOL5_CAP,
@@ -337,8 +339,8 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = SPELL_SCHOOL5_CAP,
                 order = 6,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               SPELL_SCHOOL6_CAP = {
                 arg = SPELL_SCHOOL6_CAP,
@@ -346,8 +348,8 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = SPELL_SCHOOL6_CAP,
                 order = 7,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
             },
           },
@@ -362,48 +364,48 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = L["MCDeathD"],
                 order = 1,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               MISC = {
                 name = L["MCMisc"],
                 type = "color",
                 desc = L["MCMiscD"],
                 order = 2,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               EXPC = {
                 name = L["EExperience"],
                 type = "color",
                 desc = L["MCExperienceD"],
                 order = 3,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               REPC = {
                 name = L["EReputation"],
                 type = "color",
                 desc = L["MCReputationD"],
                 order = 4,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               HONORC = {
                 name = L["EHonor"],
                 type = "color",
                 desc = L["MCHonorD"],
                 order = 5,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
               SKILLC = {
                 name = L["ESkill"],
                 type = "color",
                 desc = L["MCSkillD"],
                 order = 6,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
               },
             }
           },
@@ -418,8 +420,8 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = L["MCFrameD"],
                 order = 5,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
                 hasAlpha = true;
               },
               BORDER = {
@@ -427,8 +429,8 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = L["MCBorderD"],
                 order = 6,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
                 hasAlpha = true;
               },
               LABELC = {
@@ -436,8 +438,8 @@ function EavesDrop:SetupOptions()
                 type = "color",
                 desc = L["MCLabelD"],
                 order = 7,
-                get=getColorOption,
-                set=setColorOption,
+                get = getColorOption,
+                set = setColorOption,
                 hasAlpha = true;
               },
             },
@@ -455,8 +457,8 @@ function EavesDrop:SetupOptions()
             name = L["FNumber"], type = "range",
             desc = L["FNumberD"],
             order = 1,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
             min = 1,
             max = 20,
             step = 1
@@ -465,8 +467,8 @@ function EavesDrop:SetupOptions()
             name = L["FHeight"], type = "range",
             desc = L["FHeightD"],
             order = 2,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
             min = 10,
             max = 30,
             step = 1
@@ -475,8 +477,8 @@ function EavesDrop:SetupOptions()
             name = L["FWidth"], type = "range",
             desc = L["FWidthD"],
             order = 3,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
             min = 100,
             max = 400,
             step = 10
@@ -485,8 +487,8 @@ function EavesDrop:SetupOptions()
             name = L["FText"], type = "range",
             desc = L["FTextD"],
             order = 4,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
             min = 8,
             max = 24,
             step = 1
@@ -496,27 +498,27 @@ function EavesDrop:SetupOptions()
             name = L["FFont"],
             desc = L["FFont"],
             values = media:List('font'),
-            get=function(info)
+            get = function(info)
               local mt = media:List('font')
-              for k,v in pairs(mt) do
-                if v==self.db.profile.FONT then
+              for k, v in pairs(mt) do
+                if v == self.db.profile.FONT then
                   return k
                 end
               end
             end,
-            set=function(info,v)
+            set = function(info, v)
               local mt = media:List('font')
               self.db.profile.FONT = mt[v]
               self:PerformDisplayOptions()
             end,
-            order=5,
+            order = 5,
           },
           FADETIME = {
             name = L["FFade"], type = "range",
             desc = L["FFadeD"],
             order = 6,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
             min = 0,
             max = 60,
             step = 5
@@ -525,15 +527,15 @@ function EavesDrop:SetupOptions()
             name = L["FFadeFrame"], type = "toggle",
             desc = L["FFadeFrameD"],
             order = 7,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
           },
           HIDETAB = {
             name = L["MHideTab"], type = "toggle",
             desc = L["MHideTabD"],
             order = 8,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
           },
           LOCKED = {
             name = L["MLock"], type = "toggle",
@@ -541,8 +543,8 @@ function EavesDrop:SetupOptions()
             order = 9,
             get = getOption,
             set = function(i, v)
-                self.db.profile["LOCKED"] = v;
-                EavesDropFrame:EnableMouse(not self.db.profile["LOCKED"]);
+              self.db.profile["LOCKED"] = v;
+              EavesDropFrame:EnableMouse(not self.db.profile["LOCKED"]);
             end
           },
         },
@@ -552,11 +554,11 @@ function EavesDrop:SetupOptions()
         desc = L["Misc"],
         type = "group",
         order = 4,
-        childGroups="tab",
+        childGroups = "tab",
         args = {
           SCROLLBUTTON = {
-            name = L["MButtons"] , type = "toggle",
-            desc = L["MButtonsD"] ,
+            name = L["MButtons"], type = "toggle",
+            desc = L["MButtonsD"],
             order = 1,
             get = getOption,
             set = setOption,
@@ -565,15 +567,15 @@ function EavesDrop:SetupOptions()
             name = L["MTooltip"], type = "toggle",
             desc = L["MTooltipD"],
             order = 2,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
           },
           TIMESTAMP = {
             name = L["MTimestamp"], type = "toggle",
             desc = L["MTimestampD"],
             order = 3,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
             disabled = function() return not self.db.profile["TOOLTIPS"] end,
           },
           TOOLTIPSANCHOR = {
@@ -582,8 +584,8 @@ function EavesDrop:SetupOptions()
             order = 4,
             get = getOption,
             set = function(i, v)
-                self.db.profile["TOOLTIPSANCHOR"] = v;
-                self.ToolTipAnchor = "ANCHOR_"..strupper(v);
+              self.db.profile["TOOLTIPSANCHOR"] = v;
+              self.ToolTipAnchor = "ANCHOR_" .. strupper(v);
             end,
             values = {
               Left = "Left",
@@ -599,8 +601,8 @@ function EavesDrop:SetupOptions()
             name = L["MFlip"], type = "toggle",
             desc = L["MFlipD"],
             order = 5,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
           },
           HISTORY = {
             name = L["MHistory"], type = "toggle",
@@ -608,21 +610,21 @@ function EavesDrop:SetupOptions()
             order = 6,
             get = getOption,
             set = function(i, v)
-                self.db.profile["HISTORY"] = v;
-                if (v == true) then
-                  EavesDropHistoryButton:Show();
-                else
-                  EavesDropHistoryButton:Hide();
-                  EavesDropHistoryFrame:Hide();
-                end
+              self.db.profile["HISTORY"] = v;
+              if (v == true) then
+                EavesDropHistoryButton:Show();
+              else
+                EavesDropHistoryButton:Hide();
+                EavesDropHistoryFrame:Hide();
+              end
             end
           },
           HFILTER = {
             name = L["MHFilter"], type = "range",
             desc = L["MHFilterD"],
             order = 7,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
             min = 0,
             max = 2000,
             step = 25
@@ -631,8 +633,8 @@ function EavesDrop:SetupOptions()
             name = L["MMFilter"], type = "range",
             desc = L["MMFilterD"],
             order = 8,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
             min = 0,
             max = 2000,
             step = 25
@@ -641,16 +643,16 @@ function EavesDrop:SetupOptions()
             name = L["MBuffTruncType"], type = "select",
             desc = L["MBuffTruncTypeD"],
             order = 9,
-            get=getOption,
-            set=setOption,
-            values = {["0"]=L["MBuffTruncNone"], ["1"]=L["MBuffTruncTrunc"], ["2"]=L["MBuffTruncShorten"] }
+            get = getOption,
+            set = setOption,
+            values = { ["0"] = L["MBuffTruncNone"], ["1"] = L["MBuffTruncTrunc"], ["2"] = L["MBuffTruncShorten"] }
           },
           TRUNCATESIZE = {
             name = L["MBuffTruncSize"], type = "range",
             desc = L["MBuffTruncSize"],
             order = 10,
-            get=getOption,
-            set=setOption,
+            get = getOption,
+            set = setOption,
             min = 0,
             max = 50,
             step = 1
@@ -670,34 +672,34 @@ end
 function EavesDrop:GetDefaultConfig()
   local default = {
     profile = {
-      ["PHIT"] =  {r = 1.0, g = 0.0, b = 0.0},
-      ["PMISS"] =  {r = 0.0, g = 0.0, b = 1.0},
-      ["PHEAL"] =  {r = 0.0, g = 1.0, b = 0.0},
-      ["PSPELL"] =  {r = 0.5, g = 0.0, b = 0.5},
-      ["TSPELL"] = {r = 1.0, g = 1.0, b = 0.0},
-      ["THEAL"] = {r = 0, g = 0.7, b = 0},
-      ["TMELEE"] = {r = 1.0, g = 1.0, b = 1.0},
-      ["DEATH"] = {r = 0.6, g = 0.6, b = 0.6},
-      ["MISC"] = {r = 1, g = 1, b = 1},
-      ["EXPC"] = {r = .5, g = .7, b = .5},
-      ["HONORC"] = {r = 0.7, g = 0.5, b = 0.7},
-      ["REPC"] = {r = 0.5, g = 0.5, b = 1},
-      ["SKILLC"] = {r = 0, g = 0, b = 1},
-      ["FRAME"] = {r = 0, g = 0, b = 0, a = 0.33},
-      ["BORDER"] = {r = 1, g = 1, b = 1, a = 0.75},
-      ["LABELC"] = {r = 1, g = 1, b = 0, a = 1},
-      ["PETO"] =  {r = 0.6, g = 0.6, b = 0.0},
-      ["PETI"] =  {r = 0.6, g = 0.6, b = 0.0},
-      ["PGAIN"] =  {r = 1.0, g = 1.0, b = 0.0},
-      ["PBUFF"] =  {r = 0.7, g = 0.7, b = 0.0},
-      ["PDEBUFF"] =  {r = 0.0, g = 0.5, b = 0.5},
-      [SPELL_SCHOOL0_CAP] = {r = 1, g = 0, b = 0},
-      [SPELL_SCHOOL1_CAP] = {r = 1, g = 1, b = 0},
-      [SPELL_SCHOOL2_CAP] = {r = 1, g = 0.3, b = 0},
-      [SPELL_SCHOOL3_CAP] = {r = 0.5, g = 1, b = 0.2},
-      [SPELL_SCHOOL4_CAP] = {r = 0.4, g = 0.6, b = 0.9},
-      [SPELL_SCHOOL5_CAP] = {r = 0.4, g = 0.4, b = 0.5},
-      [SPELL_SCHOOL6_CAP] = {r = 0.8, g = 0.8, b = 1},
+      ["PHIT"] = { r = 1.0, g = 0.0, b = 0.0 },
+      ["PMISS"] = { r = 0.0, g = 0.0, b = 1.0 },
+      ["PHEAL"] = { r = 0.0, g = 1.0, b = 0.0 },
+      ["PSPELL"] = { r = 0.5, g = 0.0, b = 0.5 },
+      ["TSPELL"] = { r = 1.0, g = 1.0, b = 0.0 },
+      ["THEAL"] = { r = 0, g = 0.7, b = 0 },
+      ["TMELEE"] = { r = 1.0, g = 1.0, b = 1.0 },
+      ["DEATH"] = { r = 0.6, g = 0.6, b = 0.6 },
+      ["MISC"] = { r = 1, g = 1, b = 1 },
+      ["EXPC"] = { r = .5, g = .7, b = .5 },
+      ["HONORC"] = { r = 0.7, g = 0.5, b = 0.7 },
+      ["REPC"] = { r = 0.5, g = 0.5, b = 1 },
+      ["SKILLC"] = { r = 0, g = 0, b = 1 },
+      ["FRAME"] = { r = 0, g = 0, b = 0, a = 0.33 },
+      ["BORDER"] = { r = 1, g = 1, b = 1, a = 0.75 },
+      ["LABELC"] = { r = 1, g = 1, b = 0, a = 1 },
+      ["PETO"] = { r = 0.6, g = 0.6, b = 0.0 },
+      ["PETI"] = { r = 0.6, g = 0.6, b = 0.0 },
+      ["PGAIN"] = { r = 1.0, g = 1.0, b = 0.0 },
+      ["PBUFF"] = { r = 0.7, g = 0.7, b = 0.0 },
+      ["PDEBUFF"] = { r = 0.0, g = 0.5, b = 0.5 },
+      [SPELL_SCHOOL0_CAP] = { r = 1, g = 0, b = 0 },
+      [SPELL_SCHOOL1_CAP] = { r = 1, g = 1, b = 0 },
+      [SPELL_SCHOOL2_CAP] = { r = 1, g = 0.3, b = 0 },
+      [SPELL_SCHOOL3_CAP] = { r = 0.5, g = 1, b = 0.2 },
+      [SPELL_SCHOOL4_CAP] = { r = 0.4, g = 0.6, b = 0.9 },
+      [SPELL_SCHOOL5_CAP] = { r = 0.4, g = 0.4, b = 0.5 },
+      [SPELL_SCHOOL6_CAP] = { r = 0.8, g = 0.8, b = 1 },
       ["NUMLINES"] = 10,
       ["FADETIME"] = 10,
       ["LINEHEIGHT"] = 20,
@@ -723,7 +725,7 @@ function EavesDrop:GetDefaultConfig()
       ["LOCKED"] = false,
       ["FADEFRAME"] = false,
       ["FLIP"] = false,
-      ["OVERHEAL"] =  false,
+      ["OVERHEAL"] = false,
       ["HEALERID"] = false,
       ["HISTORY"] = true,
       ["TEXTSIZE"] = 14,
