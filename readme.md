@@ -11,6 +11,8 @@ important information by a quick skim. It separates incoming events (left side) 
 
 Additionally, it keeps track of each spell's maximum *normal* and **critical** hits! :sunglasses:
 
+----
+
 ## Installation
 ### Using wago.io app
 Install  [wago.iop app](https://addons.wago.io/app) and search for `EavesDrop` in the app to install this addon.
@@ -46,5 +48,9 @@ Then follow these instructions:
         level deep. Move the files and any sub-folders up one level
         and remove the extra folder.
   * If you have `Interface\AddOns\EavesDrop-2.8\` or similar, you need to rename it to `EavesDrop`.
+
+For more detailed instructions see [wowointerfaces](http://www.wowinterface.com/forums/faq.php?faq=install#faq_howto_install)'s FAQ.
+
+----
 
 Original [FAQ/Notes](misc/old_readme.md) by Grayhoof.
