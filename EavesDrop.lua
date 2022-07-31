@@ -504,17 +504,36 @@ function EavesDrop:CombatEvent(larg1, ...)
     print(amount)
     DevTools_Dump(db[outtype])
     DevTools_Dump(SCHOOL_STRINGS[school])
-    print("-------------------") ]]
-    if fromPlayer then
+    print(sourceGUID, sourceName, sourceFlags, sourceFlags2)
+    print("-------------------")
+    if fromPet then
+      print("from pet", school, db[outtype])
+      color = self:SpellColor(db[outtype], SCHOOL_STRINGS[school])
+    end
+    print("from pet:", fromPet, "outtype:", outtype)
+    DevTools_Dump(db[outtype]) ]]
+    local icon
+    if fromPlayer or fromPet then
+      local fake
+      icon = texture
+      if fromPet then texture = fake end
       if (self:TrackStat(inout, "hit", spellName, texture, SCHOOL_STRINGS[school], amount, critical, message)) then
         text = newhigh .. text .. newhigh
       end
-      --fix colors for self physical
+      if fromPet then
+        outtype = "PETI"
+      end
       color = self:SpellColor(db[outtype], SCHOOL_STRINGS[school])
       totDamageOut = totDamageOut + amount
-    elseif toPlayer then
+    elseif toPlayer or toPet then
+      local fake
+      icon = texture
+      if toPet then texture = fake end
       if (self:TrackStat(inout, "hit", spellName, texture, SCHOOL_STRINGS[school], amount, critical, message)) then
         text = newhigh .. text .. newhigh
+      end
+      if toPet then
+        intype = "PETO"
       end
       color = self:SpellColor(db[intype], SCHOOL_STRINGS[school])
       text = "-" .. text
@@ -522,7 +541,7 @@ function EavesDrop:CombatEvent(larg1, ...)
     elseif toPet then
       text = "-" .. text
     end
-    self:DisplayEvent(inout, text, texture, color, message, spellName)
+    self:DisplayEvent(inout, text, icon, color, message, spellName)
     ------------buff/debuff gain----------------
   elseif etype == "BUFF" then
     spellId, spellName, spellSchool, auraType, amount = select(12, CombatLogGetCurrentEventInfo())
@@ -547,24 +566,26 @@ function EavesDrop:CombatEvent(larg1, ...)
     text = tostring(shortenValue(amount))
     texture = select(3, GetSpellInfo(spellId))
 
-    if toPlayer then
+    if toPlayer or toPet then
       totHealingIn = totHealingIn + amount
       if (amount < db["HFILTER"]) then return end
       if (db["OVERHEAL"]) and overHeal > 0 then text = string_format("%d {%d}", shortenValue(amount - overHeal),
           shortenValue(overHeal))
       end
       if (critical) then text = critchar .. text .. critchar end
-      if (db["HEALERID"] == true and not fromPlayer) then text = text .. " (" .. (sourceName or "Unknown") .. ")" end
-      color = db["PHEAL"]
-      if fromPlayer then -- Show self healing under player columen & with correct color.
-        color = db["THEAL"]
-        inout = -inout
+      if (db["HEALERID"] == true and not fromPlayer and not fromPet) then text = text ..
+            " (" .. (sourceName or "Unknown") .. ")"
       end
+      color = db["PHEAL"]
       if (self:TrackStat(inout, "heal", spellName, texture, SCHOOL_STRINGS[spellSchool], amount, critical, message)) then
         text = newhigh .. text .. newhigh
       end
+      if fromPlayer and not toPet then -- Show self healing under player columen & with correct color.
+        color = db["THEAL"]
+        inout = -inout
+      end
       text = "+" .. text
-    elseif fromPlayer then
+    elseif fromPlayer or fromPet then
       totHealingOut = totHealingOut + amount
       if (amount < db["HFILTER"]) then return end
       if (db["OVERHEAL"]) and overHeal > 0 then text = string_format("%d {%d}", shortenValue(amount - overHeal),
