@@ -2,7 +2,7 @@
 ## Name: EavesDrop
 ## Title: EavesDrop
 ## Notes: A simple combat log that displays events similar to SCT
-## Version: 2.80
+## Version: 2.81
 ## Author: Grayhoof (Edited by Domzae, Updated for SL by spamwax)
 ## SavedVariables: EavesDropDB
 ## SavedVariablesPerCharacter: EavesDropStatsDB
@@ -11,6 +11,7 @@
 ## X-RelSite-WoWI: 5332
 ## X-Embeds: Ace3, LibSharedMedia-3.0
 ## OptionalDeps: Ace3, LibSharedMedia-3.0
+## X-Wago-ID: WqKQw1Nx
 ## X-Curse-Packaged-Version: v2.80
 ## X-Curse-Project-Name: EavesDrop
 ## X-Curse-Project-ID: eaves-drop
