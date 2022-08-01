@@ -1,4 +1,4 @@
-﻿--[[
+--[[
   ****************************************************************
   EavesDrop
 
@@ -6,8 +6,7 @@
           from Andalia`s SideCombatLog and CombatChat.
 
   Notes: Code comments coming at a later time.
-  ****************************************************************]]
-
+  ****************************************************************]] --
 EavesDrop = LibStub("AceAddon-3.0"):NewAddon("EavesDrop", "AceEvent-3.0", "AceConsole-3.0", "AceTimer-3.0")
 local EavesDrop = EavesDrop
 local db
@@ -25,23 +24,23 @@ local crushchar = "^"
 local glancechar = "~"
 local newhigh = "|cffffff00!|r"
 
-local arrEventData   = {}
+local arrEventData = {}
 local arrEventFrames = {}
-local frameSize      = 21
-local arrSize        = 10
+local frameSize = 21
+local arrSize = 10
 local arrDisplaySize = 20
-local arrMaxSize     = 128
-local scroll         = 0
-local allShown       = false
-local totDamageIn    = 0
-local totDamageOut   = 0
-local totHealingIn   = 0
-local totHealingOut  = 0
-local timeStart      = 0
-local curTime        = 0
-local lastTime       = 0
+local arrMaxSize = 128
+local scroll = 0
+local allShown = false
+local totDamageIn = 0
+local totDamageOut = 0
+local totHealingIn = 0
+local totHealingOut = 0
+local timeStart = 0
+local curTime = 0
+local lastTime = 0
 
---LUA calls
+-- LUA calls
 local _G = _G
 local tonumber = tonumber
 local strsub = strsub
@@ -58,14 +57,14 @@ local function string_nil(val)
   end
 end
 
---API calls
+-- API calls
 local UnitName = UnitName
 local UnitXP = UnitXP
 local GetSpellInfo = GetSpellInfo
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 
---Combat log locals
+-- Combat log locals
 local pxp = UnitXP("player")
 local skillmsg = gsub(gsub(gsub(SKILL_RANK_UP, '%d%$', ''), '%%s', '(.+)'), '%%d', '(%%d+)')
 local CombatLog_Object_IsA = CombatLog_Object_IsA
@@ -74,9 +73,7 @@ local Blizzard_CombatLog_CurrentSettings
 local COMBATLOG_OBJECT_NONE = COMBATLOG_OBJECT_NONE
 local COMBATLOG_FILTER_MINE = COMBATLOG_FILTER_MINE
 local COMBATLOG_FILTER_MY_PET = COMBATLOG_FILTER_MY_PET
-local COMBATLOG_FILTER_HOSTILE = bit.bor(
-  COMBATLOG_FILTER_HOSTILE_PLAYERS,
-  COMBATLOG_FILTER_HOSTILE_UNITS)
+local COMBATLOG_FILTER_HOSTILE = bit.bor(COMBATLOG_FILTER_HOSTILE_PLAYERS, COMBATLOG_FILTER_HOSTILE_UNITS)
 
 local COMBAT_EVENTS = {
   ["SWING_DAMAGE"] = "DAMAGE",
@@ -101,14 +98,12 @@ local COMBAT_EVENTS = {
   ["SPELL_PERIODIC_ENERGIZE"] = "POWER",
   ["PARTY_KILL"] = "DEATH",
   ["UNIT_DIED"] = "DEATH",
-  ["UNIT_DESTROYED"] = "DEATH",
+  ["UNIT_DESTROYED"] = "DEATH"
 }
 
 -- LoadAddOn("Blizzard_DebugTools")
 local SCHOOL_STRINGS = {}
-for index, value in ipairs(_G["SCHOOL_STRINGS"]) do
-  SCHOOL_STRINGS[bit.lshift(1, index - 1)] = value
-end
+for index, value in ipairs(_G["SCHOOL_STRINGS"]) do SCHOOL_STRINGS[bit.lshift(1, index - 1)] = value end
 local SCHOOL_MASK_PHYSICAL = 1
 -- DevTools_Dump(SCHOOL_STRINGS)
 --[[ local SCHOOL_STRINGS = {
@@ -136,17 +131,15 @@ local POWER_STRINGS = {
   [Enum.PowerType.Maelstrom] = MAELSTROM_POWER,
   [Enum.PowerType.Chi] = CHI_POWER,
   [Enum.PowerType.Insanity] = INSANITY_POWER,
-  --[Enum.PowerType.Obsolete] = 14;
-  --[Enum.PowerType.Obsolete2] = 15;
+  -- [Enum.PowerType.Obsolete] = 14;
+  -- [Enum.PowerType.Obsolete2] = 15;
   [Enum.PowerType.ArcaneCharges] = ARCANE_CHARGES_POWER,
   [Enum.PowerType.Fury] = FURY,
-  [Enum.PowerType.Pain] = PAIN,
+  [Enum.PowerType.Pain] = PAIN
 }
 
---set table default size sense table.insert no longer does
-for i = 1, arrMaxSize do
-  arrEventData[i] = {}
-end
+-- set table default size sense table.insert no longer does
+for i = 1, arrMaxSize do arrEventData[i] = {} end
 
 --- Returns the core school type of a multi-school type `a`.
 ---
@@ -161,9 +154,7 @@ local function getSpellSchoolCoreType(a)
   local count = 0
   while true do
     a = bit.rshift(a, 1)
-    if a == 0 then
-      break
-    end
+    if a == 0 then break end
     count = count + 1
   end
   local stype = bit.lshift(1, count)
@@ -187,9 +178,7 @@ local function shortenValue(value)
   return value
 end
 
-local function round(num, idp)
-  return tonumber(string_format("%." .. (idp or 0) .. "f", num))
-end
+local function round(num, idp) return tonumber(string_format("%." .. (idp or 0) .. "f", num)) end
 
 local function cleanstring(s)
   s = gsub(s, "|r", "")
@@ -214,10 +203,10 @@ local function clearSummary()
   totHealingOut = 0
 end
 
---Main Functions
+-- Main Functions
 function EavesDrop:OnInitialize()
 
-  --setup table for display frame objects
+  -- setup table for display frame objects
   for i = 1, arrDisplaySize do
     arrEventFrames[i] = {}
     arrEventFrames[i].frame = _G[string_format("EavesDropEvent%d", i)]
@@ -233,16 +222,15 @@ function EavesDrop:OnInitialize()
 
   self:SetupOptions()
 
-  --callbacks for profile changes
+  -- callbacks for profile changes
   self.db.RegisterCallback(self, "OnProfileChanged", "UpdateFrame")
   self.db.RegisterCallback(self, "OnProfileCopied", "UpdateFrame")
   self.db.RegisterCallback(self, "OnProfileReset", "UpdateFrame")
 
-  --local the profile table
+  -- local the profile table
   db = self.db.profile
 
   self:PerformDisplayOptions()
-
 
   self:RegisterEvent("ADDON_LOADED", self.SetFonts)
 end
@@ -258,11 +246,9 @@ function EavesDrop:OnEnable()
 
   self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "CombatEvent")
 
-  --show frame
+  -- show frame
   EavesDropFrame:Show()
-  if (db["FADEFRAME"]) then
-    self:HideFrame()
-  end
+  if (db["FADEFRAME"]) then self:HideFrame() end
 
 end
 
@@ -338,9 +324,9 @@ function EavesDrop:UpdateSkillEvents()
 end
 
 ----------------------
---Reset everything to default
+-- Reset everything to default
 function EavesDrop:UpdateFrame()
-  --local the profile table
+  -- local the profile table
   db = self.db.profile
   self:UpdateExpEvents()
   self:UpdateRepHonorEvents()
@@ -353,16 +339,16 @@ function EavesDrop:UpdateFrame()
 end
 
 function EavesDrop:PerformDisplayOptions()
-  --set size
+  -- set size
   arrSize = db["NUMLINES"]
   frameSize = db["LINEHEIGHT"] + 1
   local totalh = (frameSize * arrSize) + 50
   local totalw = (db["LINEHEIGHT"] * 2) + db["LINEWIDTH"]
   EavesDropFrame:SetHeight(totalh)
   EavesDropFrame:SetWidth(totalw)
-  --update look of frame
+  -- update look of frame
   local r, g, b, a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
-  --main frame
+  -- main frame
   EavesDropFrame:SetBackdropColor(r, g, b, a)
   EavesDropTopBar:SetGradientAlpha("VERTICAL", r * .1, g * .1, b * .1, 0, r * .2, g * .2, b * .2, a)
   EavesDropBottomBar:SetGradientAlpha("VERTICAL", r * .2, g * .2, b * .2, a, r * .1, g * .1, b * .1, 0)
@@ -371,7 +357,7 @@ function EavesDrop:PerformDisplayOptions()
   r, g, b, a = db["BORDER"].r, db["BORDER"].g, db["BORDER"].b, db["BORDER"].a
   EavesDropFrame:SetBackdropBorderColor(r, g, b, a)
   EavesDropFrame:EnableMouse(not db["LOCKED"])
-  --tooltips
+  -- tooltips
   EavesDropTab.tooltipText = L["TabTip"]
   if (db["SCROLLBUTTON"]) then
     EavesDropFrameDownButton:Hide()
@@ -382,7 +368,7 @@ function EavesDrop:PerformDisplayOptions()
     self:UpdateScrollButtons()
   end
   self.ToolTipAnchor = "ANCHOR_" .. strupper(db["TOOLTIPSANCHOR"])
-  --labels
+  -- labels
   r, g, b, a = db["LABELC"].r, db["LABELC"].g, db["LABELC"].b, db["LABELC"].a
   if (db["FLIP"] == true) then
     EavesDropFramePlayerText:SetText(L["TargetLabel"])
@@ -393,15 +379,15 @@ function EavesDrop:PerformDisplayOptions()
   end
   EavesDropFramePlayerText:SetTextColor(r, g, b, a)
   EavesDropFrameTargetText:SetTextColor(r, g, b, a)
-  --fonts
+  -- fonts
   self:SetFonts()
-  --tab
+  -- tab
   if (db["HIDETAB"] == true) then
     EavesDropTab:Hide()
   else
     EavesDropTab:Show()
   end
-  --position frame (have to schedule cause UI scale is still 1 for some reason during init)
+  -- position frame (have to schedule cause UI scale is still 1 for some reason during init)
   self:ScheduleTimer("PlaceFrame", .1, self)
 
   self:ResetEvents()
@@ -430,9 +416,7 @@ function EavesDrop:PlaceFrame()
   end
 end
 
-function EavesDrop:HideFrame()
-  EavesDropFrame:SetAlpha(0)
-end
+function EavesDrop:HideFrame() EavesDropFrame:SetAlpha(0) end
 
 function EavesDrop:ShowFrame()
   EavesDropFrame:SetAlpha(1)
@@ -440,7 +424,8 @@ function EavesDrop:ShowFrame()
 end
 
 function EavesDrop:CombatEvent(larg1, ...)
-  local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags, destFlags2 = CombatLogGetCurrentEventInfo()
+  local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags,
+        destFlags2 = CombatLogGetCurrentEventInfo()
   local etype = COMBAT_EVENTS[event]
   if not etype then return end
 
@@ -448,7 +433,7 @@ function EavesDrop:CombatEvent(larg1, ...)
     Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[Blizzard_CombatLog_Filters.currentFilter]
   end
 
-  --check for reflect damage
+  -- check for reflect damage
   if event == "SPELL_DAMAGE" and sourceName == destName and CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_HOSTILE) then
     self:ParseReflect(CombatLogGetCurrentEventInfo())
     return
@@ -471,43 +456,43 @@ function EavesDrop:CombatEvent(larg1, ...)
   local spellId, spellName, spellSchool, missType, powerType, extraAmount, environmentalType, overHeal
   local text, texture, message, inout, color, auraType, overEnergize
 
-  --defaults
+  -- defaults
   if toPet or fromPet then texture = "pet" end
   if toPlayer or toPet then inout = INCOMING end
   if fromPlayer or fromPet then inout = OUTGOING end
   if toPet then color = db["PETI"] end
   if fromPet then color = db["PETO"] end
 
-  --get combat log message (for tooltip)
+  -- get combat log message (for tooltip)
   message = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEventInfo())
-
 
   ------------damage----------------
   if etype == "DAMAGE" then
     local intype, outtype
     if event == "SWING_DAMAGE" then
       amount, overDamage, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12,
-        CombatLogGetCurrentEventInfo())
+                                                                                                     CombatLogGetCurrentEventInfo())
       if school == SCHOOL_MASK_PHYSICAL then
         outtype, intype = "TMELEE", "PHIT"
       else
         outtype, intype = "TSPELL", "PSPELL"
       end
     elseif event == "RANGE_DAMAGE" then
-      spellId, spellName, spellSchool, amount, overDamage, school, resisted, blocked, absorbed, critical, glancing,
-          crushing = select(12, CombatLogGetCurrentEventInfo())
+      spellId, spellName, spellSchool, amount, overDamage, school, resisted, blocked, absorbed, critical, glancing, crushing =
+          select(12, CombatLogGetCurrentEventInfo())
       if school == SCHOOL_MASK_PHYSICAL then
         outtype, intype = "TMELEE", "PHIT"
       else
         outtype, intype = "TSPELL", "PSPELL"
       end
     elseif event == "ENVIRONMENTAL_DAMAGE" then
-      environmentalType, amount, overDamage, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12
-        , CombatLogGetCurrentEventInfo())
+      environmentalType, amount, overDamage, school, resisted, blocked, absorbed, critical, glancing, crushing = select(
+                                                                                                                     12,
+                                                                                                                     CombatLogGetCurrentEventInfo())
       outtype, intype = "TSPELL", "PSPELL"
     else
-      spellId, spellName, spellSchool, amount, overDamage, school, resisted, blocked, absorbed, critical, glancing,
-          crushing = select(12, CombatLogGetCurrentEventInfo())
+      spellId, spellName, spellSchool, amount, overDamage, school, resisted, blocked, absorbed, critical, glancing, crushing =
+          select(12, CombatLogGetCurrentEventInfo())
       texture = select(3, GetSpellInfo(spellId))
       outtype, intype = "TSPELL", "PSPELL"
     end
@@ -549,9 +534,7 @@ function EavesDrop:CombatEvent(larg1, ...)
       if (self:TrackStat(inout, "hit", spellName, texture, SCHOOL_STRINGS[school], amount, critical, message)) then
         text = newhigh .. text .. newhigh
       end
-      if fromPet then
-        outtype = "PETO"
-      end
+      if fromPet then outtype = "PETO" end
       color = self:SpellColor(db[outtype], SCHOOL_STRINGS[school])
       if not toPlayer then -- Don't count self damag in total
         totDamageOut = totDamageOut + amount
@@ -565,9 +548,7 @@ function EavesDrop:CombatEvent(larg1, ...)
       if (self:TrackStat(inout, "hit", spellName, texture, SCHOOL_STRINGS[school], amount, critical, message)) then
         text = newhigh .. text .. newhigh
       end
-      if toPet then
-        intype = "PETI"
-      end
+      if toPet then intype = "PETI" end
       color = self:SpellColor(db[intype], SCHOOL_STRINGS[school])
       text = "-" .. text
       totDamageIn = totDamageIn + amount
@@ -581,8 +562,9 @@ function EavesDrop:CombatEvent(larg1, ...)
     texture = select(3, GetSpellInfo(spellId))
     if toPlayer and db[auraType] then
       self:DisplayEvent(INCOMING, self:ShortenString(spellName) .. " " .. L["Gained"], texture, db["P" .. auraType],
-        message, spellName)
-    else return
+                        message, spellName)
+    else
+      return
     end
     ------------buff/debuff lose----------------
   elseif etype == "FADE" then
@@ -590,8 +572,9 @@ function EavesDrop:CombatEvent(larg1, ...)
     texture = select(3, GetSpellInfo(spellId))
     if toPlayer and db[auraType .. "FADE"] then
       self:DisplayEvent(INCOMING, self:ShortenString(spellName) .. " " .. L["Fades"], texture, db["P" .. auraType],
-        message, spellName)
-    else return
+                        message, spellName)
+    else
+      return
     end
     ------------heals----------------
   elseif etype == "HEAL" then
@@ -602,12 +585,12 @@ function EavesDrop:CombatEvent(larg1, ...)
     if toPlayer or toPet then
       totHealingIn = totHealingIn + amount
       if (amount < db["HFILTER"]) then return end
-      if (db["OVERHEAL"]) and overHeal > 0 then text = string_format("%d {%d}", shortenValue(amount - overHeal),
-          shortenValue(overHeal))
+      if (db["OVERHEAL"]) and overHeal > 0 then
+        text = string_format("%d {%d}", shortenValue(amount - overHeal), shortenValue(overHeal))
       end
       if (critical) then text = critchar .. text .. critchar end
-      if (db["HEALERID"] == true and not fromPlayer and not fromPet) then text = text ..
-            " (" .. (sourceName or "Unknown") .. ")"
+      if (db["HEALERID"] == true and not fromPlayer and not fromPet) then
+        text = text .. " (" .. (sourceName or "Unknown") .. ")"
       end
       color = db["PHEAL"]
       if (self:TrackStat(inout, "heal", spellName, texture, SCHOOL_STRINGS[spellSchool], amount, critical, message)) then
@@ -621,8 +604,8 @@ function EavesDrop:CombatEvent(larg1, ...)
     elseif fromPlayer or fromPet then
       totHealingOut = totHealingOut + amount
       if (amount < db["HFILTER"]) then return end
-      if (db["OVERHEAL"]) and overHeal > 0 then text = string_format("%d {%d}", shortenValue(amount - overHeal),
-          shortenValue(overHeal))
+      if (db["OVERHEAL"]) and overHeal > 0 then
+        text = string_format("%d {%d}", shortenValue(amount - overHeal), shortenValue(overHeal))
       end
       if (critical) then text = critchar .. text .. critchar end
       color = db["THEAL"]
@@ -654,9 +637,7 @@ function EavesDrop:CombatEvent(larg1, ...)
     elseif fromPlayer then
       color = db[tcolor]
     elseif toPlayer then
-      if missType == "REFLECT" then
-        self:SetReflect(sourceName, spellName)
-      end
+      if missType == "REFLECT" then self:SetReflect(sourceName, spellName) end
       color = db["PMISS"]
     end
     self:DisplayEvent(inout, text, texture, color, message, spellName)
@@ -674,9 +655,9 @@ function EavesDrop:CombatEvent(larg1, ...)
         color = db["PGAIN"]
       elseif fromPlayer then
         return
-        --for showing your drain damage
-        --text = string_format("%d %s", amount, string_nil(POWER_STRINGS[powerType]))
-        --color = db["TSPELL"]
+        -- for showing your drain damage
+        -- text = string_format("%d %s", amount, string_nil(POWER_STRINGS[powerType]))
+        -- color = db["TSPELL"]
       end
       self:DisplayEvent(inout, text, texture, color, message, spellName)
     end
@@ -699,7 +680,8 @@ function EavesDrop:CombatEvent(larg1, ...)
     if fromPlayer then
       text = deathchar .. destName .. deathchar
       self:DisplayEvent(MISC, text, texture, db["DEATH"], message)
-    else return
+    else
+      return
     end
     ------------enchants----------------
   elseif etype == "ENCHANT_APPLIED" then
@@ -708,10 +690,10 @@ function EavesDrop:CombatEvent(larg1, ...)
   elseif etype == "ENCHANT_REMOVED" then
     spellName = select(12, CombatLogGetCurrentEventInfo())
     self:DisplayEvent(INCOMING, self:ShortenString(spellName) .. " " .. L["Fades"], texture, db["PBUFF"], message,
-      spellName)
+                      spellName)
     -------------anything else-------------
-    --else
-    --self:Print(event, sourceName, destName)
+    -- else
+    -- self:Print(event, sourceName, destName)
   end
 end
 
@@ -726,9 +708,7 @@ function EavesDrop:COMBAT_TEXT_UPDATE(event, larg1)
   local larg2, larg3 = GetCurrentCombatTextEventInfo() -- Thanks DTuloJr for pointing this out!
   if larg1 == "FACTION" then
     local sign = "+"
-    if larg2 == nil then
-      larg2 = 0
-    end
+    if larg2 == nil then larg2 = 0 end
     if larg3 == nil then
       larg3 = 0
       sign = ""
@@ -745,11 +725,11 @@ function EavesDrop:PLAYER_REGEN_DISABLED()
   timeStart = GetTime()
   clearSummary()
   self:DisplayEvent(MISC, L["StartCombat"], nil, db["MISC"])
-  --stop on update, since in combat
+  -- stop on update, since in combat
   self:StopOnUpdate()
-  --show frame, if its hidden
+  -- show frame, if its hidden
   self:ShowFrame()
-  --flag all as being shown, so buttons appear
+  -- flag all as being shown, so buttons appear
   allShown = true
 end
 
@@ -762,39 +742,38 @@ function EavesDrop:PLAYER_REGEN_ENABLED()
     local IDPS = round(totDamageIn / duration, 1) or 0
     local IHPS = round(totHealingIn / duration, 1) or 0
     local strSummary = convertRGBtoHEXString(db["MISC"], duration .. " " .. L["IncombatSummary"]) .. "\n" ..
-        convertRGBtoHEXString(db["PHIT"], L["IncomingDamge"] .. ": " .. totDamageIn .. " (" .. IDPS .. ")") .. "\n" ..
-        convertRGBtoHEXString(db["PHEAL"], L["IncomingHeals"] .. ": " .. totHealingIn .. " (" .. IHPS .. ")") ..
-        "\n" ..
-        convertRGBtoHEXString(db["THEAL"], L["OutgoingHeals"] .. ": " .. totHealingOut .. " (" .. HPS .. ")") ..
-        "\n" ..
-        convertRGBtoHEXString(db["TSPELL"], L["OutgoingDamage"] .. ": " .. totDamageOut .. " (" .. DPS .. ")")
+                           convertRGBtoHEXString(db["PHIT"],
+                                                 L["IncomingDamge"] .. ": " .. totDamageIn .. " (" .. IDPS .. ")") ..
+                           "\n" ..
+                           convertRGBtoHEXString(db["PHEAL"],
+                                                 L["IncomingHeals"] .. ": " .. totHealingIn .. " (" .. IHPS .. ")") ..
+                           "\n" ..
+                           convertRGBtoHEXString(db["THEAL"],
+                                                 L["OutgoingHeals"] .. ": " .. totHealingOut .. " (" .. HPS .. ")") ..
+                           "\n" ..
+                           convertRGBtoHEXString(db["TSPELL"],
+                                                 L["OutgoingDamage"] .. ": " .. totDamageOut .. " (" .. DPS .. ")")
 
-    self:DisplayEvent(MISC,
-      convertRGBtoHEXString(db["PHIT"], shortenValue(totDamageIn)) .. " | " ..
-      convertRGBtoHEXString(db["PHEAL"], shortenValue(totHealingIn)) .. " | " ..
-      convertRGBtoHEXString(db["THEAL"], shortenValue(totHealingOut)) .. " | " ..
-      convertRGBtoHEXString(db["TSPELL"], shortenValue(totDamageOut)),
-      nil, db["MISC"], strSummary)
+    self:DisplayEvent(MISC, convertRGBtoHEXString(db["PHIT"], shortenValue(totDamageIn)) .. " | " ..
+                          convertRGBtoHEXString(db["PHEAL"], shortenValue(totHealingIn)) .. " | " ..
+                          convertRGBtoHEXString(db["THEAL"], shortenValue(totHealingOut)) .. " | " ..
+                          convertRGBtoHEXString(db["TSPELL"], shortenValue(totDamageOut)), nil, db["MISC"], strSummary)
   end
   clearSummary()
-  --since out of combat, try and start onupdate to count down frames
+  -- since out of combat, try and start onupdate to count down frames
   self:StartOnUpdate()
 end
 
-function EavesDrop:PLAYER_DEAD()
-  self:DisplayEvent(MISC, deathchar .. UnitName("player") .. deathchar, nil, db["DEATH"])
-end
+function EavesDrop:PLAYER_DEAD() self:DisplayEvent(MISC, deathchar .. UnitName("player") .. deathchar, nil, db["DEATH"]) end
 
 function EavesDrop:CHAT_MSG_SKILL(event, larg1)
   local skill, rank = string_match(larg1, skillmsg)
-  if skill then
-    self:DisplayEvent(MISC, string_format("%s: %d", skill, rank), nil, db["SKILLC"], larg1)
-  end
+  if skill then self:DisplayEvent(MISC, string_format("%s: %d", skill, rank), nil, db["SKILLC"], larg1) end
 end
 
 local tempcolor = { r = 1, g = 1, b = 1 }
 function EavesDrop:DisplayEvent(type, text, texture, color, message, spellname)
-  --remove oldest table and create new display event
+  -- remove oldest table and create new display event
   local pEvent = tremove(arrEventData, 1)
   local tooltiptext = message
   if (db["FLIP"] == true) then type = type * -1 end
@@ -809,9 +788,7 @@ function EavesDrop:DisplayEvent(type, text, texture, color, message, spellname)
     local timecutoff = string.find(message, '> ')
 
     -- If we did, skip those two characters "> "
-    if timecutoff then
-      message = strsub(message, timecutoff + 2)
-    end
+    if timecutoff then message = strsub(message, timecutoff + 2) end
 
     pEvent.tooltipText = string_format('|cffffffff%s\n%s', date('%I:%M:%S'), message)
 
@@ -895,21 +872,21 @@ function EavesDrop:UpdateEvents()
       frame:SetAlpha(frame.alpha)
     end
     delay = delay - 4
-    --set clickthru
+    -- set clickthru
     if (frame.tooltipText) then
       frame:EnableMouse(true)
     else
       frame:EnableMouse(false)
     end
   end
-  --Update scrolls
+  -- Update scrolls
   self:UpdateScrollButtons()
-  --try to start up onUpdate. if in combat it won't start.
+  -- try to start up onUpdate. if in combat it won't start.
   self:StartOnUpdate()
 end
 
 function EavesDrop:StartOnUpdate()
-  --only start on update if not in combat, and not already started.
+  -- only start on update if not in combat, and not already started.
   if not InCombatLockdown() and not self.OnUpdateStarted then
     lastTime = GetTime()
     self.OnUpdateStarted = self:ScheduleRepeatingTimer("OnUpdate", .2, self)
@@ -970,11 +947,9 @@ function EavesDrop:OnUpdate()
   else
     allShown = false
   end
-  --if none are active, stop onUpdate
-  if (count == 0) then
-    self:StopOnUpdate()
-  end
-  --hide frame when none active
+  -- if none are active, stop onUpdate
+  if (count == 0) then self:StopOnUpdate() end
+  -- hide frame when none active
   if (db["FADEFRAME"]) then
     if ((count == 0) and (scroll == 0)) then
       self:HideFrame()
@@ -1041,18 +1016,14 @@ end
 
 function EavesDrop:ScrollUp()
   scroll = scroll + 1
-  if (scroll > (arrMaxSize - arrSize)) then
-    scroll = arrMaxSize - arrSize
-  end
+  if (scroll > (arrMaxSize - arrSize)) then scroll = arrMaxSize - arrSize end
   self:UpdateScrollButtons()
   self:UpdateEvents()
 end
 
 function EavesDrop:ScrollDown()
   scroll = scroll - 1
-  if (scroll < 0) then
-    scroll = 0
-  end
+  if (scroll < 0) then scroll = 0 end
   self:UpdateScrollButtons()
   self:UpdateEvents()
 end
@@ -1087,36 +1058,38 @@ function EavesDrop:SpellColor(option, type)
 end
 
 -------------------------
---Set last reflection
-function EavesDrop:ParseReflect(timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID
-                                , destName, destFlags, destFlags2, ...)
-  local spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing = select(1
-    , ...)
+-- Set last reflection
+function EavesDrop:ParseReflect(timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2,
+                                destGUID, destName, destFlags, destFlags2, ...)
+  local spellId, spellName, spellSchool, amount, school, resisted, blocked, absorbed, critical, glancing, crushing =
+      select(1, ...)
   local texture = select(3, GetSpellInfo(spellId))
   local text = amount
   local messsage = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, timestamp, event, hideCaster, sourceGUID,
-    sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags, destFlags2, ...)
+                                     sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags, destFlags2,
+                                     ...)
 
-  --reflected events
+  -- reflected events
   if (self.ReflectTarget == sourceName and sourceName == destName and self.ReflectSkill == spellName) then
     local text = string_format("%s: %d", REFLECT, shortenValue(amount))
     if (critical) then text = critchar .. text .. critchar end
-    self:DisplayEvent(OUTGOING, text, texture, self:SpellColor(db["TSPELL"], SCHOOL_STRINGS[school]), messsage, spellName)
+    self:DisplayEvent(OUTGOING, text, texture, self:SpellColor(db["TSPELL"], SCHOOL_STRINGS[school]), messsage,
+                      spellName)
     self:ClearReflect()
   end
 end
 
 -------------------------
---Set last reflection
+-- Set last reflection
 function EavesDrop:SetReflect(target, skill)
   self.ReflectTarget = target
   self.ReflectSkill = skill
-  --clear reflection after 3 seconds.
+  -- clear reflection after 3 seconds.
   self:ScheduleTimer(self.ClearReflect, 3, self)
 end
 
 -------------------------
---Clear last reflection
+-- Clear last reflection
 function EavesDrop:ClearReflect()
   self.ReflectTarget = nil
   self.ReflectSkill = nil

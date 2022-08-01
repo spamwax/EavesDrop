@@ -7,34 +7,28 @@ local INCOMING = -1
 local CRIT = 2
 local NONCRIT = -2
 
-local L                = LibStub("AceLocale-3.0"):GetLocale("EavesDrop", true)
+local L = LibStub("AceLocale-3.0"):GetLocale("EavesDrop", true)
 local sort_table
-local display_type     = OUTGOING
+local display_type = OUTGOING
 local display_sub_type = "hit"
 local arrHistoryFrames = {}
-local arrDisplaySize   = 10
+local arrDisplaySize = 10
 
 local _G = _G
 local string_format = string.format
 
 ----------------------
 -- append date and time to event
-local function geteventtime(arg1)
-  return string.format('|cffffffff%s|r\n%s', date('%x %I:%M:%S'), arg1 or '')
-end
+local function geteventtime(arg1) return string.format('|cffffffff%s|r\n%s', date('%x %I:%M:%S'), arg1 or '') end
 
 ------------------------------
---Copy table to table
---Taken from AceDB. Using till AceDB support character to character
+-- Copy table to table
+-- Taken from AceDB. Using till AceDB support character to character
 local function copyTable(from, to)
   setmetatable(to, nil)
   for k, v in pairs(from) do
-    if type(k) == "table" then
-      k = copyTable({}, k)
-    end
-    if type(v) == "table" then
-      v = copyTable({}, v)
-    end
+    if type(k) == "table" then k = copyTable({}, k) end
+    if type(v) == "table" then v = copyTable({}, v) end
     to[k] = v
   end
   setmetatable(to, from)
@@ -62,7 +56,7 @@ end
 function EavesDrop:SetDisplay(type, sub_type)
   display_type = type
   display_sub_type = sub_type
-  --reset sorted table
+  -- reset sorted table
   sort_table = nil
   ChangeActiveButton(type, sub_type)
   FauxScrollFrame_SetOffset(EavesDropHistoryScrollBar, 0)
@@ -73,39 +67,32 @@ end
 -- track highest stats
 function EavesDrop:TrackStat(type, hitheal, spell, icon, school, amount, crit, message)
   -- if its not enabled
-  if db["HISTORY"] == false then
-    return false
-  end
+  if db["HISTORY"] == false then return false end
 
   local key, critkey
-  --set key
+  -- set key
   if (type == OUTGOING) or (hitheal == "heal") then
     key = spell or MELEE_ATTACK
   else
     key = school or MELEE_ATTACK
   end
 
-  --set crit type
+  -- set crit type
   if (crit) then
     critkey = CRIT
   else
     critkey = NONCRIT
   end
 
-  --check if type exists
-  if (chardb[type][hitheal] == nil) then
-    chardb[type][hitheal] = {}
-  end
-  --check if skill/key exists
+  -- check if type exists
+  if (chardb[type][hitheal] == nil) then chardb[type][hitheal] = {} end
+  -- check if skill/key exists
   if (chardb[type][hitheal][key] == nil) then
-    chardb[type][hitheal][key] = {
-      [CRIT] = {},
-      [NONCRIT] = {},
-    }
-    --reset sorted table
+    chardb[type][hitheal][key] = { [CRIT] = {}, [NONCRIT] = {} }
+    -- reset sorted table
     sort_table = nil
   end
-  --see if its a higher event
+  -- see if its a higher event
   if ((chardb[type][hitheal][key][critkey].amount == nil) or (amount > chardb[type][hitheal][key][critkey].amount)) then
     chardb[type][hitheal][key][critkey].amount = amount
     chardb[type][hitheal][key][critkey].time = geteventtime(message)
@@ -121,21 +108,19 @@ end
 function EavesDrop:ScrollBar_Update()
   local i, j, k, idx, skill, hit, crit, row, key, value, texture, tip1, tip2
   local offset = FauxScrollFrame_GetOffset(EavesDropHistoryScrollBar)
-  --get table size, getn doesn't work cause not an array
+  -- get table size, getn doesn't work cause not an array
   local size = 0
   local current_table = chardb[display_type][display_sub_type]
-  --if not sorted, sort now
+  -- if not sorted, sort now
   if (sort_table == nil) then
     sort_table = {}
-    if current_table then
-      table.foreach(current_table, function(k) table.insert(sort_table, k) end)
-    end
+    if current_table then table.foreach(current_table, function(k) table.insert(sort_table, k) end) end
     table.sort(sort_table)
   end
   size = #sort_table
-  --get update
+  -- get update
   FauxScrollFrame_Update(EavesDropHistoryScrollBar, size, 10, 16)
-  --loop thru each display item
+  -- loop thru each display item
   for i = 1, arrDisplaySize do
     row = arrHistoryFrames[i].row
     texture = arrHistoryFrames[i].texture
@@ -145,9 +130,7 @@ function EavesDrop:ScrollBar_Update()
     idx = offset + i
     if idx <= size then
       k, key = next(sort_table)
-      for j = 2, idx do
-        k, key = next(sort_table, k)
-      end
+      for j = 2, idx do k, key = next(sort_table, k) end
       texture:SetTexture(current_table[key].icon)
       texture:SetTexCoord(.1, .9, .1, .9)
       skill:SetText(key)
@@ -175,7 +158,7 @@ end
 ----------------------
 -- Setup history UI
 function EavesDrop:SetupHistory()
-  --setup table for history frame objects
+  -- setup table for history frame objects
   for i = 1, arrDisplaySize do
     arrHistoryFrames[i] = {}
     arrHistoryFrames[i].row = _G[string_format("EavesDropHistoryEvent%d", i)]
@@ -184,10 +167,10 @@ function EavesDrop:SetupHistory()
     arrHistoryFrames[i].hit = _G[string_format("EavesDropHistoryEvent%d_Hit", i)]
     arrHistoryFrames[i].crit = _G[string_format("EavesDropHistoryEvent%d_Crit", i)]
   end
-  --local the profile table
+  -- local the profile table
   db = self.db.profile
   chardb = self.chardb.profile
-  --Labels
+  -- Labels
   EavesDropHistoryFrameSkillText:SetText(L["Skill"])
   EavesDropHistoryFrameAmountCritText:SetText(L["Crit"])
   EavesDropHistoryFrameAmountNormalText:SetText(L["Normal"])
@@ -195,24 +178,24 @@ function EavesDrop:SetupHistory()
   EavesDropHistoryFrameSkillText:SetTextColor(r, g, b, a)
   EavesDropHistoryFrameAmountCritText:SetTextColor(r, g, b, a)
   EavesDropHistoryFrameAmountNormalText:SetTextColor(r, g, b, a)
-  --Buttons
+  -- Buttons
   EavesDropHistoryFrameOutgoingHit.tooltipText = L["OutgoingDamage"]
   EavesDropHistoryFrameOutgoingHeal.tooltipText = L["OutgoingHeals"]
   EavesDropHistoryFrameIncomingHit.tooltipText = L["IncomingDamge"]
   EavesDropHistoryFrameIncomingHeal.tooltipText = L["IncomingHeals"]
   EavesDropHistoryButton.tooltipText = L["History"]
   EavesDropHistoryFrameResetText:SetText(L["Reset"])
-  --Show outgoing hit as active button
+  -- Show outgoing hit as active button
   activeHistoryButton = { EavesDropHistoryFrameOutgoingHit, "Interface\\Icons\\Ability_MeleeDamage" }
   activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
-  --Frame
+  -- Frame
   local r, g, b, a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
   EavesDropHistoryFrame:SetBackdropColor(r, g, b, a)
   EavesDropHistoryTopBar:SetGradientAlpha("VERTICAL", r * .1, g * .1, b * .1, 0, r * .2, g * .2, b * .2, a)
   EavesDropHistoryBottomBar:SetGradientAlpha("VERTICAL", r * .2, g * .2, b * .2, a, r * .1, g * .1, b * .1, 0)
   r, g, b, a = db["BORDER"].r, db["BORDER"].g, db["BORDER"].b, db["BORDER"].a
   EavesDropHistoryFrame:SetBackdropBorderColor(r, g, b, a)
-  --position frame (have to schedule cause UI scale is still 1 for some reason during init)
+  -- position frame (have to schedule cause UI scale is still 1 for some reason during init)
   self:ScheduleTimer("PlaceHistoryFrame", .1, self)
 
   if EavesDropStatsDB.global and EavesDropStatsDB.global.Stats then
