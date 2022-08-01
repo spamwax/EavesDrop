@@ -1,5 +1,8 @@
-![](misc/eaves1.png)
-![](misc/eaves2.png)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/spamwax/EavesDrop/ci?color=blue&logo=github&style=for-the-badge)](https://github.com/spamwax/EavesDrop/actions/workflows/ci.yml)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/spamwax?style=for-the-badge&logo=github&color=green)](https://github.com/sponsors/spamwax)
+
+<p><img src="misc/eaves1.png" alt="screenshot1" width="22%"/>
+<img src="misc/eaves2.png" alt="screenshot2" width="25%"/></p>
 
 This is my attempt to keep [Grayhoof](https://www.wowinterface.com/downloads/author-14368.html)'s addon going as I am kind of addicted to it since 2008!
 
