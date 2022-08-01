@@ -106,18 +106,18 @@ end
 ----------------------
 -- update scroll bar settings
 function EavesDrop:ScrollBar_Update()
-  local i, j, k, idx, skill, hit, crit, row, key, value, texture, tip1, tip2
+  local k, idx, skill, hit, crit, row, key, texture, tip1, tip2
   local offset = FauxScrollFrame_GetOffset(EavesDropHistoryScrollBar)
   -- get table size, getn doesn't work cause not an array
-  local size = 0
+  -- local size = 0
   local current_table = chardb[display_type][display_sub_type]
   -- if not sorted, sort now
   if (sort_table == nil) then
     sort_table = {}
-    if current_table then table.foreach(current_table, function(k) table.insert(sort_table, k) end) end
+    if current_table then table.foreach(current_table, function(lk) table.insert(sort_table, lk) end) end
     table.sort(sort_table)
   end
-  size = #sort_table
+  local size = #sort_table
   -- get update
   FauxScrollFrame_Update(EavesDropHistoryScrollBar, size, 10, 16)
   -- loop thru each display item
@@ -130,7 +130,7 @@ function EavesDrop:ScrollBar_Update()
     idx = offset + i
     if idx <= size then
       k, key = next(sort_table)
-      for j = 2, idx do k, key = next(sort_table, k) end
+      for _ = 2, idx do k, key = next(sort_table, k) end
       texture:SetTexture(current_table[key].icon)
       texture:SetTexCoord(.1, .9, .1, .9)
       skill:SetText(key)
@@ -189,7 +189,7 @@ function EavesDrop:SetupHistory()
   activeHistoryButton = { EavesDropHistoryFrameOutgoingHit, "Interface\\Icons\\Ability_MeleeDamage" }
   activeHistoryButton[1]:SetNormalTexture("Interface\\Icons\\spell_nature_wispsplode")
   -- Frame
-  local r, g, b, a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
+  r, g, b, a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
   EavesDropHistoryFrame:SetBackdropColor(r, g, b, a)
   EavesDropHistoryTopBar:SetGradientAlpha("VERTICAL", r * .1, g * .1, b * .1, 0, r * .2, g * .2, b * .2, a)
   EavesDropHistoryBottomBar:SetGradientAlpha("VERTICAL", r * .2, g * .2, b * .2, a, r * .1, g * .1, b * .1, 0)
