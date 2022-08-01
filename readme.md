@@ -1,6 +1,9 @@
 ![](misc/eaves1.png)
 ![](misc/eaves2.png)
 
+[![test & release](https://github.com/spamwax/EavesDrop/actions/workflows/ci.yml/badge.svg)](https://github.com/spamwax/EavesDrop/actions/workflows/ci.yml)
+![GitHub Sponsors](https://img.shields.io/github/sponsors/spamwax?style=flat&logo=github)
+
 This is my attempt to keep [Grayhoof](https://www.wowinterface.com/downloads/author-14368.html)'s addon going as I am kind of addicted to it since 2008!
 
 The goal is to make it work under latest game version (currently 9.2.5). Please report any issues or bugs on the project's [Github pae](https://github.com/spamwax/EavesDrop).
