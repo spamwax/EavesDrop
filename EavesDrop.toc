@@ -2,7 +2,7 @@
 ## Name: EavesDrop
 ## Title: EavesDrop
 ## Notes: A simple combat log that displays events similar to SCT
-## Version: 2.90
+## Version: 2.92
 ## Author: Grayhoof (Edited by Domzae, Updated for SL by spamwax)
 ## SavedVariables: EavesDropDB
 ## SavedVariablesPerCharacter: EavesDropStatsDB
