@@ -534,7 +534,7 @@ function EavesDrop:CombatEvent(larg1, ...)
       if (self:TrackStat(inout, "hit", spellName, texture, SCHOOL_STRINGS[school], amount, critical, message)) then
         text = newhigh .. text .. newhigh
       end
-      if fromPet then outtype = "PETO" end
+      if fromPet then outtype = "PETI" end
       color = self:SpellColor(db[outtype], SCHOOL_STRINGS[school])
       if not toPlayer then -- Don't count self damag in total
         totDamageOut = totDamageOut + amount
@@ -548,7 +548,7 @@ function EavesDrop:CombatEvent(larg1, ...)
       if (self:TrackStat(inout, "hit", spellName, texture, SCHOOL_STRINGS[school], amount, critical, message)) then
         text = newhigh .. text .. newhigh
       end
-      if toPet then intype = "PETI" end
+      if toPet then intype = "PETO" end
       color = self:SpellColor(db[intype], SCHOOL_STRINGS[school])
       text = "-" .. text
       totDamageIn = totDamageIn + amount
