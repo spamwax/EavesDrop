@@ -1,4 +1,4 @@
-﻿--[[
+--[[
   ****************************************************************
   EavesDrop
 
@@ -424,7 +424,7 @@ function EavesDrop:ShowFrame()
 end
 
 function EavesDrop:CombatEvent(larg1, ...)
-  --local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags,
+  -- local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags,
   local _, event, _, _, sourceName, sourceFlags, _, _, destName, destFlags, _ = CombatLogGetCurrentEventInfo()
   local etype = COMBAT_EVENTS[event]
   if not etype then return end
@@ -471,28 +471,27 @@ function EavesDrop:CombatEvent(larg1, ...)
     local intype, outtype
     if event == "SWING_DAMAGE" then
       amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12,
-                                                                                                     CombatLogGetCurrentEventInfo())
+                                                                                            CombatLogGetCurrentEventInfo())
       if school == SCHOOL_MASK_PHYSICAL then
         outtype, intype = "TMELEE", "PHIT"
       else
         outtype, intype = "TSPELL", "PSPELL"
       end
     elseif event == "RANGE_DAMAGE" then
-      _, spellName, _, amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing =
-          select(12, CombatLogGetCurrentEventInfo())
+      _, spellName, _, amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12,
+                                                                                                             CombatLogGetCurrentEventInfo())
       if school == SCHOOL_MASK_PHYSICAL then
         outtype, intype = "TMELEE", "PHIT"
       else
         outtype, intype = "TSPELL", "PSPELL"
       end
     elseif event == "ENVIRONMENTAL_DAMAGE" then
-      _, amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing = select(
-                                                                                                                     12,
-                                                                                                                     CombatLogGetCurrentEventInfo())
+      _, amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12,
+                                                                                               CombatLogGetCurrentEventInfo())
       outtype, intype = "TSPELL", "PSPELL"
     else
-      spellId, spellName, _, amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing =
-          select(12, CombatLogGetCurrentEventInfo())
+      spellId, spellName, _, amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12,
+                                                                                                                   CombatLogGetCurrentEventInfo())
       texture = select(3, GetSpellInfo(spellId))
       outtype, intype = "TSPELL", "PSPELL"
     end
