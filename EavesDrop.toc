@@ -13,7 +13,6 @@
 ## OptionalDeps: Ace3, LibSharedMedia-3.0
 ## X-Wago-ID: WqKQw1Nx
 
-
 embeds.xml
 
 locals\localization-enUS.lua
