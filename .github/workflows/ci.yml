@@ -33,7 +33,7 @@ jobs:
           TAG_NAME: ${{ github.ref_name }}
         run: .github/workflows/release.sh
       - name: Upload to wago.io
-        if: github.ref_type != 'tag'
+        if: github.ref_type == 'tag'
         env:
           TAG_NAME: ${{ github.ref_name }}
         run: .github/workflows/upload2wago.sh
