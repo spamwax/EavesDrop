@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-exit
 set -x
 
 # read -r -d '' metadata <<'END'
