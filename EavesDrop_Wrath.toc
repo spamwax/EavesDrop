@@ -1,0 +1,25 @@
+## Interface: 30400
+## Name: EavesDrop
+## Title: EavesDrop
+## Notes: A simple combat log that displays events similar to SCT
+## Version: 2.94
+## Author: Grayhoof (Edited by Domzae, Updated for SL & Wrath by spamwax)
+## SavedVariables: EavesDropDB
+## SavedVariablesPerCharacter: EavesDropStatsDB
+## X-Website: https://github.com/spamwax/EavesDrop
+## X-Category: Combat
+## X-RelSite-WoWI: 5332
+## X-Embeds: Ace3, LibSharedMedia-3.0
+## OptionalDeps: Ace3, LibSharedMedia-3.0
+## X-Wago-ID: WqKQw1Nx
+
+
+embeds.xml
+
+locals\localization-enUS.lua
+locals\localization-koKR.lua
+locals\localization-zhCN.lua
+Wrath\EavesDrop.lua
+Wrath\EavesDropStats.lua
+Wrath\options.lua
+Wrath\EavesDrop.xml
