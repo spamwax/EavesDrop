@@ -6,8 +6,8 @@ cat <<END > metadata.txt
 {
   "lable": "$TAG_NAME",
   "stability": "stable",
-  "changelog": "### Release v$TAG_NAME"
-  "supported_retail_patch": "9.2.7",
+  "changelog": "### Release v$TAG_NAME",
+  "supported_retail_patch": "9.2.7"
 }
 END
 
@@ -16,7 +16,7 @@ metadata=$(<metadata.txt)
 echo $metadata
 rm metadata.txt
 echo
-ls -
+ls -l
 echo
 
 # curl -f -X POST -F "metadata=$metadata" -F "file=@EavesDrop.zip" -H "authorization: Bearer $WAGO_API_KEY" -H "accept: application/json" https://addons.wago.io/api/projects/"$WAGO_PROJECT_ID"/version
