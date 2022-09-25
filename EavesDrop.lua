@@ -349,8 +349,8 @@ function EavesDrop:PerformDisplayOptions()
   local r, g, b, a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
   -- main frame
   EavesDropFrame:SetBackdropColor(r, g, b, a)
-  EavesDropTopBar:SetGradientAlpha("VERTICAL", r * .1, g * .1, b * .1, 0, r * .2, g * .2, b * .2, a)
-  EavesDropBottomBar:SetGradientAlpha("VERTICAL", r * .2, g * .2, b * .2, a, r * .1, g * .1, b * .1, 0)
+  EavesDropTopBar:SetGradient("VERTICAL", {r = r*.1, g = g*.1, b = b*.1, a = 0} , {r = r*.2, g = g*.2, b = b*.2, a = a})
+  EavesDropBottomBar:SetGradient("VERTICAL", {r = r * .2, g = g*.2, b = b*.2, a = a} , {r = r*.1, g = g*.1, b = b*.1, a = 0})
   EavesDropTopBar:SetWidth(totalw - 10)
   EavesDropBottomBar:SetWidth(totalw - 10)
   r, g, b, a = db["BORDER"].r, db["BORDER"].g, db["BORDER"].b, db["BORDER"].a
@@ -400,8 +400,8 @@ function EavesDrop:PerformDisplayOptions()
 end
 
 function EavesDrop:SetFonts()
-  EavesDropFontNormal:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"])
-  EavesDropFontNormalSmall:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"])
+  EavesDropFontNormal:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"], "OUTLINE")
+  EavesDropFontNormalSmall:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"], "OUTLINE")
 end
 
 function EavesDrop:PlaceFrame()
@@ -931,7 +931,9 @@ function EavesDrop:OnUpdate()
       frame.delay = frame.delay - elapsed
       if frame.delay <= 0 then
         frame.alpha = frame.alpha - .2
-        frame:SetAlpha(frame.alpha)
+        if (frame.alpha > 0) then
+          frame:SetAlpha(frame.alpha)
+        end
       end
       if (frame.alpha <= 0) then
         frame:Hide()
