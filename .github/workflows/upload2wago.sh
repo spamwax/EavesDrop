@@ -4,7 +4,7 @@ set -x
 # read -r -d '' metadata <<'END'
 cat <<END > metadata.json
 {
-  "lable": "$TAG_NAME",
+  "label": "$TAG_NAME",
   "stability": "stable",
   "changelog": "Release v$TAG_NAME",
   "supported_retail_patch": "9.2.7"
