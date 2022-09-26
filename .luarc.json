@@ -135,6 +135,6 @@
         "FauxScrollFrame_SetOffset",
         "EavesDropHistoryScrollBar",
         "FauxScrollFrame_GetOffset",
-        "InterfaceOptionsFrame_OpenToCategory",
+        "InterfaceOptionsFrame_OpenToCategory"
     ]
 }
