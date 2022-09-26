@@ -1,4 +1,3 @@
-﻿
 --[[  ****************************************************************
   EavesDrop
 
@@ -6,7 +5,7 @@
           from Andalia`s SideCombatLog and CombatChat.
 
   Notes: Code comments coming at a later time.
-  ****************************************************************]]
+  ****************************************************************]] --
 EavesDrop = LibStub("AceAddon-3.0"):NewAddon("EavesDrop", "AceEvent-3.0", "AceConsole-3.0", "AceTimer-3.0")
 local EavesDrop = EavesDrop
 local db
