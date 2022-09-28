@@ -10,7 +10,7 @@ cat <<END > metadata.json
 { "label": "$TAG_NAME", "stability": "stable", "changelog": "Release v$TAG_NAME\\\\n$CHANGELOG", "supported_retail_patch": "$SUPPORTED_RETAIL_PATCH", "supported_wotlk_patch": "$SUPPORTED_WOTLK_PATCH" }
 END
 
-gsed -z -i 's/\n$//;s/\n/\\\\n/g' metadata.json
+sed -z -i 's/\n$//;s/\n/\\\\n/g' metadata.json
 metadata=$(<metadata.json)
 
 echo
