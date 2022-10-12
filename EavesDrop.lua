@@ -179,15 +179,16 @@ end
 
 local function round(num, idp) return tonumber(string_format("%." .. (idp or 0) .. "f", num)) end
 
+-- 05:13:54, |Hunit:Player-4384-047F64F1:Yadeek|hYadeek's|h |Hspell:45462:0:SPELL_MISSED|hPlague Strike|h was parried by |Hunit:Creature-0-4412-609-151-28611-0000468525:Scarlet Captain|hScarlet Captain|h.
 local function cleanstring(s)
   s = gsub(s, "|r", "")
   s = gsub(s, "|c........", "")
-  s = gsub(s, "|Hunit:..................:([%w%s*%-*]*)|h", "")
+  s = gsub(s, "|Hunit:([%w%s*%-*:]*)|h", "")
   s = gsub(s, "|Haction:([%w_*]*)|h", "")
   s = gsub(s, "|Hitem:(%d+)|h", "")
   s = gsub(s, "|Hicon:%d+:dest|h", "")
   s = gsub(s, "|Hicon:%d+:source|h", "")
-  s = gsub(s, "|Hspell:%d+:([%w_*]*)|h", "")
+  s = gsub(s, "|Hspell:%d+:%d+:([%w_*]*)|h", "")
   s = gsub(s, "|TInterface.TargetingFrame.UI.RaidTargetingIcon.%d.blp:0|t", "")
   s = gsub(s, "|h", "")
   s = gsub(s, "\n", ", ")
