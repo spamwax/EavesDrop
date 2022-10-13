@@ -475,6 +475,7 @@ function EavesDrop:CombatEvent(larg1, ...)
                                                                                             CombatLogGetCurrentEventInfo())
       if school == SCHOOL_MASK_PHYSICAL then
         outtype, intype = "TMELEE", "PHIT"
+        texture = "Interface\\Icons\\INV_SWORD_04"
       else
         outtype, intype = "TSPELL", "PSPELL"
       end
@@ -586,7 +587,7 @@ function EavesDrop:CombatEvent(larg1, ...)
       totHealingIn = totHealingIn + amount
       if (amount < db["HFILTER"]) then return end
       if (db["OVERHEAL"]) and overHeal > 0 then
-        text = string_format("%d {%d}", shortenValue(amount - overHeal), shortenValue(overHeal))
+        text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
       end
       if (critical) then text = critchar .. text .. critchar end
       if (db["HEALERID"] == true and not fromPlayer and not fromPet) then
@@ -605,7 +606,7 @@ function EavesDrop:CombatEvent(larg1, ...)
       totHealingOut = totHealingOut + amount
       if (amount < db["HFILTER"]) then return end
       if (db["OVERHEAL"]) and overHeal > 0 then
-        text = string_format("%d {%d}", shortenValue(amount - overHeal), shortenValue(overHeal))
+        text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
       end
       if (critical) then text = critchar .. text .. critchar end
       color = db["THEAL"]

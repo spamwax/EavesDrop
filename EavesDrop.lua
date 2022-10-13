@@ -474,6 +474,7 @@ function EavesDrop:CombatEvent(larg1, ...)
                                                                                             CombatLogGetCurrentEventInfo())
       if school == SCHOOL_MASK_PHYSICAL then
         outtype, intype = "TMELEE", "PHIT"
+        texture = "Interface\\Icons\\INV_SWORD_04"
       else
         outtype, intype = "TSPELL", "PSPELL"
       end
