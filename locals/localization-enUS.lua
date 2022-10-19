@@ -8,7 +8,7 @@ if L then
     L["StartCombat"] = "+++Combat+++"
     L["EndCombat"] = "---Combat---"
     L["PlayerLabel"] = "Incoming"
-    L["TargetLabel"] = "Outging"
+    L["TargetLabel"] = "Outgoing"
     L["Normal"] = "Normal"
     L["Crit"] = "Crit"
     L["Skill"] = "Skill"
