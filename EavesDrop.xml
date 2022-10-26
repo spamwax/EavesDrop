@@ -123,7 +123,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<FontString name="$parent_Skill" inherits="EavesDropFontNormalSmall" wraponspaces="false" justifyH="LEFT" text="">
+				<FontString name="$parent_Skill" inherits="EavesDropFontNormalSmall" justifyH="LEFT" text="">
 					<Size>
 						<AbsDimension x="90" y="20"/>
 					</Size>
@@ -131,7 +131,7 @@
 						<Anchor point="TOPLEFT" relativeTo="$parent_Texture" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parent_Hit" inherits="EavesDropFontNormalSmall" wraponspaces="false" justifyH="RIGHT" text="">
+				<FontString name="$parent_Hit" inherits="EavesDropFontNormalSmall" justifyH="RIGHT" text="">
 					<Size>
 						<AbsDimension x="45" y="20"/>
 					</Size>
@@ -139,7 +139,7 @@
 						<Anchor point="TOPLEFT" relativeTo="$parent_Skill" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</FontString>
-				<FontString name="$parent_Crit" inherits="EavesDropFontNormalSmall" wraponspaces="false" justifyH="RIGHT" text="">
+				<FontString name="$parent_Crit" inherits="EavesDropFontNormalSmall" justifyH="RIGHT" text="">
 					<Size>
 						<AbsDimension x="45" y="20"/>
 					</Size>
