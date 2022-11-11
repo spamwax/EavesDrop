@@ -628,11 +628,22 @@ function EavesDrop:SetupOptions()
             max = 2000,
             step = 25
           },
+          DFILTER = {
+            name = L["MDFilter"],
+            type = "range",
+            desc = L["MDFilterD"],
+            order = 9,
+            get = getOption,
+            set = setOption,
+            min = 0,
+            max = 2000,
+            step = 25
+          },
           TRUNCATETYPE = {
             name = L["MBuffTruncType"],
             type = "select",
             desc = L["MBuffTruncTypeD"],
-            order = 9,
+            order = 10,
             get = getOption,
             set = setOption,
             values = { ["0"] = L["MBuffTruncNone"], ["1"] = L["MBuffTruncTrunc"], ["2"] = L["MBuffTruncShorten"] }
@@ -641,7 +652,7 @@ function EavesDrop:SetupOptions()
             name = L["MBuffTruncSize"],
             type = "range",
             desc = L["MBuffTruncSize"],
-            order = 10,
+            order = 11,
             get = getOption,
             set = setOption,
             min = 0,

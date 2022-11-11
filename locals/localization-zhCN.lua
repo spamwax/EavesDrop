@@ -127,6 +127,8 @@ if L then
     L["MPlaceD"] = "在技能或法术的图标未知的时候显示一个占位图标"
     L["MHFilter"] = "治疗过滤"
     L["MHFilterD"] = "设置一个最小值，不显示数额在该值以下的治疗，以避免类似图腾或祝福的效果在EavesDrop中显示得过为频繁"
+    L["MDFilter"] = "损坏过滤器"
+    L["MDFilterD"] = "控制需要在EAVESDROP中显示的最小伤害量, 适合过滤掉频繁出现的小伤害，如奉献等。"
     L["MMFilter"] = "法力获得过滤"
     L["MMFilterD"] = "设置一个最小值，不显示数额在该值以下的法力获得，以避免类似图腾或祝福的效果在EavesDrop中显示得过为频繁"
     L["MLock"] = "锁定框体"

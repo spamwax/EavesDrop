@@ -497,6 +497,7 @@ function EavesDrop:CombatEvent(larg1, ...)
       outtype, intype = "TSPELL", "PSPELL"
     end
     text = tostring(shortenValue(amount))
+    if amount < db["DFILTER"] then return end
 
     if (critical) then text = critchar .. text .. critchar end
     if (crushing) then text = crushchar .. text .. crushchar end

@@ -128,6 +128,8 @@ if L then
     L["MPlaceD"] = "Shows a placeholder icon for spells/skills that aren't known"
     L["MHFilter"] = "Heal Filter"
     L["MHFilterD"] = "Controls the minimum amount a heal needs to be to appear in EavesDrop. Good for filtering out frequent small heals like Totems, Blessings, etc..."
+    L["MDFilter"] = "Damage Filter"
+    L["MDFilterD"] = "Controls the minimum amount a damage needs to be to appear in EavesDrop. Good for filtering out frequent small damages like Consecration, etc..."
     L["MMFilter"] = "Power Gain Filter"
     L["MMFilterD"] = "Controls the minimum amount a power gain needs to be to appear in EavesDrop. Good for filtering out frequent small power gains like Totems, Blessings, etc..."
     L["MLock"] = "Lock Frame"
