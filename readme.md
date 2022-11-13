@@ -18,6 +18,27 @@ Additionally, it keeps track of each spell's maximum *normal* and **critical** h
 
 ----
 
+## Usage
+Events will be shown as soon as you enter combat.
+- Shift+scroll up/down will show the top/bottom of events.
+- Ctrl+scroll up/down will take you to the next/previous combat.
+- Shift+Click will copy the highlited event to the chat edit box
+
+To customize the events (buff, debuffs, colors, values, ...), open the options window by right-click on the `EavesDrop` tab or entering slash command: `/ed`.
+
+You can adjust the minium damage/healing values in the options windows under **Misc** tab.
+
+You can also completely exclude spells under the same tab. Enter the unwanted spell names or IDs in the **Blacklist** box, one spell per line. Any of the following lines will exclude *Judgment*:
+
+```
+Judgment
+20271
+Judgment -- 20271
+```
+<p><img src="misc/blacklist.png" alt="screenshot1" width="69%"/>
+
+----
+
 ## Installation
 ### Using wago.io app
 Install  [wago.iop app](https://addons.wago.io/app) and search for `EavesDrop` in the app to install this addon.
