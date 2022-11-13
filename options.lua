@@ -693,10 +693,10 @@ function EavesDrop:SetupOptions()
                   aura_name = strtrim(aura_name)
                   if not (aura_name and (#aura_name > 0)) then return end
                   if aura_id then
-                    aura_id = _G["tonumber"](strtrim(aura_id, "\r\n\t -"))
+                    aura_id = tonumber(strtrim(aura_id, "\r\n\t -"))
                   end
                   if aura_name and not aura_id then
-                    aura_id = _G["tonumber"](aura_name)
+                    aura_id = tonumber(aura_name)
                     if aura_id then
                       aura_name = GetSpellInfo(aura_id)
                     else
