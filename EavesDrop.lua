@@ -497,6 +497,10 @@ function EavesDrop:CombatEvent(larg1, ...)
       outtype, intype = "TSPELL", "PSPELL"
     end
     text = tostring(shortenValue(amount))
+
+    -- If spell is blacklisted, don't do anything
+    if tContains(db["BLACKLIST"], spellName) or tContains(db["BLACKLIST"], select(7, GetSpellInfo(spellName)) or "") then return end
+    -- If damage is too small, just ignore it.
     if amount < db["DFILTER"] then return end
 
     if (critical) then text = critchar .. text .. critchar end
@@ -580,6 +584,8 @@ function EavesDrop:CombatEvent(larg1, ...)
     ------------heals----------------
   elseif etype == "HEAL" then
     spellId, spellName, spellSchool, amount, overHeal, _, critical = select(12, CombatLogGetCurrentEventInfo())
+    DevTools_Dump(db["BLACKLIST"])
+    if tContains(db["BLACKLIST"], spellName) then return end
     text = tostring(shortenValue(amount))
     texture = select(3, GetSpellInfo(spellId))
 
