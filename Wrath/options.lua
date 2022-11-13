@@ -658,6 +658,62 @@ function EavesDrop:SetupOptions()
             min = 0,
             max = 50,
             step = 1
+          },
+          BLACKLIST = {
+            --name = string.format("Blacklist: To hide any spell enter its name or SpellID (one per line)"),
+            name = L["MBlacklist"],
+            type = "input",
+            --desc = string.format("Examples: Any of following lines will blacklist |cd0ff7d0aJudgment|r\nJudgment\n20271\nJudgment -- 20271"),
+            desc = L["MBlacklistD"],
+            order = 12,
+            width = "full",
+            multiline = 16,
+            get = function(info)
+              local spell_table = info.arg and EavesDrop.db.profile[info.arg] or EavesDrop.db.profile[info[#info]]
+              local auras = {}
+              local aname
+              for spellid, aura in pairs(spell_table) do
+                  aname = string.format("%s |cd0ff7d0a-- %d|r", aura, spellid)
+                auras[#auras+1]= aname
+              end
+              table.sort(auras)
+              return table.concat( auras, "\n" )
+            end,
+            set = function(info, v)
+              local key = info.arg or info[#info]
+              wipe(EavesDrop.db.profile[key])
+              local idx = 0
+              local auras = { strsplit("\n,", strtrim(v)) }
+              for _, name in pairs(auras) do
+                (function()
+                  name = gsub(name, "|r", "")
+                  name = gsub(name, "|c........", "")
+                  local aura_name, aura_id
+                  aura_name, aura_id = strsplit("-", name, 2)
+                  aura_name = strtrim(aura_name)
+                  if not (aura_name and (#aura_name > 0)) then return end
+                  if aura_id then
+                    aura_id = _G["tonumber"](strtrim(aura_id, "\r\n\t -"))
+                  end
+                  if aura_name and not aura_id then
+                    aura_id = _G["tonumber"](aura_name)
+                    if aura_id then
+                      aura_name = GetSpellInfo(aura_id)
+                    else
+                      aura_id = select(7, GetSpellInfo(aura_name))
+                    end
+                  end
+                  if not aura_name or not aura_id or tonumber(aura_name) then return end
+                  if not GetSpellInfo(aura_name) or not GetSpellInfo(aura_id) or aura_id ~= select(7, GetSpellInfo(aura_name)) then
+                    return
+                  end
+                  idx = idx + 1
+                  EavesDrop.db.profile[key][aura_id] = aura_name
+                  -- print(string.format("idx: %d, size of db table: %d", idx, #EavesDrop.db.profile[key]))
+                end)()
+              end
+              EavesDrop:UpdateFrame()
+            end,
           }
         }
       }
@@ -708,6 +764,8 @@ function EavesDrop:GetDefaultConfig()
       ["LINEWIDTH"] = 160,
       ["HFILTER"] = 0,
       ["MFILTER"] = 0,
+      ["DFILTER"] = 0,
+      ["BLACKLIST"] = {},
       ["SPELLCOLOR"] = true,
       ["EXP"] = true,
       ["HONOR"] = true,
