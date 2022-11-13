@@ -1,12 +1,11 @@
-﻿
---[[  ****************************************************************
+﻿--[[  ****************************************************************
   EavesDrop
 
   Author: Grayhoof. Original idea by Bant. Coding help/samples
           from Andalia`s SideCombatLog and CombatChat.
 
   Notes: Code comments coming at a later time.
-  ****************************************************************]]
+  ****************************************************************]] --
 EavesDrop = LibStub("AceAddon-3.0"):NewAddon("EavesDrop", "AceEvent-3.0", "AceConsole-3.0", "AceTimer-3.0")
 local EavesDrop = EavesDrop
 local db
@@ -499,6 +498,12 @@ function EavesDrop:CombatEvent(larg1, ...)
     end
     text = tostring(shortenValue(amount))
 
+    -- If spell is blacklisted, don't do anything
+    local _sid = select(7, GetSpellInfo(spellName))
+    if db["BLACKLIST"][_sid] ~= nil then return end
+    -- If damage is too small, just ignore it.
+    if amount < db["DFILTER"] then return end
+
     if (critical) then text = critchar .. text .. critchar end
     if (crushing) then text = crushchar .. text .. crushchar end
     if (glancing) then text = glancechar .. text .. glancechar end
@@ -507,25 +512,7 @@ function EavesDrop:CombatEvent(larg1, ...)
     if (absorbed) then text = string_format("%s (%d)", text, shortenValue(absorbed)) end
 
     local school_new = getSpellSchoolCoreType(school or 1)
-    --[[     if school_new ~= school then
-      print("converted", school, school_new)
-    end ]]
     school = school_new
-
-    --[[     print("school", school)
-    print("fromPlayer", fromPlayer)
-    print("toPlayer", toPlayer)
-    print(amount)
-    DevTools_Dump(db[outtype])
-    DevTools_Dump(SCHOOL_STRINGS[school])
-    print(sourceGUID, sourceName, sourceFlags, sourceFlags2)
-    print("-------------------")
-    if fromPet then
-      print("from pet", school, db[outtype])
-      color = self:SpellColor(db[outtype], SCHOOL_STRINGS[school])
-    end
-    print("from pet:", fromPet, "outtype:", outtype)
-    DevTools_Dump(db[outtype]) ]]
 
     local icon
     if fromPlayer or fromPet then
@@ -560,6 +547,9 @@ function EavesDrop:CombatEvent(larg1, ...)
     ------------buff/debuff gain----------------
   elseif etype == "BUFF" then
     spellId, spellName, _, auraType, _ = select(12, CombatLogGetCurrentEventInfo())
+    -- If spell is blacklisted, don't do anything
+    local _sid = select(7, GetSpellInfo(spellName))
+    if db["BLACKLIST"][_sid] ~= nil then return end
     texture = select(3, GetSpellInfo(spellId))
     if toPlayer and db[auraType] then
       self:DisplayEvent(INCOMING, self:ShortenString(spellName) .. " " .. L["Gained"], texture, db["P" .. auraType],
@@ -570,6 +560,9 @@ function EavesDrop:CombatEvent(larg1, ...)
     ------------buff/debuff lose----------------
   elseif etype == "FADE" then
     spellId, spellName, _, auraType, _ = select(12, CombatLogGetCurrentEventInfo())
+    -- If spell is blacklisted, don't do anything
+    local _sid = select(7, GetSpellInfo(spellName))
+    if db["BLACKLIST"][_sid] ~= nil then return end
     texture = select(3, GetSpellInfo(spellId))
     if toPlayer and db[auraType .. "FADE"] then
       self:DisplayEvent(INCOMING, self:ShortenString(spellName) .. " " .. L["Fades"], texture, db["P" .. auraType],
@@ -580,6 +573,10 @@ function EavesDrop:CombatEvent(larg1, ...)
     ------------heals----------------
   elseif etype == "HEAL" then
     spellId, spellName, spellSchool, amount, overHeal, _, critical = select(12, CombatLogGetCurrentEventInfo())
+    --DevTools_Dump(db["BLACKLIST"])
+    -- If spell is blacklisted, don't do anything
+    local _sid = select(7, GetSpellInfo(spellName))
+    if db["BLACKLIST"][_sid] ~= nil then return end
     text = tostring(shortenValue(amount))
     texture = select(3, GetSpellInfo(spellId))
 
@@ -625,6 +622,9 @@ function EavesDrop:CombatEvent(larg1, ...)
       tcolor = "TMELEE"
     else
       spellId, spellName, _, missType = select(12, CombatLogGetCurrentEventInfo())
+      -- If spell is blacklisted, don't do anything
+      local _sid = select(7, GetSpellInfo(spellName))
+      if db["BLACKLIST"][_sid] ~= nil then return end
       texture = select(3, GetSpellInfo(spellId))
       tcolor = "TSPELL"
     end
@@ -646,6 +646,9 @@ function EavesDrop:CombatEvent(larg1, ...)
   elseif etype == "DRAIN" then
     if (db["GAINS"]) then
       spellId, spellName, _, amount, powerType, extraAmount = select(12, CombatLogGetCurrentEventInfo())
+      -- If spell is blacklisted, don't do anything
+      local _sid = select(7, GetSpellInfo(spellName))
+      if db["BLACKLIST"][_sid] ~= nil then return end
       texture = select(3, GetSpellInfo(spellId))
       if toPlayer then
         text = string_format("-%d %s", amount, string_nil(POWER_STRINGS[powerType]))
@@ -666,6 +669,9 @@ function EavesDrop:CombatEvent(larg1, ...)
   elseif etype == "POWER" then
     if (db["GAINS"]) then
       spellId, spellName, _, amount, _, powerType = select(12, CombatLogGetCurrentEventInfo())
+      -- If spell is blacklisted, don't do anything
+      local _sid = select(7, GetSpellInfo(spellName))
+      if db["BLACKLIST"][_sid] ~= nil then return end
       texture = select(3, GetSpellInfo(spellId))
       if toPlayer then
         if (amount < db["MFILTER"]) then return end
@@ -934,7 +940,9 @@ function EavesDrop:OnUpdate()
       frame.delay = frame.delay - elapsed
       if frame.delay <= 0 then
         frame.alpha = frame.alpha - .2
+        if (frame.alpha > 0) then
         frame:SetAlpha(frame.alpha)
+        end
       end
       if (frame.alpha <= 0) then
         frame:Hide()

@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - dragon
     tags:
       - "*"
   pull_request:
