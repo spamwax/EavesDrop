@@ -19,10 +19,11 @@ Additionally, it keeps track of each spell's maximum *normal* and **critical** h
 ----
 
 ## Usage
-Events will be shown as soon as you enter combat.
+All events related to player will be shown in 3 columns. After each combat, a summary of incoming and outgoing heals and damage will be displayed.
 - Shift+scroll up/down will show the top/bottom of events.
 - Ctrl+scroll up/down will take you to the next/previous combat.
 - Shift+Click will copy the highlited event to the chat edit box
+- Click the "*sun clock*" icon, to open history of highest values of all events, divided into healing and damage.
 
 To customize the events (buff, debuffs, colors, values, ...), open the options window by right-click on the `EavesDrop` tab or entering slash command: `/ed`.
 
