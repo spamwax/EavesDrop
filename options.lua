@@ -660,8 +660,9 @@ function EavesDrop:SetupOptions()
             step = 1
           },
           BLACKLIST = {
-            name = "Blacklist: To hide any spell enter its name or SpellID (one per line)",
+            name = string.format("Blacklist: To hide any spell enter its name or SpellID (one per line)"),
             type = "input",
+            desc = string.format("Examples: Any of following lines will blacklist |cd0ff7d0aJudgment|r\nJudgment\n20271\nJudgment -- 20271"),
             order = 12,
             width = "full",
             multiline = 16,
@@ -669,86 +670,56 @@ function EavesDrop:SetupOptions()
               local spell_table = info.arg and EavesDrop.db.profile[info.arg] or EavesDrop.db.profile[info[#info]]
               local auras = {}
               local aname
-              for _, aura in ipairs(spell_table) do
-                  aname = string.format("%s |cd0ff7d0a-- %d|r", aura[1], aura[2])
-                  --aname = string.format("%s -- %d", aura[1], aura[2])
-                --auras[#auras+1]= (type(aura)=="number") and GetSpellInfo(aura) or aura
+              for spellid, aura in pairs(spell_table) do
+                  aname = string.format("%s |cd0ff7d0a-- %d|r", aura, spellid)
                 auras[#auras+1]= aname
               end
-              print("#auras", #auras)
+              table.sort(auras)
               return table.concat( auras, "\n" )
             end,
             set = function(info, v)
               local key = info.arg or info[#info]
               wipe(EavesDrop.db.profile[key])
-              local idx, spellid, spellname
+              local idx
               idx = 0
-              print("v", v)
-              --[[print("============")
-              local ss = "19750"
-              print(tonumber(ss))
-              print(_G["tonumber"](ss))
-              DevTools_Dump(tonumber)
-              DevTools_Dump(_G["tonumber"])
-              print("============")]]
               local auras = { strsplit("\n,", strtrim(v)) }
-              print("auras:")
-              DevTools_Dump(auras)
-              print("============")
               for _, name in pairs(auras) do
                 (function()
-                  print("raw name", name)
                   name = gsub(name, "|r", "")
                   name = gsub(name, "|c........", "")
                   local aura_name, aura_id
-                  print("current line: ", name)
                   aura_name, aura_id = strsplit("-", name, 2)
-                  print(string.format("-> aura_name: >%s<", aura_name or ""))
-                  print(string.format("-> aura_id: >%s<", aura_id or ""))
-                  print(string.format("-> type(aura_id): >%s<", type(aura_id)))
                   aura_name = strtrim(aura_name)
-                  print(string.format("-> aura_name_trimmed: >%s<", aura_name))
+                  if not (aura_name and (#aura_name > 0)) then return end
                   if aura_id then
-                    local tmp = strtrim(aura_id, "\r\n\t -")
-                    print(string.format("--> aura_id_trimmed: >%s<", tmp))
-                    print(string.format("--> type(aura_id_trimmed): >%s<", type(tmp)))
-                    aura_id = _G["tonumber"](tmp)
-                    print(string.format("--> tonumber(aura_id_trimmed): >%d<", aura_id))
+                    aura_id = _G["tonumber"](strtrim(aura_id, "\r\n\t -"))
                   end
                   if aura_name and aura_id then
-                    if not GetSpellInfo(aura_name) or not GetSpellInfo(aura_id) or aura_id ~= select(7, GetSpellInfo(aura_name)) then
-                      return
-                    end
-                    idx = idx + 1
-                    print(string.format("-> inserting {%s, %d}", aura_name, aura_id))
-                    table.insert(EavesDrop.db.profile[key], idx, {aura_name, aura_id})
-                    print(string.format("idx: %d, size of db table: %d", idx, #EavesDrop.db.profile[key]))
+                    print()
+                    -- print(string.format("-> full data", aura_name, aura_id))
                   elseif aura_name then
                     aura_id = _G["tonumber"](aura_name)
                     if aura_id then
-                      spellname = GetSpellInfo(aura_id)
-                      if spellname then
+                      aura_name = GetSpellInfo(aura_id)
+                      --[[if aura_name then
                         print(string.format("*only id*"))
-                        idx = idx + 1
-                        print(string.format("-> inserting {%s, %d}", spellname, aura_id))
-                        table.insert(EavesDrop.db.profile[key], idx, {spellname, aura_id})
-                        print(string.format("idx: %d, size of db table: %d", idx, #EavesDrop.db.profile[key]))
-                      end
+                      end]]
                     else
-                      spellid = select(7, GetSpellInfo(aura_name))
-                      if spellid then
+                      aura_id = select(7, GetSpellInfo(aura_name))
+                      --[[if aura_id then
                         print(string.format("*only spellname*"))
-                        idx = idx + 1
-                        print(string.format("-> inserting {%s, %d}", aura_name, spellid))
-                        table.insert(EavesDrop.db.profile[key], idx, {aura_name, spellid})
-                        print(string.format("idx: %d, size of db table: %d", idx, #EavesDrop.db.profile[key]))
-                      end
+                      end]]
                     end
                   end
+                  if not aura_name or not aura_id or tonumber(aura_name) then return end
+                  if not GetSpellInfo(aura_name) or not GetSpellInfo(aura_id) or aura_id ~= select(7, GetSpellInfo(aura_name)) then
+                    return
+                  end
+                  idx = idx + 1
+                  -- print(string.format("-> inserting {%s, %d}", aura_name, aura_id))
+                  EavesDrop.db.profile[key][aura_id] = aura_name
+                  -- print(string.format("idx: %d, size of db table: %d", idx, #EavesDrop.db.profile[key]))
                 end)()
-                --[[ if #aura>0 then
-                  table.insert(EavesDrop.db.profile[key], tonumber(aura) or aura )
-                end]]
               end
               EavesDrop:UpdateFrame()
             end,
