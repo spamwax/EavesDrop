@@ -660,9 +660,11 @@ function EavesDrop:SetupOptions()
             step = 1
           },
           BLACKLIST = {
-            name = string.format("Blacklist: To hide any spell enter its name or SpellID (one per line)"),
+            --name = string.format("Blacklist: To hide any spell enter its name or SpellID (one per line)"),
+            name = L["MBlacklist"],
             type = "input",
-            desc = string.format("Examples: Any of following lines will blacklist |cd0ff7d0aJudgment|r\nJudgment\n20271\nJudgment -- 20271"),
+            --desc = string.format("Examples: Any of following lines will blacklist |cd0ff7d0aJudgment|r\nJudgment\n20271\nJudgment -- 20271"),
+            desc = L["MBlacklistD"],
             order = 12,
             width = "full",
             multiline = 16,
