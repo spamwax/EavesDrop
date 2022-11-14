@@ -9,7 +9,7 @@ cp -R EavesDrop "$stage_dir"
 cd "$stage_dir"/EavesDrop || exit
 pwd
 ls -la
-rm -rf .git .gitignore .github .vscode .lua-format .luacheckrc .luarc.json metadata.json misc/*.png
+rm -rf .git .gitignore .github .vscode .lua-format .luacheckrc .luarc.json metadata.json misc
 cd ..
 zip -r EavesDrop EavesDrop
 pwd
