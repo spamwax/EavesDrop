@@ -8,7 +8,7 @@ set -x
 
 # { "label": "$TAG_NAME", "stability": "stable", "changelog": "Release v$TAG_NAME\\\\n$CHANGELOG", "supported_retail_patch": "$SUPPORTED_RETAIL_PATCH", "supported_wotlk_patch": "$SUPPORTED_WOTLK_PATCH" }
 cat <<END > metadata.json
-{ "label": "$TAG_NAME", "stability": "stable", "changelog": "Release v$TAG_NAME\\n$CHANGELOG", "supported_retail_patch": "$SUPPORTED_RETAIL_PATCH", "supported_wotlk_patch": "$SUPPORTED_WOTLK_PATCH" }
+{ "label": "$TAG_NAME", "stability": "stable", "changelog": "Release v$TAG_NAME\\n\\n$CHANGELOG", "supported_retail_patch": "$SUPPORTED_RETAIL_PATCH", "supported_wotlk_patch": "$SUPPORTED_WOTLK_PATCH" }
 END
 
 sed -z -i 's/\n$//;s/\n/\\n/g' metadata.json
