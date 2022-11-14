@@ -1,4 +1,4 @@
-﻿--[[  ****************************************************************
+--[[  ****************************************************************
   EavesDrop
 
   Author: Grayhoof. Original idea by Bant. Coding help/samples
@@ -401,8 +401,9 @@ function EavesDrop:PerformDisplayOptions()
 end
 
 function EavesDrop:SetFonts()
-  EavesDropFontNormal:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"])
-  EavesDropFontNormalSmall:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"])
+  local flag = db["FONTOUTLINE"] == "None" and "" or strupper(db["FONTOUTLINE"])
+  EavesDropFontNormal:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"], flag)
+  EavesDropFontNormalSmall:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"], flag)
 end
 
 function EavesDrop:PlaceFrame()
@@ -941,7 +942,7 @@ function EavesDrop:OnUpdate()
       if frame.delay <= 0 then
         frame.alpha = frame.alpha - .2
         if (frame.alpha > 0) then
-        frame:SetAlpha(frame.alpha)
+          frame:SetAlpha(frame.alpha)
         end
       end
       if (frame.alpha <= 0) then
