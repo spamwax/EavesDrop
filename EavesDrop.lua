@@ -1,4 +1,4 @@
-﻿--[[  ****************************************************************
+--[[  ****************************************************************
   EavesDrop
 
   Author: Grayhoof. Original idea by Bant. Coding help/samples
@@ -401,8 +401,9 @@ function EavesDrop:PerformDisplayOptions()
 end
 
 function EavesDrop:SetFonts()
-  EavesDropFontNormal:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"], "OUTLINE")
-  EavesDropFontNormalSmall:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"], "OUTLINE")
+  local flag = db["FONTOUTLINE"] == "None" and "" or strupper(db["FONTOUTLINE"])
+  EavesDropFontNormal:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"], flag)
+  EavesDropFontNormalSmall:SetFont(media:Fetch("font", db["FONT"]), db["TEXTSIZE"], flag)
 end
 
 function EavesDrop:PlaceFrame()

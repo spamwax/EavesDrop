@@ -497,11 +497,30 @@ function EavesDrop:SetupOptions()
             end,
             order = 5
           },
+          FONTOUTLINE = {
+            name = "Font Outline", --L["MTooltipAnchor"],
+            type = "select",
+            desc = "Set font outline decoration", -- L["MTooltipAnchorD"],
+            order = 6,
+            get = getOption,
+            set = function(i, v)
+              self.db.profile["FONTOUTLINE"] = v
+              self:PerformDisplayOptions()
+            end,
+            values = {
+              Monochrome = "Monochrome",
+              MonochromeOutline = "Monochrome Outline",
+              MonochromeThickOutline = "Monochrome Thick Outline",
+              None = "None",
+              Outline = "Outline",
+              ThickOutline = "Thick Outline"
+            },
+          },
           FADETIME = {
             name = L["FFade"],
             type = "range",
             desc = L["FFadeD"],
-            order = 6,
+            order = 7,
             get = getOption,
             set = setOption,
             min = 0,
@@ -512,7 +531,7 @@ function EavesDrop:SetupOptions()
             name = L["FFadeFrame"],
             type = "toggle",
             desc = L["FFadeFrameD"],
-            order = 7,
+            order = 8,
             get = getOption,
             set = setOption
           },
@@ -520,7 +539,7 @@ function EavesDrop:SetupOptions()
             name = L["MHideTab"],
             type = "toggle",
             desc = L["MHideTabD"],
-            order = 8,
+            order = 9,
             get = getOption,
             set = setOption
           },
@@ -528,7 +547,7 @@ function EavesDrop:SetupOptions()
             name = L["MLock"],
             type = "toggle",
             desc = L["MLockD"],
-            order = 9,
+            order = 10,
             get = getOption,
             set = function(i, v)
               self.db.profile["LOCKED"] = v;
@@ -797,7 +816,8 @@ function EavesDrop:GetDefaultConfig()
       ["y"] = 0,
       ["hx"] = 0,
       ["hy"] = 0,
-      ["FONT"] = "Friz Quadrata TT"
+      ["FONT"] = "Friz Quadrata TT",
+      ["FONTOUTLINE"] = "Outline"
     }
   }
   return default
