@@ -498,9 +498,9 @@ function EavesDrop:SetupOptions()
             order = 5
           },
           FONTOUTLINE = {
-            name = "Font Outline", --L["MTooltipAnchor"],
+            name = L["FFontOutline"],
             type = "select",
-            desc = "Set font outline decoration", -- L["MTooltipAnchorD"],
+            desc = L["FFontOutlineD"],
             order = 6,
             get = getOption,
             set = function(i, v)
