@@ -504,7 +504,10 @@ function EavesDrop:CombatEvent(larg1, ...)
     if (glancing) then text = glancechar .. text .. glancechar end
     if (resisted) then text = string_format("%s (%s)", text, shortenValue(resisted)) end
     if (blocked) then text = string_format("%s (%s)", text, shortenValue(blocked)) end
-    if (absorbed) then text = string_format("%s (%s)", text, shortenValue(absorbed)) end
+    if (absorbed) then
+      text = string_format("%s (%s)", text, shortenValue(absorbed))
+      totHealingIn = totHealingIn + absorbed
+    end
 
     local school_new = getSpellSchoolCoreType(school or 1)
     school = school_new
@@ -622,10 +625,10 @@ function EavesDrop:CombatEvent(larg1, ...)
   elseif etype == "MISS" then
     local tcolor
     if event == "SWING_MISSED" or event == "RANGE_MISSED" then
-      missType = select(12, CombatLogGetCurrentEventInfo())
+      missType, _, amount = select(12, CombatLogGetCurrentEventInfo())
       tcolor = "TMELEE"
     else
-      spellId, spellName, _, missType = select(12, CombatLogGetCurrentEventInfo())
+      spellId, spellName, _, missType, _, amount = select(12, CombatLogGetCurrentEventInfo())
       -- If spell is blacklisted, don't show it
       local _sid = select(7, GetSpellInfo(spellName))
       if db["BLACKLIST"][_sid] ~= nil then return end
@@ -633,6 +636,9 @@ function EavesDrop:CombatEvent(larg1, ...)
       tcolor = "TSPELL"
     end
     text = _G[missType]
+    if missType == "ABSORB" and amount then
+      totHealingIn = totHealingIn + amount
+    end
     if toPet then
       inout = INCOMING
       color = db["PETO"]
@@ -719,7 +725,7 @@ function EavesDrop:PLAYER_XP_UPDATE()
     msg = string_format("+%s (%s)", shortenValue(xpgained), XP)
   end
   -- print(string.format("PLAYER_XP_UPDATE: pxp: %d, xp: %d\n  **GAIND**: %d", pxp, xp, xpgained))
-  self:DisplayEvent(MISC, string_format(msg), nil, db["EXPC"], nil)
+  self:DisplayEvent(MISC, msg, nil, db["EXPC"], nil)
   pxp = xp
 end
 
