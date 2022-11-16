@@ -39,6 +39,8 @@ local timeStart = 0
 local curTime = 0
 local lastTime = 0
 
+local maxXP = UnitXPMax("player")
+
 -- LUA calls
 local _G = _G
 local tonumber = tonumber
@@ -716,14 +718,21 @@ end
 
 function EavesDrop:PLAYER_XP_UPDATE()
   local xp = UnitXP("player")
-  local xpgained = xp - pxp
+  local xpgained -- = xp - pxp
   local msg
-  if xpgained < 0 then
-    msg = "Gratz on new level!"
+  if xp <= pxp then -- xpgained <= 0 then
+    xpgained = maxXP - pxp + xp
+    -- print(string.format("LEVELED UP! pmaxXP: %d, pxp: %d, cxp: %d, xpgained: %d, newmaxXP: %d", maxXP, pxp, xp, xpgained, UnitXPMax("player")))
+    maxXP = UnitXPMax("player")
+    local gratz = string.format("Gratz on new level %d!", UnitLevel("player"))
+    self:DisplayEvent(MISC, gratz, nil, db["EXPC"], nil)
+    -- msg = string.format("Gratz on new level!\n%s (%s)", xpgained, XP)
   else
-    msg = string_format("+%s (%s)", shortenValue(xpgained), XP)
+    xpgained = xp - pxp
+  --  print(string.format("xp: %d, pxp: %d, xpgained: %d", xp, pxp, xpgained))
   end
   -- print(string.format("PLAYER_XP_UPDATE: pxp: %d, xp: %d\n  **GAIND**: %d", pxp, xp, xpgained))
+  msg = string_format("+%s (%s)", shortenValue(xpgained), XP)
   self:DisplayEvent(MISC, msg, nil, db["EXPC"], nil)
   pxp = xp
 end

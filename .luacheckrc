@@ -111,6 +111,7 @@ globals = {
     "UnitName",
     "UnitXP",
     "UnitXPMax",
+    "UnitLevel",
     "InCombatLockdown",
     "PlaySound",
     "CreateFrame",
