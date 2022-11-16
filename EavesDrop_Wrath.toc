@@ -20,7 +20,7 @@ embeds.xml
 locals\localization-enUS.lua
 locals\localization-koKR.lua
 locals\localization-zhCN.lua
-Wrath\EavesDrop.lua
-Wrath\EavesDropStats.lua
-Wrath\options.lua
+EavesDrop.lua
+EavesDropStats.lua
+options.lua
 Wrath\EavesDrop.xml

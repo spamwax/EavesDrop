@@ -162,6 +162,13 @@ local function getSpellSchoolCoreType(a)
   return stype
 end
 
+function EavesDrop:IsClassic()
+  return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC) or (_G.WOW_PROJECT_ID  == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC) or (_G.WOW_PROJECT_ID  == _G.WOW_PROJECT_WRATH_CLASSIC)
+end
+function EavesDrop:IsRetail()
+  return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
+end
+
 local function convertRGBtoHEXString(color, text)
   return string_format("|cFF%02x%02x%02x%s|r", ceil(color.r * 255), ceil(color.g * 255), ceil(color.b * 255), text)
 end
@@ -352,8 +359,13 @@ function EavesDrop:PerformDisplayOptions()
   local r, g, b, a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
   -- main frame
   EavesDropFrame:SetBackdropColor(r, g, b, a)
-  EavesDropTopBar:SetGradient("VERTICAL", {r = r*.1, g = g*.1, b = b*.1, a = 0} , {r = r*.2, g = g*.2, b = b*.2, a = a})
-  EavesDropBottomBar:SetGradient("VERTICAL", {r = r * .2, g = g*.2, b = b*.2, a = a} , {r = r*.1, g = g*.1, b = b*.1, a = 0})
+  if self:IsRetail() then
+    EavesDropTopBar:SetGradient("VERTICAL", {r = r*.1, g = g*.1, b = b*.1, a = 0} , {r = r*.2, g = g*.2, b = b*.2, a = a})
+    EavesDropBottomBar:SetGradient("VERTICAL", {r = r * .2, g = g*.2, b = b*.2, a = a} , {r = r*.1, g = g*.1, b = b*.1, a = 0})
+  else
+    EavesDropTopBar:SetGradientAlpha("VERTICAL", r * .1, g * .1, b * .1, 0, r * .2, g * .2, b * .2, a)
+    EavesDropBottomBar:SetGradientAlpha("VERTICAL", r * .2, g * .2, b * .2, a, r * .1, g * .1, b * .1, 0)
+  end
   EavesDropTopBar:SetWidth(totalw - 10)
   EavesDropBottomBar:SetWidth(totalw - 10)
   r, g, b, a = db["BORDER"].r, db["BORDER"].g, db["BORDER"].b, db["BORDER"].a
