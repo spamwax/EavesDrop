@@ -110,6 +110,7 @@ globals = {
     "GetLocale",
     "UnitName",
     "UnitXP",
+    "UnitXPMax",
     "InCombatLockdown",
     "PlaySound",
     "CreateFrame",
