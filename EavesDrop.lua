@@ -719,7 +719,7 @@ function EavesDrop:PLAYER_XP_UPDATE()
     msg = string_format("+%s (%s)", shortenValue(xpgained), XP)
   end
   -- print(string.format("PLAYER_XP_UPDATE: pxp: %d, xp: %d\n  **GAIND**: %d", pxp, xp, xpgained))
-  self:DisplayEvent(MISC, string_format(msg), nil, db["EXPC"], nil)
+  self:DisplayEvent(MISC, msg, nil, db["EXPC"], nil)
   pxp = xp
 end
 
