@@ -12,7 +12,8 @@
 ## X-Embeds: Ace3, LibSharedMedia-3.0
 ## OptionalDeps: Ace3, LibSharedMedia-3.0
 ## X-Wago-ID: WqKQw1Nx
-
+## X-Curse-Project-Name: EavesDrop
+## X-Curse-Project-ID: 2812
 
 embeds.xml
 
