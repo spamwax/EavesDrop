@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    tags:
+      - "*"
+      - "!**-alpha**"
+      - "!**-beta**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 200
+
+      - name: Install and run Luacheck
+        uses: nebularg/actions-luacheck@v1
+        with:
+          args: "--no-color -q"
+          annotate: warning
+
+      - name: Generate Changelog
+        run: .github/generate_changelog.sh
+
+      - name: Create Package
+        uses: BigWigsMods/packager@v2
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
