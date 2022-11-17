@@ -18,4 +18,6 @@ cd "$workdir" || exit
 pwd
 cp "$stage_dir"/EavesDrop.zip .
 ls -l
-gh release create "$TAG_NAME" --notes "Release v$TAG_NAME\n\n$CHANGELOG" EavesDrop.zip
+gh release create "$TAG_NAME" --notes "Release v$TAG_NAME
+
+$CHANGELOG" EavesDrop.zip

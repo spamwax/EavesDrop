@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 version=$( git describe --tags --always )
 tag=$( git describe --tags --always --abbrev=0 )
