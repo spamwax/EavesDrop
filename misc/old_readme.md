@@ -28,6 +28,23 @@ How do I use it? - Unzip EavesDrop into your interface\addons directory. For mor
 FAQ
 My peridoic damage is not showing up in the combat log or on the screen! How do I fix it? - You have turned off periodic damage on the Advanced Options under Interface options. Make sure the "Periodic Damage" check box is checked, even if you have Damage unchecked.
 
+FAQ (old)
+
+My peridoic damage is not showing up in the combat log or on the screen! How do I fix it? - You have turned off periodic damage on the Advanced Options under Interface options. Make sure the "Periodic Damage" check box is checked, even if you have Damage unchecked.
+
+<br />Where did it come from? - Original idea by Bant. Coding help/samples from Andalia`s SideCombatLog and CombatChat. 
+<br />
+<br />How do I use it? - Unzip EavesDrop into your interface\addons directory. For more info on installing, please read install.txt. Now just run WoW and once logged in, you will see the EavesDrop in the middle of your screen. Left click the EavesDrop Tab to drag it. Right click the EavesDrop Tab to see the options menu.
+<br />
+<br />How do I reset EavesDrop or load another users settings? - EavesDrop uses the Ace2 profile system. By default all characters use the same profile. You may change this for each character using the Profile area of the option menu. You can reset the options for the current profile using the Rest option in the menu.
+<br />
+<br />How do I change the fonts? - EavesDrop uses the games default fonts. You will need to use a font program like ClearFont of Fontabulous to change it.
+<br />
+<br />Support
+<br />Please post all errors and suggestions on http://grayhoof.wowinterface.com/ using the provided forms.
+<br />Please post all questions and comments on the offical EavesDrop thread.
+<br />
+
 How do I reset EavesDrop or load another users settings? - EavesDrop uses the Ace3 profile system. By default all characters have their own profile. You may change this for each character using the Profile area of the option menu. You can reset the options for the current profile using the Rest option in the menu.
 
 How do I change the fonts? - EavesDrop now supports ShareMedia, so just select your font from the options menu.

@@ -8,7 +8,7 @@
 
 This is my attempt to keep [Grayhoof](https://www.wowinterface.com/downloads/author-14368.html)'s addon alive as I am kind of addicted to it since 2008!
 
-The goal is to make it work under latest game version (currently 10.x). Please report any issues or bugs on the project's [Github pae](https://github.com/spamwax/EavesDrop).
+The goal is to make it work under latest game version (currently 10.x). Please report any issues or bugs on the project's [Github page](https://github.com/spamwax/EavesDrop).
 
 ## What does it do?
 A simple combat log that shows events (such as damae, heal, buff/debuff...), using icons and colors to make it easy to find
@@ -20,14 +20,15 @@ Additionally, it keeps track of each spell's maximum *normal* and **critical** h
 
 ## Usage
 All events related to player will be shown in 3 columns. After each combat, a summary of incoming and outgoing heals and damage will be displayed.
+
 - Shift+scroll up/down will show the top/bottom of events.
 - Ctrl+scroll up/down will take you to the next/previous combat.
-- Shift+Click will copy the highlited event to the chat edit box
+- Shift+Click will copy the highlighted event to the chat edit box
 - Click the "*sun clock*" icon, to open history of highest values of all events, divided into healing and damage.
 
 To customize the events (buff, debuffs, colors, values, ...), open the options window by right-click on the `EavesDrop` tab or entering slash command: `/ed`.
 
-You can adjust the minium damage/healing values in the options windows under **Misc** tab.
+You can adjust the minimum damage/healing values in the options windows under **Misc** tab.
 
 You can also completely exclude spells under the same tab. Enter the unwanted spell names or IDs in the **Blacklist** box, one spell per line. Any of the following lines will exclude *Judgment*:
 
@@ -36,15 +37,18 @@ Judgment
 20271
 Judgment -- 20271
 ```
+
 <p><img src="misc/blacklist.png" alt="screenshot1" width="69%"/>
 
 ----
 
 ## Installation
 ### Using addon managers
+
 Install [wago.iop app](https://addons.wago.io/app) or [CurseForge](https://download.curseforge.com/) and search for `EavesDrop` in the apps to install the addon.
 
 ### Manual Installation
+
 Download the `EavesDrop.zip` file from either [wago.io](https://addons.wago.io/addons/eavesdrop) or [github.com](https://github.com/spamwax/EavesDrop/releases/latest).
 Then follow these instructions:
 
