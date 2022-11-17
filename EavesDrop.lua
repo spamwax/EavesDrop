@@ -555,8 +555,7 @@ function EavesDrop:CombatEvent(larg1, ...)
       text = "-" .. text
     end
     -- If spell is blacklisted, don't show it
-    local _sid = select(7, GetSpellInfo(spellName))
-    if db["BLACKLIST"][_sid] ~= nil then return end
+    if db["BLACKLIST"][spellId] ~= nil then return end
     -- If damage is too small, just ignore it.
     if amount < db["DFILTER"] then return end
 
@@ -565,8 +564,7 @@ function EavesDrop:CombatEvent(larg1, ...)
   elseif etype == "BUFF" then
     spellId, spellName, _, auraType, _ = select(12, CombatLogGetCurrentEventInfo())
     -- If spell is blacklisted, don't show it
-    local _sid = select(7, GetSpellInfo(spellName))
-    if db["BLACKLIST"][_sid] ~= nil then return end
+    if db["BLACKLIST"][spellId] ~= nil then return end
     texture = select(3, GetSpellInfo(spellId))
     if toPlayer and db[auraType] then
       self:DisplayEvent(INCOMING, self:ShortenString(spellName) .. " " .. L["Gained"], texture, db["P" .. auraType],
@@ -578,8 +576,7 @@ function EavesDrop:CombatEvent(larg1, ...)
   elseif etype == "FADE" then
     spellId, spellName, _, auraType, _ = select(12, CombatLogGetCurrentEventInfo())
     -- If spell is blacklisted, don't show it
-    local _sid = select(7, GetSpellInfo(spellName))
-    if db["BLACKLIST"][_sid] ~= nil then return end
+    if db["BLACKLIST"][spellId] ~= nil then return end
     texture = select(3, GetSpellInfo(spellId))
     if toPlayer and db[auraType .. "FADE"] then
       self:DisplayEvent(INCOMING, self:ShortenString(spellName) .. " " .. L["Fades"], texture, db["P" .. auraType],
@@ -594,12 +591,14 @@ function EavesDrop:CombatEvent(larg1, ...)
     text = tostring(shortenValue(amount))
     texture = select(3, GetSpellInfo(spellId))
 
+    if spellName == "Golden Path" then
+      print("id:", spellId)
+      print("db[id]", db["BLACKLIST"][spellId])
+    end
     if toPlayer or toPet then
       totHealingIn = totHealingIn + amount
       -- If spell is blacklisted, don't show it
-      local _sid = select(7, GetSpellInfo(spellName))
-      if db["BLACKLIST"][_sid] ~= nil then return end
-      if (amount < db["HFILTER"]) then return end
+      if (db["BLACKLIST"][spellId] ~= nil) or (amount < db["HFILTER"]) then return end
       if (db["OVERHEAL"]) and overHeal > 0 then
         text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
       end
@@ -618,10 +617,8 @@ function EavesDrop:CombatEvent(larg1, ...)
       text = "+" .. text
     elseif fromPlayer or fromPet then
       totHealingOut = totHealingOut + amount
-      -- If spell is blacklisted, don't show it
-      local _sid = select(7, GetSpellInfo(spellName))
-      if db["BLACKLIST"][_sid] ~= nil then return end
-      if (amount < db["HFILTER"]) then return end
+      -- If spell is blacklisted or its amount is small, don't show it
+      if (db["BLACKLIST"][spellId] ~= nil) or (amount < db["HFILTER"]) then return end
       if (db["OVERHEAL"]) and overHeal > 0 then
         text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
       end
@@ -643,8 +640,7 @@ function EavesDrop:CombatEvent(larg1, ...)
     else
       spellId, spellName, _, missType, _, amount = select(12, CombatLogGetCurrentEventInfo())
       -- If spell is blacklisted, don't show it
-      local _sid = select(7, GetSpellInfo(spellName))
-      if db["BLACKLIST"][_sid] ~= nil then return end
+      if db["BLACKLIST"][spellId] ~= nil then return end
       texture = select(3, GetSpellInfo(spellId))
       tcolor = "TSPELL"
     end
@@ -670,8 +666,7 @@ function EavesDrop:CombatEvent(larg1, ...)
     if (db["GAINS"]) then
       spellId, spellName, _, amount, powerType, extraAmount = select(12, CombatLogGetCurrentEventInfo())
       -- If spell is blacklisted, don't show it
-      local _sid = select(7, GetSpellInfo(spellName))
-      if db["BLACKLIST"][_sid] ~= nil then return end
+      if db["BLACKLIST"][spellId] ~= nil then return end
       texture = select(3, GetSpellInfo(spellId))
       if toPlayer then
         totHealingIn = totHealingIn + amount
@@ -694,8 +689,7 @@ function EavesDrop:CombatEvent(larg1, ...)
     if (db["GAINS"]) then
       spellId, spellName, _, amount, _, powerType = select(12, CombatLogGetCurrentEventInfo())
       -- If spell is blacklisted, don't show it
-      local _sid = select(7, GetSpellInfo(spellName))
-      if db["BLACKLIST"][_sid] ~= nil then return end
+      if db["BLACKLIST"][spellId] ~= nil then return end
       texture = select(3, GetSpellInfo(spellId))
       if toPlayer then
         if (amount < db["MFILTER"]) then return end
