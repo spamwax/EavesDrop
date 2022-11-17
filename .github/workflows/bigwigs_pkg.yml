@@ -23,7 +23,7 @@ jobs:
           annotate: warning
 
       - name: Generate Changelog
-        run: .github/generate_changelog.sh
+        run: .github/workflows/generate_changelog.sh
 
       - name: Create Package
         uses: BigWigsMods/packager@v2
