@@ -107,6 +107,8 @@ if L then
     L["FText"] = "字号"
     L["FTextD"] = "事件文字的字号"
     L["FFont"] = "字体"
+    L["FFontOutline"] = "字体轮廓"
+    L["FFontOutlineD"] = "设置字体轮廓装饰"
     L["FFade"] = "消退时间"
     L["FFadeD"] = "时间发生后多长时间消失"
     L["FFadeFrame"] = "框体消退"

@@ -107,6 +107,8 @@ if L then
     L["FText"] = "Text Size"
     L["FTextD"] = "Size of event text"
     L["FFont"] = "Font"
+    L["FFontOutline"] = "Font Outline"
+    L["FFontOutlineD"] = "Set font outline decoration"
     L["FFade"] = "Fade Time"
     L["FFadeD"] = "How long before events start to fade"
     L["FFadeFrame"] = "Fade Frame"

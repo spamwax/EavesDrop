@@ -110,6 +110,8 @@ globals = {
     "GetLocale",
     "UnitName",
     "UnitXP",
+    "UnitXPMax",
+    "UnitLevel",
     "InCombatLockdown",
     "PlaySound",
     "CreateFrame",
@@ -119,6 +121,7 @@ globals = {
     "ChatEdit_ChooseBoxForSend",
     "AceGUIMultiLineEditBoxInsertLink",
     "GetSpellInfo",
+    "IsSpellKnown",
     "GetCurrentCombatTextEventInfo",
     "hooksecurefunc",
 

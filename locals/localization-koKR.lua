@@ -107,6 +107,8 @@ if L then
     L["FText"] = "글자 크기"
     L["FTextD"] = "이벤트 글자의 크기"
     L["FFont"] = "폰트"
+    L["FFontOutline"] = "글꼴 개요"
+    L["FFontOutlineD"] = "글꼴 윤곽선 장식 설정"
     L["FFade"] = "사라짐 시간"
     L["FFadeD"] = "이벤트를 얼마의 시간동안 표시할 것인지 설정"
     L["FFadeFrame"] = "프레임 사라짐"
