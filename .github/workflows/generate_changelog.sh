@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -x 
 
 version=$( git describe --tags --always )
