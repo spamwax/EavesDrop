@@ -39,6 +39,8 @@ local timeStart = 0
 local curTime = 0
 local lastTime = 0
 
+local maxXP = UnitXPMax("player")
+
 -- LUA calls
 local _G = _G
 local tonumber = tonumber
@@ -158,6 +160,13 @@ local function getSpellSchoolCoreType(a)
   end
   local stype = bit.lshift(1, count)
   return stype
+end
+
+function EavesDrop:IsClassic()
+  return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC) or (_G.WOW_PROJECT_ID  == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC) or (_G.WOW_PROJECT_ID  == _G.WOW_PROJECT_WRATH_CLASSIC)
+end
+function EavesDrop:IsRetail()
+  return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
 end
 
 local function convertRGBtoHEXString(color, text)
@@ -350,8 +359,13 @@ function EavesDrop:PerformDisplayOptions()
   local r, g, b, a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
   -- main frame
   EavesDropFrame:SetBackdropColor(r, g, b, a)
-  EavesDropTopBar:SetGradient("VERTICAL", {r = r*.1, g = g*.1, b = b*.1, a = 0} , {r = r*.2, g = g*.2, b = b*.2, a = a})
-  EavesDropBottomBar:SetGradient("VERTICAL", {r = r * .2, g = g*.2, b = b*.2, a = a} , {r = r*.1, g = g*.1, b = b*.1, a = 0})
+  if self:IsRetail() then
+    EavesDropTopBar:SetGradient("VERTICAL", {r = r*.1, g = g*.1, b = b*.1, a = 0} , {r = r*.2, g = g*.2, b = b*.2, a = a})
+    EavesDropBottomBar:SetGradient("VERTICAL", {r = r * .2, g = g*.2, b = b*.2, a = a} , {r = r*.1, g = g*.1, b = b*.1, a = 0})
+  else
+    EavesDropTopBar:SetGradientAlpha("VERTICAL", r * .1, g * .1, b * .1, 0, r * .2, g * .2, b * .2, a)
+    EavesDropBottomBar:SetGradientAlpha("VERTICAL", r * .2, g * .2, b * .2, a, r * .1, g * .1, b * .1, 0)
+  end
   EavesDropTopBar:SetWidth(totalw - 10)
   EavesDropBottomBar:SetWidth(totalw - 10)
   r, g, b, a = db["BORDER"].r, db["BORDER"].g, db["BORDER"].b, db["BORDER"].a
@@ -504,8 +518,10 @@ function EavesDrop:CombatEvent(larg1, ...)
     if (glancing) then text = glancechar .. text .. glancechar end
     if (resisted) then text = string_format("%s (%s)", text, shortenValue(resisted)) end
     if (blocked) then text = string_format("%s (%s)", text, shortenValue(blocked)) end
-    if (absorbed) then text = string_format("%s (%s)", text, shortenValue(absorbed)) end
-
+    if (absorbed) then
+      text = string_format("%s (%s)", text, shortenValue(absorbed))
+      totHealingIn = totHealingIn + absorbed
+    end
     local school_new = getSpellSchoolCoreType(school or 1)
     school = school_new
 
@@ -622,10 +638,10 @@ function EavesDrop:CombatEvent(larg1, ...)
   elseif etype == "MISS" then
     local tcolor
     if event == "SWING_MISSED" or event == "RANGE_MISSED" then
-      missType = select(12, CombatLogGetCurrentEventInfo())
+      missType, _, amount = select(12, CombatLogGetCurrentEventInfo())
       tcolor = "TMELEE"
     else
-      spellId, spellName, _, missType = select(12, CombatLogGetCurrentEventInfo())
+      spellId, spellName, _, missType, _, amount = select(12, CombatLogGetCurrentEventInfo())
       -- If spell is blacklisted, don't show it
       local _sid = select(7, GetSpellInfo(spellName))
       if db["BLACKLIST"][_sid] ~= nil then return end
@@ -633,6 +649,9 @@ function EavesDrop:CombatEvent(larg1, ...)
       tcolor = "TSPELL"
     end
     text = _G[missType]
+    if missType == "ABSORB" and amount then
+      totHealingIn = totHealingIn + amount
+    end
     if toPet then
       inout = INCOMING
       color = db["PETO"]
@@ -711,14 +730,21 @@ end
 
 function EavesDrop:PLAYER_XP_UPDATE()
   local xp = UnitXP("player")
-  local xpgained = xp - pxp
+  local xpgained -- = xp - pxp
   local msg
-  if xpgained < 0 then
-    msg = "Gratz on new level!"
+  if xp <= pxp then -- xpgained <= 0 then
+    xpgained = maxXP - pxp + xp
+    -- print(string.format("LEVELED UP! pmaxXP: %d, pxp: %d, cxp: %d, xpgained: %d, newmaxXP: %d", maxXP, pxp, xp, xpgained, UnitXPMax("player")))
+    maxXP = UnitXPMax("player")
+    local gratz = string.format("Gratz on new level %d!", UnitLevel("player"))
+    self:DisplayEvent(MISC, gratz, nil, db["EXPC"], nil)
+    -- msg = string.format("Gratz on new level!\n%s (%s)", xpgained, XP)
   else
-    msg = string_format("+%s (%s)", shortenValue(xpgained), XP)
+    xpgained = xp - pxp
+  --  print(string.format("xp: %d, pxp: %d, xpgained: %d", xp, pxp, xpgained))
   end
   -- print(string.format("PLAYER_XP_UPDATE: pxp: %d, xp: %d\n  **GAIND**: %d", pxp, xp, xpgained))
+  msg = string_format("+%s (%s)", shortenValue(xpgained), XP)
   self:DisplayEvent(MISC, msg, nil, db["EXPC"], nil)
   pxp = xp
 end

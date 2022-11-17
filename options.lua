@@ -498,9 +498,9 @@ function EavesDrop:SetupOptions()
             order = 5
           },
           FONTOUTLINE = {
-            name = "Font Outline", --L["MTooltipAnchor"],
+            name = L["FFontOutline"],
             type = "select",
-            desc = "Set font outline decoration", -- L["MTooltipAnchorD"],
+            desc = L["FFontOutlineD"],
             order = 6,
             get = getOption,
             set = function(i, v)
@@ -720,12 +720,21 @@ function EavesDrop:SetupOptions()
                       aura_name = GetSpellInfo(aura_id)
                     else
                       aura_id = select(7, GetSpellInfo(aura_name))
+                      if aura_id == nil then
+                        print(string.format("EavesDrop: |cffffff00%s|r is not in your spell book!", aura_name))
+                        print(string.format("EavesDrop: Try entering it by its spell ID!"))
+                        return
+                      end
                     end
                   end
-                  if not aura_name or not aura_id or tonumber(aura_name) then return end
-                  if not GetSpellInfo(aura_name) or not GetSpellInfo(aura_id) or aura_id ~= select(7, GetSpellInfo(aura_name)) then
+                  if not aura_name or not aura_id or type(aura_name) == "number" then return end
+                  if aura_name ~= select(1, GetSpellInfo(aura_id)) then
+                    print(string.format("EavesDrop: |cffffff00%s|r does not match the provided spell id: %d", aura_name, aura_id))
                     return
                   end
+                  --[[if not IsSpellKnown(aura_id) then
+                    print(string.format("EavesDrop: Blacklisted an |cd0ff7d0aunknown spell:|r %s", aura_name))
+                  end]]
                   idx = idx + 1
                   EavesDrop.db.profile[key][aura_id] = aura_name
                   -- print(string.format("idx: %d, size of db table: %d", idx, #EavesDrop.db.profile[key]))

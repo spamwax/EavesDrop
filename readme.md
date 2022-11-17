@@ -6,15 +6,15 @@
 <p><img src="misc/eaves1.png" alt="screenshot1" width="22%"/>
 <img src="misc/eaves2.png" alt="screenshot2" width="25%"/></p>
 
-This is my attempt to keep [Grayhoof](https://www.wowinterface.com/downloads/author-14368.html)'s addon going as I am kind of addicted to it since 2008!
+This is my attempt to keep [Grayhoof](https://www.wowinterface.com/downloads/author-14368.html)'s addon alive as I am kind of addicted to it since 2008!
 
-The goal is to make it work under latest game version (currently 9.2.5). Please report any issues or bugs on the project's [Github pae](https://github.com/spamwax/EavesDrop).
+The goal is to make it work under latest game version (currently 10.x). Please report any issues or bugs on the project's [Github pae](https://github.com/spamwax/EavesDrop).
 
 ## What does it do?
 A simple combat log that shows events (such as damae, heal, buff/debuff...), using icons and colors to make it easy to find
 important information by a quick skim. It separates incoming events (left side) from outgoing events (right side) from misc. events (middle).
 
-Additionally, it keeps track of each spell's maximum *normal* and **critical** hits! :sunglasses:
+Additionally, it keeps track of each spell's maximum *normal* and **critical** hits!
 
 ----
 
@@ -41,8 +41,8 @@ Judgment -- 20271
 ----
 
 ## Installation
-### Using wago.io app
-Install  [wago.iop app](https://addons.wago.io/app) and search for `EavesDrop` in the app to install this addon.
+### Using addon managers
+Install [wago.iop app](https://addons.wago.io/app) or [CurseForge](https://download.curseforge.com/) and search for `EavesDrop` in the apps to install the addon.
 
 ### Manual Installation
 Download the `EavesDrop.zip` file from either [wago.io](https://addons.wago.io/addons/eavesdrop) or [github.com](https://github.com/spamwax/EavesDrop/releases/latest).
