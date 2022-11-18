@@ -13,3 +13,4 @@ ignore:
   - generate_changelog.sh
   - readme.md
   - CHANGELOG.md
+  - TODO.md

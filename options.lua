@@ -25,6 +25,150 @@ local function setColorOption(info, r, g, b, a)
   EavesDrop:PerformDisplayOptions()
 end
 
+local getBlacklistOption = function (info)
+  local spell_table = info.arg and EavesDrop.db.profile[info.arg] or EavesDrop.db.profile[info[#info]]
+  local auras = {}
+  local aname
+  if spell_table["version"] == nil then
+    --@debug@
+    print("--> Reading old DB for excluded spells.")
+    --@end-debug@
+    local temp = {}
+    for _, value in pairs(spell_table) do
+      temp[value] = true
+    end
+    for key, _ in pairs(temp) do
+      auras[#auras+1] = key
+    end
+  elseif spell_table["version"] == EavesDrop.BLACKLIST_DB_VERSION then
+    spell_table = spell_table["spells"]
+    --@debug@
+    print("--> Reading new DB for excluded spells.", EavesDrop.BLACKLIST_DB_VERSION)
+    --@end-debug@
+    for key, value in pairs(spell_table) do
+      if type(value) == "boolean" and value == true then
+        aname = string.format("%s", key)
+      elseif type(key) == "number" and type(value) == "string" then
+        aname = string.format("%d |cd0ff7d0a-- %s|r", key, value)
+      else
+        print(string.format("|cffff0000BIG ISSUE:|r"), key, value, type(key), type(value))
+        aname = "INVALID"
+      end
+      auras[#auras+1]= aname
+    end
+  end
+  table.sort(auras)
+  return table.concat(auras, "\n")
+end
+
+local setBlacklistOption = function(info, inp)
+  local auras = { strsplit("\n,", strtrim(inp)) }
+  local dbkey = info.arg or info[#info]
+  --@debug@
+  print("dbkey:", dbkey)
+  --@end-debug@
+  wipe(EavesDrop.db.profile[dbkey])
+  local idx = 0
+  local new_spells = {}
+
+  for _, v in pairs(auras) do
+    (function()
+      local key, value
+      local id, name
+      local aura_name, aura_id
+      v = gsub(v, "|r", "")
+      v = gsub(v, "|c........", "")
+      aura_name, aura_id = strsplit("-", v, 2)
+      aura_name = strtrim(aura_name)
+      if not (aura_name and (#aura_name > 0)) then
+        --@debug@
+        print(string.format("EavesDrop: Blacklist entry is empty: >%s<", v))
+        --@end-debug@
+        return
+      end
+      if aura_id then
+        aura_id = strtrim(aura_id, "\r\n\t -")
+        if #aura_id == 0 then aura_id = nil end
+      end
+      if aura_name and aura_id then -- TWO ITEMS
+        --@debug@
+        assert(#aura_id > 0 and #aura_name > 0)
+        print(string.format("TWO ITEM, >%s<, >%s<", aura_name, aura_id))
+        --@end-debug@
+        if not tonumber(aura_name) and tonumber(aura_id) then -- string, number
+          key = aura_name
+          value = true
+          print(string.format("EavesDrop: |cffff0000Removing spell id:|r %s", aura_id))
+        elseif not tonumber(aura_name) and not tonumber(aura_id) then -- string, string
+          print(string.format("EavesDrop: |cffff0000Only enter a single spell name per line|r"))
+          return
+        elseif tonumber(aura_name) and tonumber(aura_id) then -- number, number
+          id = tonumber(aura_name)
+          name = GetSpellInfo(id)
+          if not name then
+            print(string.format("EavesDrop: |cffff0000Invalid spell ID:|r %d", id))
+            return
+          else
+            key = id
+            value = name
+            --@debug@
+            print("|cffff0000Removing 2nd id|r", aura_id)
+            --@end-debug@
+          end
+        elseif tonumber(aura_name) and not tonumber(aura_id) then -- number, string
+          id = tonumber(aura_name)
+          name = GetSpellInfo(id)
+          if name then
+            key = id
+            value = name
+          else
+            print(string.format("EavesDrop: |cffff0000Invalid spell ID:|r %d", id))
+            return
+          end
+        end
+      elseif aura_name and not aura_id then -- ONE ITEM
+        --@debug@
+        assert(#aura_name > 0 and aura_id == nil)
+        print(string.format("ONE ITEM, >%s<, >%s<", aura_name, aura_id or "NIL"))
+        --@end-debug@
+        if tonumber(aura_name) then
+          -- it's spell id
+          id = tonumber(aura_name)
+          name = GetSpellInfo(id)
+          if name then
+            key = id
+            value = name
+          else
+            print(string.format("EavesDrop: |cffff0000Invalid spell ID:|r %d", id))
+            return
+          end
+        else
+          key = aura_name
+          value = true
+        end
+      else
+        print(string.format("|cffff0000Can't understand your entry!|r\n\tPlease eport your entry (%s) to the author.", v))
+        return
+      end
+      --@debug
+      assert(key ~= nil and value ~= nil)
+      print("Inserting", key, value)
+      --@end-debug@
+      idx = idx + 1
+      new_spells[key] = value
+      --table.insert(new_spells, {[key] = value})
+      --EavesDrop.db.profile[dbkey] = value
+    end)()
+  end
+  EavesDrop.db.profile[dbkey]["version"] = EavesDrop.BLACKLIST_DB_VERSION
+  EavesDrop.db.profile[dbkey]["spells"] = new_spells
+  EavesDrop.blacklist = new_spells
+  EavesDrop:UpdateFrame()
+  --@debug
+  print(string.format("EavesDrop: Blacklist table now has %d items.", idx))
+  --@end-debug
+end
+
 function EavesDrop:SetupOptions()
   self.options = {
     type = "group",
@@ -679,69 +823,14 @@ function EavesDrop:SetupOptions()
             step = 1
           },
           BLACKLIST = {
-            --name = string.format("Blacklist: To hide any spell enter its name or SpellID (one per line)"),
             name = L["MBlacklist"],
             type = "input",
-            --desc = string.format("Examples: Any of following lines will blacklist |cd0ff7d0aJudgment|r\nJudgment\n20271\nJudgment -- 20271"),
             desc = L["MBlacklistD"],
             order = 12,
             width = "full",
             multiline = 16,
-            get = function(info)
-              local spell_table = info.arg and EavesDrop.db.profile[info.arg] or EavesDrop.db.profile[info[#info]]
-              local auras = {}
-              local aname
-              for spellid, aura in pairs(spell_table) do
-                  aname = string.format("%s |cd0ff7d0a-- %d|r", aura, spellid)
-                auras[#auras+1]= aname
-              end
-              table.sort(auras)
-              return table.concat( auras, "\n" )
-            end,
-            set = function(info, v)
-              local key = info.arg or info[#info]
-              wipe(EavesDrop.db.profile[key])
-              local idx = 0
-              local auras = { strsplit("\n,", strtrim(v)) }
-              for _, name in pairs(auras) do
-                (function()
-                  name = gsub(name, "|r", "")
-                  name = gsub(name, "|c........", "")
-                  local aura_name, aura_id
-                  aura_name, aura_id = strsplit("-", name, 2)
-                  aura_name = strtrim(aura_name)
-                  if not (aura_name and (#aura_name > 0)) then return end
-                  if aura_id then
-                    aura_id = tonumber(strtrim(aura_id, "\r\n\t -"))
-                  end
-                  if aura_name and not aura_id then
-                    aura_id = tonumber(aura_name)
-                    if aura_id then
-                      aura_name = GetSpellInfo(aura_id)
-                    else
-                      aura_id = select(7, GetSpellInfo(aura_name))
-                      if aura_id == nil then
-                        print(string.format("EavesDrop: |cffffff00%s|r is not in your spell book!", aura_name))
-                        print(string.format("EavesDrop: Try entering it by its spell ID!"))
-                        return
-                      end
-                    end
-                  end
-                  if not aura_name or not aura_id or type(aura_name) == "number" then return end
-                  if aura_name ~= select(1, GetSpellInfo(aura_id)) then
-                    print(string.format("EavesDrop: |cffffff00%s|r does not match the provided spell id: %d", aura_name, aura_id))
-                    return
-                  end
-                  --[[if not IsSpellKnown(aura_id) then
-                    print(string.format("EavesDrop: Blacklisted an |cd0ff7d0aunknown spell:|r %s", aura_name))
-                  end]]
-                  idx = idx + 1
-                  EavesDrop.db.profile[key][aura_id] = aura_name
-                  -- print(string.format("idx: %d, size of db table: %d", idx, #EavesDrop.db.profile[key]))
-                end)()
-              end
-              EavesDrop:UpdateFrame()
-            end,
+            get = getBlacklistOption,
+            set = setBlacklistOption,
           }
         }
       }

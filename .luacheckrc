@@ -46,6 +46,7 @@ globals = {
     "tostringall",
     "tremove",
     "gsub",
+    "DevTools_Dump",
 
     -- WoW
     "C_Timer",
