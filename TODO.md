@@ -6,4 +6,4 @@
 - Test if spell reflect works
 - Test what to happens to EXP message when leveling
 - Use BigWigs packager for wago.io too
-- Automatically update mod version in TOC when when we do `git tag`
+- Automatically update mod version in TOC when when we do `git tag`. We can use `@project-version@` through BigWigs packager but this requires us to use BigWigs packager for wago.io too.

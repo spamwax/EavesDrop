@@ -3,11 +3,7 @@ name: ci
 on:
   push:
     branches:
-      - main
-      - develop
       - dragon
-    tags:
-      - "*"
   pull_request:
     branches:
       - master
