@@ -1,4 +1,4 @@
-﻿--[[  ****************************************************************
+--[[  ****************************************************************
   EavesDrop
 
   Author: Grayhoof. Original idea by Bant. Coding help/samples
@@ -39,7 +39,6 @@ local timeStart = 0
 local curTime = 0
 local lastTime = 0
 
-local maxXP = UnitXPMax("player")
 
 EavesDrop.BLACKLIST_DB_VERSION = "v2"
 
@@ -68,7 +67,10 @@ local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 
 -- Combat log locals
+local maxXP = UnitXPMax("player")
 local pxp = UnitXP("player")
+local PLAYER_MAX_LEVEL
+local PLAYER_CURRENT_LEVEL
 local skillmsg = gsub(gsub(gsub(SKILL_RANK_UP, '%d%$', ''), '%%s', '(.+)'), '%%d', '(%%d+)')
 local CombatLog_Object_IsA = CombatLog_Object_IsA
 local Blizzard_CombatLog_CurrentSettings
@@ -172,9 +174,9 @@ EavesDrop.blacklist = {}
 ---@param spell string|number
 ---@return boolen
 local function isBlacklisted(spell, ...)
-  local args = {...}
   local blacklist = EavesDrop.blacklist
   if blacklist[spell] then return true end
+  local args = {...}
   for i = 1, #args do
     if blacklist[args[i]] then return true end
   end
@@ -260,13 +262,47 @@ function EavesDrop:OnInitialize()
 
   self:PerformDisplayOptions()
 
+  PLAYER_CURRENT_LEVEL = UnitLevel("player")
+  maxXP = UnitXPMax("player")
+  pxp = UnitXP("player")
+
+  if self.IsRetail() then
+    PLAYER_MAX_LEVEL = 70
+  elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC then
+    PLAYER_MAX_LEVEL = 80
+  elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+    PLAYER_MAX_LEVEL = 70
+  elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC then
+    PLAYER_MAX_LEVEL = 60
+  end
   self:RegisterEvent("ADDON_LOADED", self.SetFonts)
   if EavesDrop.db.profile["BLACKLIST"]["version"] == EavesDrop.BLACKLIST_DB_VERSION then -- latest version
     EavesDrop.blacklist = EavesDrop.db.profile["BLACKLIST"]["spells"]
+    --@debug@
+    print("Loading new db")
+    DevTools_Dump(EavesDrop.blacklist)
+    --@end-debug@
+  elseif next(EavesDrop.db.profile["BLACKLIST"]) == nil then -- empty blacklist
+    EavesDrop.blacklist = {}
+    EavesDrop.db.profile["BLACKLIST"] = { version = EavesDrop.BLACKLIST_DB_VERSION, spells = {} }
+    --@debug@
+    print("Empty blacklist. Updating format")
+    DevTools_Dump(EavesDrop.db.profile.BLACKLIST)
+    --@end-debug@
   elseif EavesDrop.db.profile["BLACKLIST"]["version"] == nil then -- old/first version
     EavesDrop.blacklist = EavesDrop.db.profile["BLACKLIST"]
+    --@debug@
+    print("Loading old db")
+    DevTools_Dump(EavesDrop.blacklist)
+    --@end-debug@
     C_Timer.NewTimer(5, function() print(string.format(
-      "|cffF48CBAEavesDrop|r: Options file format has changed!\nOpen EavesDrop options and refresh the blacklisted spells under |cffFFF468Misc.|r tab.")
+      "|cffF48CBAEavesDrop|r: Options file format has changed!\n" ..
+      "Open EavesDrop options and refresh the blacklisted spells under |cffFFF468Misc.|r tab " ..
+      "by insering a blank new line and then clicking |cffffff00Accept|r button!\n")
+    ) end)
+  else
+    C_Timer.NewTimer(5, function() print(string.format(
+      "|cffF48CBAEavesDrop|r: Saved profile DB seems to be corrupted!\nExit the game and delete EavesDrop.lua under |cffFFF468Saved Variables|r folder.")
     ) end)
   end
 end
@@ -749,21 +785,71 @@ function EavesDrop:PLAYER_XP_UPDATE()
   local xp = UnitXP("player")
   local xpgained -- = xp - pxp
   local msg
-  if xp <= pxp then -- xpgained <= 0 then
-    xpgained = maxXP - pxp + xp
-    -- print(string.format("LEVELED UP! pmaxXP: %d, pxp: %d, cxp: %d, xpgained: %d, newmaxXP: %d", maxXP, pxp, xp, xpgained, UnitXPMax("player")))
-    maxXP = UnitXPMax("player")
-    local gratz = string.format("Gratz on new level %d!", UnitLevel("player"))
-    self:DisplayEvent(MISC, gratz, nil, db["EXPC"], nil)
-    -- msg = string.format("Gratz on new level!\n%s (%s)", xpgained, XP)
-  else
-    xpgained = xp - pxp
-  --  print(string.format("xp: %d, pxp: %d, xpgained: %d", xp, pxp, xpgained))
+
+  print("=================>")
+  local should_level = 0
+  if PLAYER_CURRENT_LEVEL ~= UnitLevel("player") then
+    print("----")
+    print(string.format("LEVEL CHANGED"))
+    print("xp < pxp?", xp < pxp)
+    assert(xp < pxp, "Player leveled but xp > pxp!")
+    local foo = maxXP - pxp + xp
+    local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, foo, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    should_level = should_level + 1
+    print(x)
+    print("----")
   end
-  -- print(string.format("PLAYER_XP_UPDATE: pxp: %d, xp: %d\n  **GAIND**: %d", pxp, xp, xpgained))
-  msg = string_format("+%s (%s)", shortenValue(xpgained), XP)
-  self:DisplayEvent(MISC, msg, nil, db["EXPC"], nil)
+  if xp < pxp or PLAYER_CURRENT_LEVEL ~= UnitLevel("player") then -- xpgained <= 0 then
+    print("xp < pxp")
+    xpgained = maxXP - pxp + xp
+    --@debug@@
+    assert(PLAYER_CURRENT_LEVEL+1 == UnitLevel("player"), "xp < pxp but player didn't level up!")
+    local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print(string.format("LEVELED UP!"))
+    if UnitLevel("player") == PLAYER_MAX_LEVEL then
+      print(string.format("PLAYER at MAX LEVEL"))
+    else
+      print("Detected level up but player is not at MAX level.")
+    end
+    print(x)
+    --@end-debug@
+    maxXP = UnitXPMax("player")
+    PLAYER_CURRENT_LEVEL = UnitLevel("player")
+    local gratz = string.format(L["NewLevel"], UnitLevel("player"))
+    self:DisplayEvent(MISC, gratz, nil, db["EXPC"], nil)
+    should_level = should_level + 1
+    -- msg = string.format("Gratz on new level!\n%s (%s)", xpgained, XP)
+  elseif xp > pxp then
+    xpgained = xp - pxp
+    --@debug@
+    local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print("xp > pxp")
+    print(x)
+    --@end-debug@
+  elseif xp == pxp then
+    xpgained = xp - pxp
+    local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print("xp and pxp are the same!")
+    print(x)
+  else
+    print("Unreachable?")
+    xpgained = xp - pxp
+    local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print(x)
+  end
+  if should_level == 1 then
+    assert(false, "UnitLevel and (xp<pxp) didn't happen at the same time!")
+    print("**** WTF ****")
+  end
+  --@debug@@
+  print(string.format("PLAYER_XP_UPDATE **GAINED**: %d", xpgained))
+  --@end-debug@
+  if xpgained ~= 0 then
+    msg = string_format("+%s (%s)", shortenValue(xpgained), XP)
+    self:DisplayEvent(MISC, msg, nil, db["EXPC"], nil)
+  end
   pxp = xp
+  print("<=================")
 end
 
 function EavesDrop:COMBAT_TEXT_UPDATE(event, larg1)
@@ -922,7 +1008,7 @@ function EavesDrop:UpdateEvents()
         outtexture:SetTexture(nil)
       end
       text:SetText(value.text)
-      text:SetTextColor(value.color.r, value.color.g, value.color.b)
+      text:SetTextColor(value.color.r, value.color.g, value.color.b, 1)
       frame.delay = delay
       frame.alpha = 1
       if (db["TOOLTIPS"] == true) then

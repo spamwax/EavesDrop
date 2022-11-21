@@ -21,6 +21,7 @@ if L then
     L["IncomingHeals"] = "Incoming Heals"
     L["History"] = "Show EavesDrop History"
     L["IncombatSummary"] = "seconds in combat"
+    L["NewLevel"] = "New level %d, Gratz!"
 
     --events
     L["Events"] = "Events"
@@ -133,7 +134,7 @@ if L then
     L["MDFilter"] = "Damage Filter"
     L["MDFilterD"] = "Controls the minimum amount a damage needs to be to appear in EavesDrop. Good for filtering out frequent small damages like Consecration, etc..."
     L["MBlacklist"] = "Blacklist: To hide any spell enter its name or SpellID (one per line)"
-    L["MBlacklistD"] = "Examples: Any of following lines will blacklist |cd0ff7d0aJudgment|r:\nJudgment\n275773\n275773 -- Judgment"
+    L["MBlacklistD"] = "Examples: Any of the following lines will blacklist |cd0ff7d0aJudgment|r:\nJudgment\n275773\n275773 -- Judgment"
     L["MMFilter"] = "Power Gain Filter"
     L["MMFilterD"] = "Controls the minimum amount a power gain needs to be to appear in EavesDrop. Good for filtering out frequent small power gains like Totems, Blessings, etc..."
     L["MLock"] = "Lock Frame"

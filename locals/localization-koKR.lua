@@ -21,6 +21,7 @@ if L then
     L["IncomingHeals"] = "받은 치유량"
     L["History"] = "기록 보기"
     L["IncombatSummary"] = "전투 시간"
+    L["NewLevel"] = "새로운 수준 %d, 축하합니다!"
 
     --events
     L["Events"] = "이벤트"
