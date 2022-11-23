@@ -1,4 +1,4 @@
---[[  ****************************************************************
+﻿--[[  ****************************************************************
   EavesDrop
 
   Author: Grayhoof. Original idea by Bant. Coding help/samples
@@ -264,6 +264,23 @@ function EavesDrop:OnInitialize()
 
   PLAYER_CURRENT_LEVEL = UnitLevel("player")
   maxXP = UnitXPMax("player")
+  --@debug@
+  print("OnInitialize, maxXP:", maxXP)
+  --@end-debug@
+  if maxXP == 0 then
+    --@debug@
+    print("Getting player's maxXP in 3 seconds!")
+    --@end-debug@
+    C_Timer.NewTimer(3, function ()
+      maxXP = UnitXPMax("player")
+      --@debug@
+      print("After 3 seconds got maxXP as", maxXP)
+      --@end-debug
+      if maxXP == 0 then
+        print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Can't get player's MAX XP!")
+      end
+    end)
+  end
   pxp = UnitXP("player")
 
   if self.IsRetail() then
@@ -501,7 +518,8 @@ function EavesDrop:ShowFrame()
   EavesDropTab:SetAlpha(0)
 end
 
-function EavesDrop:CombatEvent(larg1, ...)
+--function EavesDrop:CombatEvent(larg1, ...)
+function EavesDrop:CombatEvent(_, _)
   -- local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags,
   local _, event, _, _, sourceName, sourceFlags, _, _, destName, destFlags, _ = CombatLogGetCurrentEventInfo()
   local etype = COMBAT_EVENTS[event]
@@ -852,7 +870,7 @@ function EavesDrop:PLAYER_XP_UPDATE()
   print("<=================")
 end
 
-function EavesDrop:COMBAT_TEXT_UPDATE(event, larg1)
+function EavesDrop:COMBAT_TEXT_UPDATE(_, larg1)
   local larg2, larg3 = GetCurrentCombatTextEventInfo() -- Thanks DTuloJr for pointing this out!
   if larg1 == "FACTION" then
     local sign = "+"
@@ -914,7 +932,7 @@ end
 
 function EavesDrop:PLAYER_DEAD() self:DisplayEvent(MISC, deathchar .. UnitName("player") .. deathchar, nil, db["DEATH"]) end
 
-function EavesDrop:CHAT_MSG_SKILL(event, larg1)
+function EavesDrop:CHAT_MSG_SKILL(_, larg1)
   local skill, rank = string_match(larg1, skillmsg)
   if skill then self:DisplayEvent(MISC, string_format("%s: %d", skill, rank), nil, db["SKILLC"], larg1) end
 end
@@ -1109,7 +1127,7 @@ function EavesDrop:OnUpdate()
   end
 end
 
-function EavesDrop:Scroll(this, dir)
+function EavesDrop:Scroll(_, dir)
   -- local self = EavesDrop
   if dir > 0 then
     if IsShiftKeyDown() then

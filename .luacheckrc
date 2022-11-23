@@ -8,7 +8,7 @@ exclude_files = {
 ignore = {
     "11./SLASH_.*", -- Setting an undefined (Slash handler) global variable
     "11./BINDING_.*", -- Setting an undefined (Keybinding header) global variable
-    "212", -- Unused argument
+    "212/self.*", -- Unused argument
     -- "211", -- Unused local variable
     -- "211/L", -- Unused local variable "L"
     -- "211/CL", -- Unused local variable "CL"
@@ -104,6 +104,7 @@ globals = {
     "CombatLog_OnEvent",
     "IsShiftKeyDown",
     "IsControlKeyDown",
+    "WrapTextInColorCode",
 
     "BackdropTemplateMixin",
     "UIParent",

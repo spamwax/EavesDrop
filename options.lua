@@ -630,11 +630,11 @@ function EavesDrop:SetupOptions()
             name = L["FFont"],
             desc = L["FFont"],
             values = media:List('font'),
-            get = function(info)
+            get = function(_)
               local mt = media:List('font')
               for k, v in pairs(mt) do if v == self.db.profile.FONT then return k end end
             end,
-            set = function(info, v)
+            set = function(_, v)
               local mt = media:List('font')
               self.db.profile.FONT = mt[v]
               self:PerformDisplayOptions()
@@ -647,7 +647,7 @@ function EavesDrop:SetupOptions()
             desc = L["FFontOutlineD"],
             order = 6,
             get = getOption,
-            set = function(i, v)
+            set = function(_, v)
               self.db.profile["FONTOUTLINE"] = v
               self:PerformDisplayOptions()
             end,
@@ -693,7 +693,7 @@ function EavesDrop:SetupOptions()
             desc = L["MLockD"],
             order = 10,
             get = getOption,
-            set = function(i, v)
+            set = function(_, v)
               self.db.profile["LOCKED"] = v;
               EavesDropFrame:EnableMouse(not self.db.profile["LOCKED"]);
             end
@@ -738,7 +738,7 @@ function EavesDrop:SetupOptions()
             desc = L["MTooltipAnchorD"],
             order = 4,
             get = getOption,
-            set = function(i, v)
+            set = function(_, v)
               self.db.profile["TOOLTIPSANCHOR"] = v;
               self.ToolTipAnchor = "ANCHOR_" .. strupper(v);
             end,
@@ -759,7 +759,7 @@ function EavesDrop:SetupOptions()
             desc = L["MHistoryD"],
             order = 6,
             get = getOption,
-            set = function(i, v)
+            set = function(_, v)
               self.db.profile["HISTORY"] = v;
               if (v == true) then
                 EavesDropHistoryButton:Show();

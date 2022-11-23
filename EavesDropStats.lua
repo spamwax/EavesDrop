@@ -92,6 +92,7 @@ function EavesDrop:TrackStat(type, hitheal, spell, icon, school, amount, crit, m
     -- reset sorted table
     sort_table = nil
   end
+
   -- see if its a higher event
   if ((chardb[type][hitheal][key][critkey].amount == nil) or (amount > chardb[type][hitheal][key][critkey].amount)) then
     chardb[type][hitheal][key][critkey].amount = amount
