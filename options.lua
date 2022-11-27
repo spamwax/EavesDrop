@@ -165,7 +165,7 @@ local setBlacklistOption = function(info, inp)
   EavesDrop.blacklist = new_spells
   EavesDrop:UpdateFrame()
   --@debug
-  print(string.format("EavesDrop: Blacklist table now has %d items.", idx))
+  print(string.format("EavesDrop: Processed % items for Blacklist table.", idx))
   --@end-debug
 end
 

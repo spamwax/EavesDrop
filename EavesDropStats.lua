@@ -135,8 +135,8 @@ function EavesDrop:ScrollBar_Update()
       texture:SetTexture(current_table[key].icon)
       texture:SetTexCoord(.1, .9, .1, .9)
       skill:SetText(key)
-      hit:SetText(current_table[key][NONCRIT].amount)
-      crit:SetText(current_table[key][CRIT].amount)
+      hit:SetText(EavesDrop.shortenValue(current_table[key][NONCRIT].amount or 0))
+      crit:SetText(EavesDrop.shortenValue(current_table[key][CRIT].amount or 0))
       tip1 = current_table[key][NONCRIT].time or ""
       tip2 = current_table[key][CRIT].time or ""
       row.tooltipText = tip1 .. "\n\n" .. tip2

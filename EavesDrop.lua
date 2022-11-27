@@ -1,4 +1,4 @@
-﻿--[[  ****************************************************************
+--[[  ****************************************************************
   EavesDrop
 
   Author: Grayhoof. Original idea by Bant. Coding help/samples
@@ -206,6 +206,7 @@ local function shortenValue(value)
   end
   return tostring(value)
 end
+EavesDrop.shortenValue = shortenValue
 
 local function round(num, idp) return tonumber(string_format("%." .. (idp or 0) .. "f", num)) end
 
@@ -551,13 +552,18 @@ function EavesDrop:CombatEvent(_, _)
   local amount, school, resisted, blocked, absorbed, critical, glancing, crushing
   local spellId, spellName, spellSchool, missType, powerType, extraAmount, overHeal
   local text, texture, message, inout, color, auraType
+  local playerRelated, whiteDMG
 
   -- defaults
   if toPet or fromPet then texture = "pet" end
+  if toPlayer or fromPlayer then playerRelated = true end
   if toPlayer or toPet then inout = INCOMING end
   if fromPlayer or fromPet then inout = OUTGOING end
   if toPet then color = db["PETI"] end
   if fromPet then color = db["PETO"] end
+
+  local swordTexture = "Interface\\Icons\\INV_SWORD_04"
+  local bowTexture = "Interface\\Icons\\INV_WEAPON_BOW_07"
 
   -- get combat log message (for tooltip)
   message = CombatLog_OnEvent(Blizzard_CombatLog_CurrentSettings, CombatLogGetCurrentEventInfo())
@@ -570,10 +576,11 @@ function EavesDrop:CombatEvent(_, _)
                                                                                             CombatLogGetCurrentEventInfo())
       if school == SCHOOL_MASK_PHYSICAL then
         outtype, intype = "TMELEE", "PHIT"
-        texture = "Interface\\Icons\\INV_SWORD_04"
       else
         outtype, intype = "TSPELL", "PSPELL"
       end
+      if playerRelated then texture = swordTexture end
+      whiteDMG = true
     elseif event == "RANGE_DAMAGE" then
       _, spellName, _, amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12,
                                                                                                              CombatLogGetCurrentEventInfo())
@@ -582,15 +589,20 @@ function EavesDrop:CombatEvent(_, _)
       else
         outtype, intype = "TSPELL", "PSPELL"
       end
+      if toPlayer then texture = swordTexture end
+      if fromPlayer then texture = bowTexture end
+      whiteDMG = true
     elseif event == "ENVIRONMENTAL_DAMAGE" then
       _, amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12,
                                                                                                CombatLogGetCurrentEventInfo())
       outtype, intype = "TSPELL", "PSPELL"
+      whiteDMG = false
     else
       spellId, spellName, _, amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing = select(12,
                                                                                                                    CombatLogGetCurrentEventInfo())
       texture = select(3, GetSpellInfo(spellId))
       outtype, intype = "TSPELL", "PSPELL"
+      whiteDMG = false
     end
     text = tostring(shortenValue(amount))
 
@@ -606,30 +618,43 @@ function EavesDrop:CombatEvent(_, _)
     local school_new = getSpellSchoolCoreType(school or 1)
     school = school_new
 
-    local icon
+    local trackIcon = texture
+    if event == "SWING_DAMAGE" or event == "RANGE_DAMAGE" then trackIcon = swordTexture end
     if fromPlayer or fromPet then
-      local fake = nil
-      icon = texture
-      if fromPet then texture = fake end
-      if (self:TrackStat(inout, "hit", spellName, texture, SCHOOL_STRINGS[school], amount, critical, message)) then
+      --@debug@
+      if fromPet then print("from: ", texture, amount) end
+      --@end-debug@
+      if (self:TrackStat(inout, "hit", spellName, trackIcon, SCHOOL_STRINGS[school], amount, critical, message)) then
         text = newhigh .. text .. newhigh
       end
-      if fromPet then outtype = "PETI" end
-      color = self:SpellColor(db[outtype], SCHOOL_STRINGS[school])
+      if fromPet then
+        outtype = "PETI"
+        color = self:SpellColor(db[outtype], SCHOOL_STRINGS[school])
+      elseif whiteDMG then
+        color = db["TMELEE"]
+      else
+        color = self:SpellColor(db[outtype], SCHOOL_STRINGS[school])
+      end
       if not toPlayer then -- Don't count self damag in total
         totDamageOut = totDamageOut + amount
       else
         inout = -inout -- Show self damag under player column
       end
     elseif toPlayer or toPet then
-      local fake = nil
-      icon = texture
-      if toPet then texture = fake end
-      if (self:TrackStat(inout, "hit", spellName, texture, SCHOOL_STRINGS[school], amount, critical, message)) then
+      --@debug
+      if toPet then print("to: ",texture, amount) end
+      --@end-debug@
+      if (self:TrackStat(inout, "hit", spellName, trackIcon, SCHOOL_STRINGS[school], amount, critical, message)) then
         text = newhigh .. text .. newhigh
       end
-      if toPet then intype = "PETO" end
-      color = self:SpellColor(db[intype], SCHOOL_STRINGS[school])
+      if toPet and not whiteDMG then
+        intype = "PSPELL"
+        color = self:SpellColor(db[intype], SCHOOL_STRINGS[school])
+      elseif whiteDMG then
+        color = db["PHIT"]
+      else
+        color = self:SpellColor(db[intype], SCHOOL_STRINGS[school])
+      end
       text = "-" .. text
       totDamageIn = totDamageIn + amount
     elseif toPet then
@@ -640,7 +665,7 @@ function EavesDrop:CombatEvent(_, _)
     -- If damage is too small, just ignore it.
     if amount < db["DFILTER"] then return end
 
-    self:DisplayEvent(inout, text, icon, color, message, spellName)
+    self:DisplayEvent(inout, text, texture, color, message, spellName)
     ------------buff/debuff gain----------------
   elseif etype == "BUFF" then
     spellId, spellName, _, auraType, _ = select(12, CombatLogGetCurrentEventInfo())
@@ -779,17 +804,24 @@ function EavesDrop:CombatEvent(_, _)
     end
     ------------deaths----------------
   elseif etype == "DEATH" then
-    if fromPlayer then
+    texture = nil
+    if fromPlayer or toPlayer then
       text = deathchar .. destName .. deathchar
       self:DisplayEvent(MISC, text, texture, db["DEATH"], message)
+      if toPlayer then
+        local _, xx = PlaySound(98429)
+        C_Timer.NewTimer(2, function () StopSound(xx, 500) end)
+      end
     else
       return
     end
     ------------enchants----------------
   elseif etype == "ENCHANT_APPLIED" then
+    texture = "Interface\\Icons\\UI_PROFESSION_ENCHANTING"
     spellName = select(12, CombatLogGetCurrentEventInfo())
     self:DisplayEvent(INCOMING, self:ShortenString(spellName), texture, db["PBUFF"], message, spellName)
   elseif etype == "ENCHANT_REMOVED" then
+    texture = "Interface\\Icons\\INV_ENCHANT_DISENCHANT"
     spellName = select(12, CombatLogGetCurrentEventInfo())
     self:DisplayEvent(INCOMING, self:ShortenString(spellName) .. " " .. L["Fades"], texture, db["PBUFF"], message,
                       spellName)
