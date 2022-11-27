@@ -21,7 +21,7 @@ if L then
     L["IncomingHeals"] = "Incoming Heals"
     L["History"] = "Show EavesDrop History"
     L["IncombatSummary"] = "seconds in combat"
-    L["NewLevel"] = "New level %d, Gratz!"
+    L["NewLevel"] = "Gratz! New Level %d"
 
     --events
     L["Events"] = "Events"

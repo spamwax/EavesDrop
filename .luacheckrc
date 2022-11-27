@@ -116,6 +116,7 @@ globals = {
     "UnitLevel",
     "InCombatLockdown",
     "PlaySound",
+    "StopSound",
     "CreateFrame",
     "ChatFontNormal",
     "GameFontHighlightNormal",

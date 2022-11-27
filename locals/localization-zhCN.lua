@@ -21,7 +21,7 @@ if L then
     L["IncomingHeals"] = "治疗承受"
     L["History"] = "显示EavesDrop历史记录"
     L["IncombatSummary"] = "秒战斗"
-    L["NewLevel"] = "新关卡 %d, 恭喜!"
+    L["NewLevel"] = "恭喜! 新关卡 %d"
 
     --events
     L["Events"] = "事件显示开启/关闭"
