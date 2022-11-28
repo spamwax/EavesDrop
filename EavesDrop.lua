@@ -265,24 +265,29 @@ function EavesDrop:OnInitialize()
 
   PLAYER_CURRENT_LEVEL = UnitLevel("player")
   maxXP = UnitXPMax("player")
+  pxp = UnitXP("player")
   --@debug@
   print("OnInitialize, maxXP:", maxXP)
+  print("OnInitialize, pxp:", pxp)
   --@end-debug@
-  if maxXP == 0 then
+  if maxXP == 0 or pxp == 0 then
     --@debug@
     print("Getting player's maxXP in 3 seconds!")
     --@end-debug@
     C_Timer.NewTimer(3, function ()
       maxXP = UnitXPMax("player")
+      pxp = UnitXP("player")
       --@debug@
-      print("After 3 seconds got maxXP as", maxXP)
+      print(string_format("After 3 seconds: maxXP: %d, pxp: %d"), maxXP, pxp)
       --@end-debug
       if maxXP == 0 then
-        print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Can't get player's MAX XP!")
+        print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Couldn't get player's MAX EXP!")
+      end
+      if pxp == 0 then
+        print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Couldn't get player's EXP!")
       end
     end)
   end
-  pxp = UnitXP("player")
 
   if self.IsRetail() then
     PLAYER_MAX_LEVEL = 70
