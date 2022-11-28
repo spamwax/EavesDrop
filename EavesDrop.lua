@@ -1,4 +1,4 @@
---[[  ****************************************************************
+﻿--[[  ****************************************************************
   EavesDrop
 
   Author: Grayhoof. Original idea by Bant. Coding help/samples
@@ -103,7 +103,8 @@ local COMBAT_EVENTS = {
   ["SPELL_PERIODIC_ENERGIZE"] = "POWER",
   ["PARTY_KILL"] = "DEATH",
   ["UNIT_DIED"] = "DEATH",
-  ["UNIT_DESTROYED"] = "DEATH"
+  ["UNIT_DESTROYED"] = "DEATH",
+  ["SPELL_INSTAKILL"] = "DEATH",
 }
 
 -- LoadAddOn("Blizzard_DebugTools")
@@ -270,19 +271,29 @@ function EavesDrop:OnInitialize()
   print("OnInitialize, maxXP:", maxXP)
   print("OnInitialize, pxp:", pxp)
   --@end-debug@
-  if maxXP == 0 or pxp == 0 then
+  if maxXP == 0 then
     --@debug@
     print("Getting player's maxXP in 3 seconds!")
     --@end-debug@
     C_Timer.NewTimer(3, function ()
       maxXP = UnitXPMax("player")
-      pxp = UnitXP("player")
       --@debug@
-      print(string_format("After 3 seconds: maxXP: %d, pxp: %d"), maxXP, pxp)
+      print(string_format("After 3 seconds: maxXP: %d, pxp: %d", maxXP, pxp))
       --@end-debug
       if maxXP == 0 then
         print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Couldn't get player's MAX EXP!")
       end
+    end)
+  end
+  if pxp == 0 then
+    --@debug@
+    print("Getting player's pxp in 4 seconds!")
+    --@end-debug@
+    C_Timer.NewTimer(4, function ()
+      pxp = UnitXP("player")
+      --@debug@
+      print(string_format("After 4 seconds: maxXP: %d, pxp: %d", maxXP, pxp))
+      --@end-debug
       if pxp == 0 then
         print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Couldn't get player's EXP!")
       end
@@ -557,10 +568,13 @@ function EavesDrop:CombatEvent(_, _)
   local amount, school, resisted, blocked, absorbed, critical, glancing, crushing
   local spellId, spellName, spellSchool, missType, powerType, extraAmount, overHeal
   local text, texture, message, inout, color, auraType
-  local playerRelated, whiteDMG
+  local playerRelated, petRelated, whiteDMG
 
   -- defaults
-  if toPet or fromPet then texture = "pet" end
+  if toPet or fromPet then
+    texture = "pet"
+    petRelated = true
+  end
   if toPlayer or fromPlayer then playerRelated = true end
   if toPlayer or toPet then inout = INCOMING end
   if fromPlayer or fromPet then inout = OUTGOING end
@@ -627,7 +641,7 @@ function EavesDrop:CombatEvent(_, _)
     if event == "SWING_DAMAGE" or event == "RANGE_DAMAGE" then trackIcon = swordTexture end
     if fromPlayer or fromPet then
       --@debug@
-      if fromPet then print("from: ", texture, amount) end
+      --if fromPet then print("from: ", texture, amount) end
       --@end-debug@
       if (self:TrackStat(inout, "hit", spellName, trackIcon, SCHOOL_STRINGS[school], amount, critical, message)) then
         text = newhigh .. text .. newhigh
@@ -647,7 +661,7 @@ function EavesDrop:CombatEvent(_, _)
       end
     elseif toPlayer or toPet then
       --@debug
-      if toPet then print("to: ",texture, amount) end
+      --if toPet then print("to: ",texture, amount) end
       --@end-debug@
       if (self:TrackStat(inout, "hit", spellName, trackIcon, SCHOOL_STRINGS[school], amount, critical, message)) then
         text = newhigh .. text .. newhigh
@@ -810,9 +824,17 @@ function EavesDrop:CombatEvent(_, _)
     ------------deaths----------------
   elseif etype == "DEATH" then
     texture = nil
-    if fromPlayer or toPlayer then
+    if  playerRelated or petRelated then
+--[[       print("--- DEATH ---")
+      print(string_format("fromPlayer: %s, toPlayer: %s\nfromPet: %s, toPet: %s", tostring(fromPlayer), tostring(toPlayer), tostring(fromPet), tostring(toPet)))
+      print(string_format("sourceName: %s, destName: %s", tostring(sourceName), tostring(destName)))
+      print("---- END ----") ]]
+      --@debug@
+      local _color
+      if toPet and not toPlayer then _color = { r = 1, g = 0.27, b = 0.2, a = 1 } end
+      --@end-debug@
       text = deathchar .. destName .. deathchar
-      self:DisplayEvent(MISC, text, texture, db["DEATH"], message)
+      self:DisplayEvent(MISC, text, texture, _color or db["DEATH"], message)
       if toPlayer then
         local _, xx = PlaySound(98429)
         C_Timer.NewTimer(2, function () StopSound(xx, 500) end)
@@ -831,34 +853,42 @@ function EavesDrop:CombatEvent(_, _)
     self:DisplayEvent(INCOMING, self:ShortenString(spellName) .. " " .. L["Fades"], texture, db["PBUFF"], message,
                       spellName)
     -------------anything else-------------
-    -- else
+  else
     -- self:Print(event, sourceName, destName)
+    --@debug@
+    print(string_format("Event: %s, |cffff0000source: %s, |cffF48CBAdest: %s|r", tostring(event), tostring(sourceName), tostring(destName)))
+    --@end-debug@
   end
 end
 
-function EavesDrop:PLAYER_XP_UPDATE()
+function EavesDrop:PLAYER_XP_UPDATE(_, unitID)
+  if unitID ~= "player" then return end
   local xp = UnitXP("player")
   local xpgained -- = xp - pxp
   local msg
 
-  print("=================>")
-  local should_level = 0
+  --@debug@
+  print(string_format("========= %s =========>", unitID))
   if PLAYER_CURRENT_LEVEL ~= UnitLevel("player") then
     print("----")
     print(string.format("LEVEL CHANGED"))
     print("xp < pxp?", xp < pxp)
-    assert(xp < pxp, "Player leveled but xp > pxp!")
+    if xp >= pxp then
+      print("|cffff0000Player leveled but xp > pxp!|r")
+    end
     local foo = maxXP - pxp + xp
     local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, foo, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
-    should_level = should_level + 1
     print(x)
     print("----")
   end
+  --@end-debug@
   if xp < pxp or PLAYER_CURRENT_LEVEL ~= UnitLevel("player") then -- xpgained <= 0 then
-    print("xp < pxp")
     xpgained = maxXP - pxp + xp
-    --@debug@@
-    assert(PLAYER_CURRENT_LEVEL+1 == UnitLevel("player"), "xp < pxp but player didn't level up!")
+    --@debug@
+    print("xp < pxp")
+    if PLAYER_CURRENT_LEVEL+1 ~= UnitLevel("player") then
+      print(string_format("|cffff0000PLAYER_CURRENT_LEVEL+1 ~= UnitLevel('player'), xp < pxp but player didn't level up!|r"))
+    end
     local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
     print(string.format("LEVELED UP!"))
     if UnitLevel("player") == PLAYER_MAX_LEVEL then
@@ -872,39 +902,42 @@ function EavesDrop:PLAYER_XP_UPDATE()
     PLAYER_CURRENT_LEVEL = UnitLevel("player")
     local gratz = string.format(L["NewLevel"], UnitLevel("player"))
     self:DisplayEvent(MISC, gratz, nil, db["EXPC"], nil)
-    should_level = should_level + 1
-    -- msg = string.format("Gratz on new level!\n%s (%s)", xpgained, XP)
   elseif xp > pxp then
     xpgained = xp - pxp
     --@debug@
     local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
-    print("xp > pxp")
+    print("xp > pxp: Gained XP.")
     print(x)
     --@end-debug@
   elseif xp == pxp then
     xpgained = xp - pxp
     local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    --@debug@
     print("xp and pxp are the same!")
     print(x)
+    --@end-debug@
   else
     print("Unreachable?")
     xpgained = xp - pxp
     local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
     print(x)
   end
-  if should_level == 1 then
-    assert(false, "UnitLevel and (xp<pxp) didn't happen at the same time!")
-    print("**** WTF ****")
+  --@debug@
+  local cc = "ffff1a88"
+  if xpgained == 0 then
+    cc = "ff0044ff"
   end
-  --@debug@@
-  print(string.format("PLAYER_XP_UPDATE **GAINED**: %d", xpgained))
+  cc = WrapTextInColorCode("**GAINED**", cc)
+  print(string.format("PLAYER_XP_UPDATE %s: %d", cc, xpgained))
   --@end-debug@
   if xpgained ~= 0 then
     msg = string_format("+%s (%s)", shortenValue(xpgained), XP)
     self:DisplayEvent(MISC, msg, nil, db["EXPC"], nil)
   end
   pxp = xp
+  --@debug@
   print("<=================")
+  --@end-debug@
 end
 
 function EavesDrop:COMBAT_TEXT_UPDATE(_, larg1)
@@ -974,7 +1007,7 @@ function EavesDrop:CHAT_MSG_SKILL(_, larg1)
   if skill then self:DisplayEvent(MISC, string_format("%s: %d", skill, rank), nil, db["SKILLC"], larg1) end
 end
 
-local tempcolor = { r = 1, g = 1, b = 1 }
+local tempcolor = { r = 1, g = 1, b = 1 , a = 1}
 function EavesDrop:DisplayEvent(type, text, texture, color, message, spellname)
   -- remove oldest table and create new display event
   local pEvent = tremove(arrEventData, 1)
