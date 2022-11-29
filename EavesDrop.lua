@@ -846,11 +846,11 @@ function EavesDrop:CombatEvent(_, _)
   elseif etype == "ENCHANT_APPLIED" then
     texture = "Interface\\Icons\\UI_PROFESSION_ENCHANTING"
     spellName = select(12, CombatLogGetCurrentEventInfo())
-    self:DisplayEvent(INCOMING, self:ShortenString(spellName), texture, db["PBUFF"], message, spellName)
+    self:DisplayEvent(MISC, self:ShortenString(spellName), texture, db["PBUFF"], message, spellName)
   elseif etype == "ENCHANT_REMOVED" then
     texture = "Interface\\Icons\\INV_ENCHANT_DISENCHANT"
     spellName = select(12, CombatLogGetCurrentEventInfo())
-    self:DisplayEvent(INCOMING, self:ShortenString(spellName) .. " " .. L["Fades"], texture, db["PBUFF"], message,
+    self:DisplayEvent(MISC, self:ShortenString(spellName) .. " " .. L["Fades"], texture, db["PBUFF"], message,
                       spellName)
     -------------anything else-------------
   else
