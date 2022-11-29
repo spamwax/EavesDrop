@@ -150,7 +150,7 @@ local setBlacklistOption = function(info, inp)
         print(string.format("|cffff0000Can't understand your entry!|r\n\tPlease eport your entry (%s) to the author.", v))
         return
       end
-      --@debug
+      --@debug@
       assert(key ~= nil and value ~= nil)
       print("Inserting", key, value)
       --@end-debug@
@@ -164,9 +164,9 @@ local setBlacklistOption = function(info, inp)
   EavesDrop.db.profile[dbkey]["spells"] = new_spells
   EavesDrop.blacklist = new_spells
   EavesDrop:UpdateFrame()
-  --@debug
+  --@debug@
   print(string.format("EavesDrop: Processed % items for Blacklist table.", idx))
-  --@end-debug
+  --@end-debug@
 end
 
 function EavesDrop:SetupOptions()

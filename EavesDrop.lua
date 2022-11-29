@@ -279,7 +279,7 @@ function EavesDrop:OnInitialize()
       maxXP = UnitXPMax("player")
       --@debug@
       print(string_format("After 3 seconds: maxXP: %d, pxp: %d", maxXP, pxp))
-      --@end-debug
+      --@end-debug@
       if maxXP == 0 then
         print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Couldn't get player's MAX EXP!")
       end
@@ -293,7 +293,7 @@ function EavesDrop:OnInitialize()
       pxp = UnitXP("player")
       --@debug@
       print(string_format("After 4 seconds: maxXP: %d, pxp: %d", maxXP, pxp))
-      --@end-debug
+      --@end-debug@
       if pxp == 0 then
         print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Couldn't get player's EXP!")
       end
@@ -660,7 +660,7 @@ function EavesDrop:CombatEvent(_, _)
         inout = -inout -- Show self damag under player column
       end
     elseif toPlayer or toPet then
-      --@debug
+      --@debug@
       --if toPet then print("to: ",texture, amount) end
       --@end-debug@
       if (self:TrackStat(inout, "hit", spellName, trackIcon, SCHOOL_STRINGS[school], amount, critical, message)) then
