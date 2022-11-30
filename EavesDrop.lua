@@ -264,42 +264,6 @@ function EavesDrop:OnInitialize()
 
   self:PerformDisplayOptions()
 
-  PLAYER_CURRENT_LEVEL = UnitLevel("player")
-  maxXP = UnitXPMax("player")
-  pxp = UnitXP("player")
-  --@debug@
-  print("OnInitialize, maxXP:", maxXP)
-  print("OnInitialize, pxp:", pxp)
-  --@end-debug@
-  if maxXP == 0 then
-    --@debug@
-    print("Getting player's maxXP in 3 seconds!")
-    --@end-debug@
-    C_Timer.NewTimer(3, function ()
-      maxXP = UnitXPMax("player")
-      --@debug@
-      print(string_format("After 3 seconds: maxXP: %d, pxp: %d", maxXP, pxp))
-      --@end-debug@
-      if maxXP == 0 then
-        print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Couldn't get player's MAX EXP!")
-      end
-    end)
-  end
-  if pxp == 0 then
-    --@debug@
-    print("Getting player's pxp in 4 seconds!")
-    --@end-debug@
-    C_Timer.NewTimer(4, function ()
-      pxp = UnitXP("player")
-      --@debug@
-      print(string_format("After 4 seconds: maxXP: %d, pxp: %d", maxXP, pxp))
-      --@end-debug@
-      if pxp == 0 then
-        print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Couldn't get player's EXP!")
-      end
-    end)
-  end
-
   if self.IsRetail() then
     PLAYER_MAX_LEVEL = 70
   elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC then
@@ -309,6 +273,52 @@ function EavesDrop:OnInitialize()
   elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC then
     PLAYER_MAX_LEVEL = 60
   end
+
+  PLAYER_CURRENT_LEVEL = UnitLevel("player")
+  maxXP = UnitXPMax("player")
+  pxp = UnitXP("player")
+  --@debug@
+  print("OnInitialize, maxXP:", maxXP)
+  print("OnInitialize, pxp:", pxp)
+  --@end-debug@
+  if PLAYER_CURRENT_LEVEL ~= PLAYER_MAX_LEVEL then
+    --@debug@
+    print("Not max level, checking XP numbers")
+    --@end-debug@
+    if maxXP == 0 then
+      --@debug@
+      print("Getting player's maxXP in 3 seconds!")
+      --@end-debug@
+      C_Timer.NewTimer(3, function ()
+        maxXP = UnitXPMax("player")
+        --@debug@
+        print(string_format("After 3 seconds: maxXP: %d, pxp: %d", maxXP, pxp))
+        --@end-debug@
+        if maxXP == 0 then
+          print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Couldn't get player's MAX EXP!")
+        end
+      end)
+    end
+    if pxp == 0 then
+      --@debug@
+      print("Getting player's pxp in 4 seconds!")
+      --@end-debug@
+      C_Timer.NewTimer(4, function ()
+        pxp = UnitXP("player")
+        --@debug@
+        print(string_format("After 4 seconds: maxXP: %d, pxp: %d", maxXP, pxp))
+        --@end-debug@
+        if pxp == 0 then
+          print(WrapTextInColorCode("EavesDrop", "fff48cba") .. ": Couldn't get player's EXP!")
+        end
+      end)
+    end
+  else
+    --@debug@
+    print("At max level, NOT checking XP numbers")
+    --@end-debug@
+  end
+
   self:RegisterEvent("ADDON_LOADED", self.SetFonts)
   if EavesDrop.db.profile["BLACKLIST"]["version"] == EavesDrop.BLACKLIST_DB_VERSION then -- latest version
     EavesDrop.blacklist = EavesDrop.db.profile["BLACKLIST"]["spells"]

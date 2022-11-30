@@ -51,4 +51,15 @@ if [ "$mainline_addon_version" != "$retail_addon_version" ]; then
     error=1
 fi
 
+for file in $(git diff --name-only --cached); do
+    # (^.*--@(end-)?debug[^@])|(^.*--(end-)?debug@)|(^\s*\S+.*--@(end-)?debug@)|(^.*--\s+@(end-)?debug)|(^.*--\s+(end-)?debug)
+    if grep -P '^(\s*\S+.*--@(end-)?debug@)|(.*--@(end-)?debug(?:(((?!@).)+|\b)))+$' "$file"; then
+        grep --with-filename -n -P '^(\s*\S+.*--@(end-)?debug@)|(.*--@(end-)?debug(?:(((?!@).)+|\b)))+$' "$file"
+        echo -e "\033[0;31mThere is at least one typo with @debug@/@end-debug@"
+        echo ""
+        error=1
+        break
+    fi
+done
+
 exit $error

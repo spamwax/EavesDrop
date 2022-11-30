@@ -17,6 +17,12 @@ ignore = {
     -- "542", -- An empty if branch
 }
 globals = {
+    -- self
+    "std",
+    "max_line_length",
+    "ignore",
+    "exclude_files",
+    "globals",
     -- Lua
     "bit.band",
     "bit",
@@ -50,6 +56,7 @@ globals = {
 
     -- WoW
     "C_Timer",
+    "C_ClassColor",
     "ALL",
     "ACCEPT",
     "ALWAYS",
@@ -113,6 +120,7 @@ globals = {
     "UnitName",
     "UnitXP",
     "UnitXPMax",
+    "UnitClass",
     "UnitLevel",
     "InCombatLockdown",
     "PlaySound",
@@ -126,6 +134,7 @@ globals = {
     "GetSpellInfo",
     "IsSpellKnown",
     "GetCurrentCombatTextEventInfo",
+    "IsAddOnLoaded",
     "hooksecurefunc",
 
     -- Ace3
@@ -160,5 +169,8 @@ globals = {
     "EavesDropHistoryScrollBar",
     "FauxScrollFrame_GetOffset",
     "InterfaceOptionsFrame_OpenToCategory",
+
+    -- Deubg
+    "ViragDevTool",
 }
 
