@@ -822,11 +822,20 @@ function EavesDrop:SetupOptions()
             max = 50,
             step = 1
           },
+          DEATHSOUND = {
+            name = "Bwonsamdi Sees you!",
+            type = "toggle",
+            desc = "Play Bwonsamdi's voice when you die!",
+            order = 12,
+            get = getOption,
+            set = setOption,
+            disabled = function() return not EavesDrop:IsRetail() end
+          },
           BLACKLIST = {
             name = L["MBlacklist"],
             type = "input",
             desc = L["MBlacklistD"],
-            order = 12,
+            order = 13,
             width = "full",
             multiline = 16,
             get = getBlacklistOption,
@@ -882,6 +891,7 @@ function EavesDrop:GetDefaultConfig()
       ["HFILTER"] = 0,
       ["MFILTER"] = 0,
       ["DFILTER"] = 0,
+      ["DEATHSOUND"] = false,
       ["BLACKLIST"] = {},
       ["SPELLCOLOR"] = true,
       ["EXP"] = true,

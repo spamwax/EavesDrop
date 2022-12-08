@@ -1,4 +1,4 @@
-﻿--[[  ****************************************************************
+﻿--[[  **************************************************************** --
   EavesDrop
 
   Author: Grayhoof. Original idea by Bant. Coding help/samples
@@ -834,24 +834,24 @@ function EavesDrop:CombatEvent(_, _)
     ------------deaths----------------
   elseif etype == "DEATH" then
     texture = nil
-    if  playerRelated or petRelated then
---[[       print("--- DEATH ---")
-      print(string_format("fromPlayer: %s, toPlayer: %s\nfromPet: %s, toPet: %s", tostring(fromPlayer), tostring(toPlayer), tostring(fromPet), tostring(toPet)))
-      print(string_format("sourceName: %s, destName: %s", tostring(sourceName), tostring(destName)))
-      print("---- END ----") ]]
+    --@debug@
+    print("--- DEATH BEGING---")
+    print(string_format("fromPlayer: %s, toPlayer: %s\nfromPet: %s, toPet: %s", tostring(fromPlayer), tostring(toPlayer), tostring(fromPet), tostring(toPet)))
+    print(string_format("sourceName: %s, destName: %s", tostring(sourceName), tostring(destName)))
+    --@end-debug@
+    if  (playerRelated or petRelated) and not toPlayer then
       --@debug@
+      print("* Loggging It *")
+      --@end-debug@
       local _color
       if toPet and not toPlayer then _color = { r = 1, g = 0.27, b = 0.2, a = 1 } end
-      --@end-debug@
       text = deathchar .. destName .. deathchar
       self:DisplayEvent(MISC, text, texture, _color or db["DEATH"], message)
-      if toPlayer then
-        local _, xx = PlaySound(98429)
-        C_Timer.NewTimer(2, function () StopSound(xx, 500) end)
-      end
-    else
-      return
     end
+    --@debug@
+    print("--- DEATH END ---")
+    --@end-debug@
+    return
     ------------enchants----------------
   elseif etype == "ENCHANT_APPLIED" then
     texture = "Interface\\Icons\\UI_PROFESSION_ENCHANTING"
@@ -1010,7 +1010,19 @@ function EavesDrop:PLAYER_REGEN_ENABLED()
   self:StartOnUpdate()
 end
 
-function EavesDrop:PLAYER_DEAD() self:DisplayEvent(MISC, deathchar .. UnitName("player") .. deathchar, nil, db["DEATH"]) end
+function EavesDrop:PLAYER_DEAD()
+  local classColorHex
+  if EavesDrop:IsRetail() then
+    classColorHex = C_ClassColor.GetClassColor(select(2, UnitClass("player"))):GenerateHexColor()
+  else
+    classColorHex = RAID_CLASS_COLORS[select(2, UnitClass("player"))]:GenerateHexColor()
+  end
+  self:DisplayEvent(MISC, deathchar .. UnitName("player") .. deathchar, nil, classColorHex or db["DEATH"], "You Died!")
+  if db["DEATHSOUND"] then
+    local _, xx = PlaySound(98429)
+    C_Timer.NewTimer(2, function () StopSound(xx, 500) end)
+  end
+end
 
 function EavesDrop:CHAT_MSG_SKILL(_, larg1)
   local skill, rank = string_match(larg1, skillmsg)
@@ -1344,7 +1356,8 @@ end
 
 ------------------------------
 ---Shorten a spell/buff
-function EavesDrop:ShortenString(strString)
+function EavesDrop:ShortenString(incString)
+  local strString = tostring(incString)
   if (db["TRUNCATETYPE"] ~= "0") and strlen(strString) > db["TRUNCATESIZE"] then
     if (db["TRUNCATETYPE"] == "1") then
       return strsub(strString, 1, db["TRUNCATESIZE"]) .. "..."
