@@ -25,7 +25,7 @@ local function setColorOption(info, r, g, b, a)
   EavesDrop:PerformDisplayOptions()
 end
 
-local getBlacklistOption = function (info)
+local getBlacklistOption = function(info)
   local spell_table = info.arg and EavesDrop.db.profile[info.arg] or EavesDrop.db.profile[info[#info]]
   local auras = {}
   local aname
@@ -34,12 +34,8 @@ local getBlacklistOption = function (info)
     print("--> Reading old DB for excluded spells.")
     --@end-debug@
     local temp = {}
-    for _, value in pairs(spell_table) do
-      temp[value] = true
-    end
-    for key, _ in pairs(temp) do
-      auras[#auras+1] = key
-    end
+    for _, value in pairs(spell_table) do temp[value] = true end
+    for key, _ in pairs(temp) do auras[#auras + 1] = key end
   elseif spell_table["version"] == EavesDrop.BLACKLIST_DB_VERSION then
     spell_table = spell_table["spells"]
     --@debug@
@@ -54,7 +50,7 @@ local getBlacklistOption = function (info)
         print(string.format("|cffff0000BIG ISSUE:|r"), key, value, type(key), type(value))
         aname = "INVALID"
       end
-      auras[#auras+1]= aname
+      auras[#auras + 1] = aname
     end
   end
   table.sort(auras)
