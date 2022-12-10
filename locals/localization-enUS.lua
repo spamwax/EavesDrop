@@ -133,6 +133,8 @@ if L then
     L["MHFilterD"] = "Controls the minimum amount a heal needs to be to appear in EavesDrop. Good for filtering out frequent small heals like Totems, Blessings, etc..."
     L["MDFilter"] = "Damage Filter"
     L["MDFilterD"] = "Controls the minimum amount a damage needs to be to appear in EavesDrop. Good for filtering out frequent small damages like Consecration, etc..."
+    L["BWONSAMDI"] = "Bwonsamdi Sees you!"
+    L["BWONSAMDID"] = "Play Bwonsamdi's voice when you die!"
     L["MBlacklist"] = "Blacklist: To hide any spell enter its name or SpellID (one per line)"
     L["MBlacklistD"] = "Examples: Any of the following lines will blacklist |cd0ff7d0aJudgment|r:\nJudgment\n275773\n275773 -- Judgment"
     L["MMFilter"] = "Power Gain Filter"
@@ -146,7 +148,7 @@ if L then
 
     --misc buff
     L["MBuffTrunc"] = "Buff Shortening"
-    L["MBuffTruncD"] = "Set who buffs and debuffs names are altered"
+    L["MBuffTruncD"] = "Set how buffs and debuffs names are altered"
     L["MBuffTruncType"] = "Shorten Type"
     L["MBuffTruncTypeD"] = "Selects how to shorten buffs: None, Truncate, Abbreviate"
     L["MBuffTruncSize"] = "Shorten Size"
@@ -154,4 +156,7 @@ if L then
     L["MBuffTruncNone"] = "None"
     L["MBuffTruncTrunc"] = "Truncate"
     L["MBuffTruncShorten"] = "Abbreviate"
+
+    -- Other
+    L["YOUDIED"] = "You Died!"
 end

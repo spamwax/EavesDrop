@@ -1,11 +1,13 @@
-﻿--[[  **************************************************************** --
+--[==[ ****************************************************************
   EavesDrop
 
   Author: Grayhoof. Original idea by Bant. Coding help/samples
           from Andalia`s SideCombatLog and CombatChat.
 
   Notes: Code comments coming at a later time.
-  ****************************************************************]] --
+  ****************************************************************]==]
+--
+
 EavesDrop = LibStub("AceAddon-3.0"):NewAddon("EavesDrop", "AceEvent-3.0", "AceConsole-3.0", "AceTimer-3.0")
 local EavesDrop = EavesDrop
 local db
@@ -39,7 +41,6 @@ local timeStart = 0
 local curTime = 0
 local lastTime = 0
 
-
 EavesDrop.BLACKLIST_DB_VERSION = "v2"
 
 -- LUA calls
@@ -65,6 +66,21 @@ local UnitXP = UnitXP
 local GetSpellInfo = GetSpellInfo
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
+
+EavesDrop.showPrints = false
+local print = function(...)
+  if EavesDrop.showPrints == false then return end
+  local flag = select(1, ...)
+  if type(flag) == "boolean" then
+    if flag == true then
+      print(select(2, ...))
+    else
+      return
+    end
+  else
+    print(...)
+  end
+end
 
 -- Combat log locals
 local maxXP = UnitXPMax("player")
@@ -177,19 +193,17 @@ EavesDrop.blacklist = {}
 local function isBlacklisted(spell, ...)
   local blacklist = EavesDrop.blacklist
   if blacklist[spell] then return true end
-  local args = {...}
-  for i = 1, #args do
-    if blacklist[args[i]] then return true end
-  end
+  local args = { ... }
+  for i = 1, #args do if blacklist[args[i]] then return true end end
   return false
 end
 
 function EavesDrop:IsClassic()
-  return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC) or (_G.WOW_PROJECT_ID  == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC) or (_G.WOW_PROJECT_ID  == _G.WOW_PROJECT_WRATH_CLASSIC)
+  return
+      (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC) or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC) or
+          (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC)
 end
-function EavesDrop:IsRetail()
-  return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
-end
+function EavesDrop:IsRetail() return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE) end
 
 local function convertRGBtoHEXString(color, text)
   return string_format("|cFF%02x%02x%02x%s|r", ceil(color.r * 255), ceil(color.g * 255), ceil(color.b * 255), text)
@@ -467,8 +481,10 @@ function EavesDrop:PerformDisplayOptions()
   -- main frame
   EavesDropFrame:SetBackdropColor(r, g, b, a)
   if self:IsRetail() then
-    EavesDropTopBar:SetGradient("VERTICAL", {r = r*.1, g = g*.1, b = b*.1, a = 0} , {r = r*.2, g = g*.2, b = b*.2, a = a})
-    EavesDropBottomBar:SetGradient("VERTICAL", {r = r * .2, g = g*.2, b = b*.2, a = a} , {r = r*.1, g = g*.1, b = b*.1, a = 0})
+    EavesDropTopBar:SetGradient("VERTICAL", { r = r * .1, g = g * .1, b = b * .1, a = 0 },
+                                { r = r * .2, g = g * .2, b = b * .2, a = a })
+    EavesDropBottomBar:SetGradient("VERTICAL", { r = r * .2, g = g * .2, b = b * .2, a = a },
+                                   { r = r * .1, g = g * .1, b = b * .1, a = 0 })
   else
     EavesDropTopBar:SetGradientAlpha("VERTICAL", r * .1, g * .1, b * .1, 0, r * .2, g * .2, b * .2, a)
     EavesDropBottomBar:SetGradientAlpha("VERTICAL", r * .2, g * .2, b * .2, a, r * .1, g * .1, b * .1, 0)
@@ -545,7 +561,7 @@ function EavesDrop:ShowFrame()
   EavesDropTab:SetAlpha(0)
 end
 
---function EavesDrop:CombatEvent(larg1, ...)
+-- function EavesDrop:CombatEvent(larg1, ...)
 function EavesDrop:CombatEvent(_, _)
   -- local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags,
   local _, event, _, _, sourceName, sourceFlags, _, _, destName, destFlags, _ = CombatLogGetCurrentEventInfo()
@@ -764,7 +780,7 @@ function EavesDrop:CombatEvent(_, _)
     ------------misses----------------
   elseif etype == "MISS" then
     local tcolor
-    if event == "SWING_MISSED" or event == "RANGE_MISSED" then
+    if event == "SWING_MISSED" then
       missType, _, amount = select(12, CombatLogGetCurrentEventInfo())
       tcolor = "TMELEE"
     else
@@ -773,11 +789,20 @@ function EavesDrop:CombatEvent(_, _)
       tcolor = "TSPELL"
     end
     text = _G[missType]
-    if missType == "ABSORB" and amount then
-      totHealingIn = totHealingIn + amount
-    end
+    if missType == "ABSORB" and amount then totHealingIn = totHealingIn + amount end
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) then return end
+    --@debug@
+    if missType == "DEFLECT" or missType == "BLOCK" then
+      local f = select(2, IsAddOnLoaded("ViragDevTool"))
+      if f then ViragDevTool:AddData({ CombatLogGetCurrentEventInfo() }, "value_EavesDrop:UpdateEvents") end
+      print(" ")
+      print(string_format("spellID: %s, spellName: |cffff1000%s|r\namount: %s event: %s", tostring(spellId),
+                          tostring(spellName), tostring(amount), tostring(event)))
+      print("-->", message)
+      print(" ")
+    end
+    --@end-debug@
 
     if toPet then
       inout = INCOMING
@@ -836,10 +861,11 @@ function EavesDrop:CombatEvent(_, _)
     texture = nil
     --@debug@
     print("--- DEATH BEGING---")
-    print(string_format("fromPlayer: %s, toPlayer: %s\nfromPet: %s, toPet: %s", tostring(fromPlayer), tostring(toPlayer), tostring(fromPet), tostring(toPet)))
+    print(string_format("fromPlayer: %s, toPlayer: %s\nfromPet: %s, toPet: %s", tostring(fromPlayer),
+                        tostring(toPlayer), tostring(fromPet), tostring(toPet)))
     print(string_format("sourceName: %s, destName: %s", tostring(sourceName), tostring(destName)))
     --@end-debug@
-    if  (playerRelated or petRelated) and not toPlayer then
+    if (playerRelated or petRelated) and not toPlayer then
       --@debug@
       print("* Loggging It *")
       --@end-debug@
@@ -860,13 +886,13 @@ function EavesDrop:CombatEvent(_, _)
   elseif etype == "ENCHANT_REMOVED" then
     texture = "Interface\\Icons\\INV_ENCHANT_DISENCHANT"
     spellName = select(12, CombatLogGetCurrentEventInfo())
-    self:DisplayEvent(MISC, self:ShortenString(spellName) .. " " .. L["Fades"], texture, db["PBUFF"], message,
-                      spellName)
+    self:DisplayEvent(MISC, self:ShortenString(spellName) .. " " .. L["Fades"], texture, db["PBUFF"], message, spellName)
     -------------anything else-------------
   else
     -- self:Print(event, sourceName, destName)
     --@debug@
-    print(string_format("Event: %s, |cffff0000source: %s, |cffF48CBAdest: %s|r", tostring(event), tostring(sourceName), tostring(destName)))
+    print(string_format("Event: %s, |cffff0000source: %s, |cffF48CBAdest: %s|r",
+                        tostring(event), tostring(sourceName), tostring(destName)))
     --@end-debug@
   end
 end
@@ -878,35 +904,39 @@ function EavesDrop:PLAYER_XP_UPDATE(_, unitID)
   local msg
 
   --@debug@
-  print(string_format("========= %s =========>", unitID))
+  local debug = false
+  print(false, string_format("========= %s =========>", unitID))
   if PLAYER_CURRENT_LEVEL ~= UnitLevel("player") then
-    print("----")
-    print(string.format("LEVEL CHANGED"))
-    print("xp < pxp?", xp < pxp)
-    if xp >= pxp then
-      print("|cffff0000Player leveled but xp > pxp!|r")
-    end
+    print(debug, "----")
+    print(debug, string.format("LEVEL CHANGED"))
+    print(debug, "xp < pxp?", xp < pxp)
+    if xp >= pxp then print("|cffff0000Player leveled but xp > pxp!|r") end
     local foo = maxXP - pxp + xp
-    local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, foo, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
-    print(x)
-    print("----")
+    local x = string.format(
+                  "xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d",
+                  xp, pxp, foo, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print(debug, x)
+    print(debug, "----")
   end
   --@end-debug@
   if xp < pxp or PLAYER_CURRENT_LEVEL ~= UnitLevel("player") then -- xpgained <= 0 then
     xpgained = maxXP - pxp + xp
     --@debug@
-    print("xp < pxp")
-    if PLAYER_CURRENT_LEVEL+1 ~= UnitLevel("player") then
-      print(string_format("|cffff0000PLAYER_CURRENT_LEVEL+1 ~= UnitLevel('player'), xp < pxp but player didn't level up!|r"))
+    print(debug, "xp < pxp")
+    if PLAYER_CURRENT_LEVEL + 1 ~= UnitLevel("player") then
+      print(debug, string_format(
+                "|cffff0000PLAYER_CURRENT_LEVEL+1 ~= UnitLevel('player'), xp < pxp but player didn't level up!|r"))
     end
-    local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
-    print(string.format("LEVELED UP!"))
+    local x = string.format(
+                  "xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d",
+                  xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print(debug, string.format("LEVELED UP!"))
     if UnitLevel("player") == PLAYER_MAX_LEVEL then
-      print(string.format("PLAYER at MAX LEVEL"))
+      print(debug, string.format("PLAYER at MAX LEVEL"))
     else
-      print("Detected level up but player is not at MAX level.")
+      print(debug, "Detected level up but player is not at MAX level.")
     end
-    print(x)
+    print(debug, x)
     --@end-debug@
     maxXP = UnitXPMax("player")
     PLAYER_CURRENT_LEVEL = UnitLevel("player")
@@ -915,30 +945,34 @@ function EavesDrop:PLAYER_XP_UPDATE(_, unitID)
   elseif xp > pxp then
     xpgained = xp - pxp
     --@debug@
-    local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
-    print("xp > pxp: Gained XP.")
-    print(x)
+    local x = string.format(
+                  "xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d",
+                  xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print(debug, "xp > pxp: Gained XP.")
+    print(debug, x)
     --@end-debug@
   elseif xp == pxp then
     xpgained = xp - pxp
-    local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
     --@debug@
-    print("xp and pxp are the same!")
-    print(x)
+    local x = string.format(
+                  "xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d",
+                  xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print(debug, "xp and pxp are the same!")
+    print(debug, x)
     --@end-debug@
   else
     print("Unreachable?")
     xpgained = xp - pxp
-    local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    local x = string.format(
+                  "xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d",
+                  xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
     print(x)
   end
   --@debug@
   local cc = "ffff1a88"
-  if xpgained == 0 then
-    cc = "ff0044ff"
-  end
+  if xpgained == 0 then cc = "ff0044ff" end
   cc = WrapTextInColorCode("**GAINED**", cc)
-  print(string.format("PLAYER_XP_UPDATE %s: %d", cc, xpgained))
+  print(debug, string.format("PLAYER_XP_UPDATE %s: %d", cc, xpgained))
   --@end-debug@
   if xpgained ~= 0 then
     msg = string_format("+%s (%s)", shortenValue(xpgained), XP)
@@ -946,7 +980,7 @@ function EavesDrop:PLAYER_XP_UPDATE(_, unitID)
   end
   pxp = xp
   --@debug@
-  print("<=================")
+  print(debug, "<=================")
   --@end-debug@
 end
 
@@ -1011,16 +1045,22 @@ function EavesDrop:PLAYER_REGEN_ENABLED()
 end
 
 function EavesDrop:PLAYER_DEAD()
-  local classColorHex
+  local classColor
   if EavesDrop:IsRetail() then
-    classColorHex = C_ClassColor.GetClassColor(select(2, UnitClass("player"))):GenerateHexColor()
+    classColor = C_ClassColor.GetClassColor(select(2, UnitClass("player")))
   else
-    classColorHex = RAID_CLASS_COLORS[select(2, UnitClass("player"))]:GenerateHexColor()
+    classColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
   end
-  self:DisplayEvent(MISC, deathchar .. UnitName("player") .. deathchar, nil, classColorHex or db["DEATH"], "You Died!")
-  if db["DEATHSOUND"] then
+  classColor = { r = classColor.r, g = classColor.g, b = classColor.b, a = 1 }
+  self:DisplayEvent(MISC, deathchar .. UnitName("player") .. deathchar, nil, classColor or db["DEATH"], L["YOUDIED"])
+  if db["DEATHSOUND"] and UnitIsDeadOrGhost("player") and UnitIsDead("player") then
+    if GetTime() > (EavesDrop.lastDeath or 0) + 4 then
+      EavesDrop.lastDeath = GetTime()
+    else
+      return
+    end
     local _, xx = PlaySound(98429)
-    C_Timer.NewTimer(2, function () StopSound(xx, 500) end)
+    C_Timer.NewTimer(2, function() StopSound(xx, 500) end)
   end
 end
 
@@ -1029,13 +1069,13 @@ function EavesDrop:CHAT_MSG_SKILL(_, larg1)
   if skill then self:DisplayEvent(MISC, string_format("%s: %d", skill, rank), nil, db["SKILLC"], larg1) end
 end
 
-local tempcolor = { r = 1, g = 1, b = 1 , a = 1}
-function EavesDrop:DisplayEvent(type, text, texture, color, message, spellname)
+local tempcolor = { r = 1, g = 1, b = 1, a = 1 }
+function EavesDrop:DisplayEvent(inout, text, texture, color, message, spellname)
   -- remove oldest table and create new display event
   local pEvent = tremove(arrEventData, 1)
   local tooltiptext = message
-  if (db["FLIP"] == true) then type = type * -1 end
-  pEvent.type = type
+  if (db["FLIP"] == true) then inout = inout * -1 end
+  pEvent.type = inout
   pEvent.text = text
   pEvent.texture = texture
   pEvent.color = color or tempcolor
@@ -1191,9 +1231,7 @@ function EavesDrop:OnUpdate()
       frame.delay = frame.delay - elapsed
       if frame.delay <= 0 then
         frame.alpha = frame.alpha - .2
-        if (frame.alpha > 0) then
-          frame:SetAlpha(frame.alpha)
-        end
+        if (frame.alpha > 0) then frame:SetAlpha(frame.alpha) end
       end
       if (frame.alpha <= 0) then
         frame:Hide()
@@ -1391,6 +1429,5 @@ function EavesDrop:ShowHistory()
   else
     EavesDropHistoryFrame:Hide()
   end
-  -- PlaySound("igMainMenuOptionCheckBoxOn")
   PlaySound(888)
 end
