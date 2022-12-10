@@ -5,3 +5,4 @@ tab_width: 4
 continuation_indent_width: 4
 spaces_before_call: 1
 spaces_inside_table_braces: true
+extra_sep_at_table_end: true

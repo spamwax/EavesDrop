@@ -123,6 +123,8 @@ globals = {
     "UnitXPMax",
     "UnitClass",
     "UnitLevel",
+    "UnitIsDeadOrGhost",
+    "UnitIsDead",
     "InCombatLockdown",
     "PlaySound",
     "StopSound",

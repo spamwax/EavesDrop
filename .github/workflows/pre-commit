@@ -52,9 +52,14 @@ if [ "$mainline_addon_version" != "$retail_addon_version" ]; then
 fi
 
 for file in $(git diff --name-only --cached); do
+    if [[ $file != *.lua ]]; then
+        echo "Skipping @debug@ sanity checks for $file"
+        continue
+    fi
     # (^.*--@(end-)?debug[^@])|(^.*--(end-)?debug@)|(^\s*\S+.*--@(end-)?debug@)|(^.*--\s+@(end-)?debug)|(^.*--\s+(end-)?debug)
-    if grep -P '^(\s*\S+.*--@(end-)?debug@)|(.*--@(end-)?debug(?:(((?!@).)+|\b)))+$' "$file"; then
-        grep --with-filename -n -P '^(\s*\S+.*--@(end-)?debug@)|(.*--@(end-)?debug(?:(((?!@).)+|\b)))+$' "$file"
+    # if grep -P '^(\s*\S+.*--@(end-)?debug@)|(.*--@(end-)?debug(?:(((?!@).)+|\b)))+$' "$file"; then
+    if grep -P '(^.*--@(end-)?debug[^@])|(^.*--(end-)?debug@)|(^\s*\S+.*--@(end-)?debug@)|(^.*--\s+@(end-)?debug)|(^.*--\s+(end-)?debug)' "$file"; then
+        grep --with-filename -n -P '(^.*--@(end-)?debug[^@])|(^.*--(end-)?debug@)|(^\s*\S+.*--@(end-)?debug@)|(^.*--\s+@(end-)?debug)|(^.*--\s+(end-)?debug)' "$file"
         echo -e "\033[0;31mThere is at least one typo with @debug@/@end-debug@"
         echo ""
         error=1
