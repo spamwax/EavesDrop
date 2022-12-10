@@ -780,7 +780,7 @@ function EavesDrop:CombatEvent(_, _)
     ------------misses----------------
   elseif etype == "MISS" then
     local tcolor
-    if event == "SWING_MISSED" or event == "RANGE_MISSED" then
+    if event == "SWING_MISSED" then
       missType, _, amount = select(12, CombatLogGetCurrentEventInfo())
       tcolor = "TMELEE"
     else
@@ -1060,12 +1060,12 @@ function EavesDrop:CHAT_MSG_SKILL(_, larg1)
 end
 
 local tempcolor = { r = 1, g = 1, b = 1, a = 1 }
-function EavesDrop:DisplayEvent(type, text, texture, color, message, spellname)
+function EavesDrop:DisplayEvent(inout, text, texture, color, message, spellname)
   -- remove oldest table and create new display event
   local pEvent = tremove(arrEventData, 1)
   local tooltiptext = message
-  if (db["FLIP"] == true) then type = type * -1 end
-  pEvent.type = type
+  if (db["FLIP"] == true) then inout = inout * -1 end
+  pEvent.type = inout
   pEvent.text = text
   pEvent.texture = texture
   pEvent.color = color or tempcolor
