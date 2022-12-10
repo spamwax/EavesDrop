@@ -1,4 +1,4 @@
---[==[ ****************************************************************
+﻿--[==[ ****************************************************************
   EavesDrop
 
   Author: Grayhoof. Original idea by Bant. Coding help/samples
@@ -67,7 +67,7 @@ local GetSpellInfo = GetSpellInfo
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 
-EavesDrop.showPrints = false
+EavesDrop.showPrints = true
 local print = function(...)
   if EavesDrop.showPrints == false then return end
   local flag = select(1, ...)
@@ -1045,6 +1045,16 @@ function EavesDrop:PLAYER_REGEN_ENABLED()
 end
 
 function EavesDrop:PLAYER_DEAD()
+  -- PLAYER_DEAD event sometimes fires twice in a row!
+  if GetTime() < (EavesDrop.lastDeath or 0) + 2 then return end
+  EavesDrop.lastDeath = GetTime()
+  --@debug@
+  print("*****", date('%I:%M:%S'))
+  print("PLAYER_DEAD fired at ", GetTime())
+  print("Processing PLAYER_DEAD event")
+  print("*****")
+  print(" ")
+  --@end-debug@
   local classColor
   if EavesDrop:IsRetail() then
     classColor = C_ClassColor.GetClassColor(select(2, UnitClass("player")))
@@ -1054,11 +1064,6 @@ function EavesDrop:PLAYER_DEAD()
   classColor = { r = classColor.r, g = classColor.g, b = classColor.b, a = 1 }
   self:DisplayEvent(MISC, deathchar .. UnitName("player") .. deathchar, nil, classColor or db["DEATH"], L["YOUDIED"])
   if db["DEATHSOUND"] and UnitIsDeadOrGhost("player") and UnitIsDead("player") then
-    if GetTime() > (EavesDrop.lastDeath or 0) + 4 then
-      EavesDrop.lastDeath = GetTime()
-    else
-      return
-    end
     local _, xx = PlaySound(98429)
     C_Timer.NewTimer(2, function() StopSound(xx, 500) end)
   end
