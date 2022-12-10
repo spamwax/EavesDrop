@@ -67,6 +67,21 @@ local GetSpellInfo = GetSpellInfo
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 
+EavesDrop.showPrints = false
+local print = function(...)
+  if EavesDrop.showPrints == false then return end
+  local flag = select(1, ...)
+  if type(flag) == "boolean" then
+    if flag == true then
+      print(select(2, ...))
+    else
+      return
+    end
+  else
+    print(...)
+  end
+end
+
 -- Combat log locals
 local maxXP = UnitXPMax("player")
 local pxp = UnitXP("player")
@@ -777,6 +792,13 @@ function EavesDrop:CombatEvent(_, _)
     if missType == "ABSORB" and amount then totHealingIn = totHealingIn + amount end
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) then return end
+    if missType == "DEFLECT" or missType == "BLOCK" then
+      ViragDevTool:Add({ CombatLogGetCurrentEventInfo() }, "CLEU")
+      --[[       print(string_format("spellID: %s, spellName: |cffff1000%s|r\namount: %s event: %s", tostring(spellId),
+                          tostring(spellName), tostring(amount), tostring(event)))
+      print("-->", message)
+      print(" ") ]]
+    end
 
     if toPet then
       inout = INCOMING
@@ -878,34 +900,39 @@ function EavesDrop:PLAYER_XP_UPDATE(_, unitID)
   local msg
 
   --@debug@
-  print(string_format("========= %s =========>", unitID))
+  local debug = false
+  print(false, string_format("========= %s =========>", unitID))
   if PLAYER_CURRENT_LEVEL ~= UnitLevel("player") then
-    print("----")
-    print(string.format("LEVEL CHANGED"))
-    print("xp < pxp?", xp < pxp)
-    if xp >= pxp then
-      print("|cffff0000Player leveled but xp > pxp!|r")
-    end
+    print(debug, "----")
+    print(debug, string.format("LEVEL CHANGED"))
+    print(debug, "xp < pxp?", xp < pxp)
+    if xp >= pxp then print("|cffff0000Player leveled but xp > pxp!|r") end
     local foo = maxXP - pxp + xp
     local x = string.format(
                   "xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d",
                   xp, pxp, foo, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print(debug, x)
+    print(debug, "----")
   end
   --@end-debug@
   if xp < pxp or PLAYER_CURRENT_LEVEL ~= UnitLevel("player") then -- xpgained <= 0 then
     xpgained = maxXP - pxp + xp
     --@debug@
+    print(debug, "xp < pxp")
     if PLAYER_CURRENT_LEVEL + 1 ~= UnitLevel("player") then
+      print(debug, string_format(
+                "|cffff0000PLAYER_CURRENT_LEVEL+1 ~= UnitLevel('player'), xp < pxp but player didn't level up!|r"))
     end
     local x = string.format(
                   "xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d",
                   xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print(debug, string.format("LEVELED UP!"))
     if UnitLevel("player") == PLAYER_MAX_LEVEL then
-      print(string.format("PLAYER at MAX LEVEL"))
+      print(debug, string.format("PLAYER at MAX LEVEL"))
     else
-      print("Detected level up but player is not at MAX level.")
+      print(debug, "Detected level up but player is not at MAX level.")
     end
-    print(x)
+    print(debug, x)
     --@end-debug@
     maxXP = UnitXPMax("player")
     PLAYER_CURRENT_LEVEL = UnitLevel("player")
@@ -917,14 +944,17 @@ function EavesDrop:PLAYER_XP_UPDATE(_, unitID)
     local x = string.format(
                   "xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d",
                   xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print(debug, "xp > pxp: Gained XP.")
+    print(debug, x)
     --@end-debug@
   elseif xp == pxp then
     xpgained = xp - pxp
-    local x = string.format("xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d", xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
     --@debug@
     local x = string.format(
                   "xp: %d, pxp: %d, xpgained: %d\nmaxXP: %d, UnitXPMax: %d\nPLAYER_CURRENT_LEVEL: %d, UnitLevel: %d",
                   xp, pxp, xpgained, maxXP, UnitXPMax("player"), PLAYER_CURRENT_LEVEL, UnitLevel("player"))
+    print(debug, "xp and pxp are the same!")
+    print(debug, x)
     --@end-debug@
   else
     print("Unreachable?")
@@ -938,7 +968,7 @@ function EavesDrop:PLAYER_XP_UPDATE(_, unitID)
   local cc = "ffff1a88"
   if xpgained == 0 then cc = "ff0044ff" end
   cc = WrapTextInColorCode("**GAINED**", cc)
-  print(string.format("PLAYER_XP_UPDATE %s: %d", cc, xpgained))
+  print(debug, string.format("PLAYER_XP_UPDATE %s: %d", cc, xpgained))
   --@end-debug@
   if xpgained ~= 0 then
     msg = string_format("+%s (%s)", shortenValue(xpgained), XP)
@@ -946,7 +976,7 @@ function EavesDrop:PLAYER_XP_UPDATE(_, unitID)
   end
   pxp = xp
   --@debug@
-  print("<=================")
+  print(debug, "<=================")
   --@end-debug@
 end
 
