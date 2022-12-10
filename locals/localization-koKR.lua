@@ -133,6 +133,8 @@ if L then
     L["MHFilterD"] = "캐릭터의 치유량 표시를 설정합니다. 토템이나 축복같은 작은 치유등 빈번한 치유를 표시하지 않을 때 유용합니다."
     L["MDFilter"] = "데미지 필터"
     L["MDFilterD"] = "표시하기 위해 필요한 최소 피해량을 제어합니다. 봉헌 등 자주 발생하는 작은 피해를 걸러내는 데 좋습니다."
+    L["BWONSAMDI"] = "브원삼디가 당신을 뵙습니다!"
+    L["BWONSAMDID"] = "당신이 죽으면 브원삼디의 목소리를 재생하세요!"
     L["MBlacklist"] = "블랙리스트: 철자를 숨기려면 이름이나 철자 번호를 입력하십시오(한 줄에 하나씩)."
     L["MBlacklistD"] = "예: 다음 행 중 하나는 \"|cd0ff7d0a판단|r\"을 블랙리스트에 추가합니다:\n심판\n275773\n275773 -- 심판"
     L["MMFilter"] = "기력/분노 필터링"
@@ -154,4 +156,7 @@ if L then
     L["MBuffTruncNone"] = "없음"
     L["MBuffTruncTrunc"] = "자르기"
     L["MBuffTruncShorten"] = "간략화"
+
+    -- Other
+    L["YOUDIED"] = "너는 죽었다!"
 end

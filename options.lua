@@ -152,8 +152,6 @@ local setBlacklistOption = function(info, inp)
       --@end-debug@
       idx = idx + 1
       new_spells[key] = value
-      --table.insert(new_spells, {[key] = value})
-      --EavesDrop.db.profile[dbkey] = value
     end)()
   end
   EavesDrop.db.profile[dbkey]["version"] = EavesDrop.BLACKLIST_DB_VERSION
@@ -819,9 +817,9 @@ function EavesDrop:SetupOptions()
             step = 1
           },
           DEATHSOUND = {
-            name = "Bwonsamdi Sees you!",
+            name = L["BWONSAMDI"],
             type = "toggle",
-            desc = "Play Bwonsamdi's voice when you die!",
+            desc = L["BWONSAMDID"],
             order = 12,
             get = getOption,
             set = setOption,

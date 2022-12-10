@@ -792,13 +792,17 @@ function EavesDrop:CombatEvent(_, _)
     if missType == "ABSORB" and amount then totHealingIn = totHealingIn + amount end
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) then return end
+    --@debug@
     if missType == "DEFLECT" or missType == "BLOCK" then
-      ViragDevTool:Add({ CombatLogGetCurrentEventInfo() }, "CLEU")
-      --[[       print(string_format("spellID: %s, spellName: |cffff1000%s|r\namount: %s event: %s", tostring(spellId),
+      local f = select(2, IsAddOnLoaded("ViragDevTool"))
+      if f then ViragDevTool:AddData({ CombatLogGetCurrentEventInfo() }, "value_EavesDrop:UpdateEvents") end
+      print(" ")
+      print(string_format("spellID: %s, spellName: |cffff1000%s|r\namount: %s event: %s", tostring(spellId),
                           tostring(spellName), tostring(amount), tostring(event)))
       print("-->", message)
-      print(" ") ]]
+      print(" ")
     end
+    --@end-debug@
 
     if toPet then
       inout = INCOMING
@@ -1041,16 +1045,22 @@ function EavesDrop:PLAYER_REGEN_ENABLED()
 end
 
 function EavesDrop:PLAYER_DEAD()
-  local classColorHex
+  local classColor
   if EavesDrop:IsRetail() then
-    classColorHex = C_ClassColor.GetClassColor(select(2, UnitClass("player"))):GenerateHexColor()
+    classColor = C_ClassColor.GetClassColor(select(2, UnitClass("player")))
   else
-    classColorHex = RAID_CLASS_COLORS[select(2, UnitClass("player"))]:GenerateHexColor()
+    classColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
   end
-  self:DisplayEvent(MISC, deathchar .. UnitName("player") .. deathchar, nil, classColorHex or db["DEATH"], "You Died!")
-  if db["DEATHSOUND"] then
+  classColor = { r = classColor.r, g = classColor.g, b = classColor.b, a = 1 }
+  self:DisplayEvent(MISC, deathchar .. UnitName("player") .. deathchar, nil, classColor or db["DEATH"], L["YOUDIED"])
+  if db["DEATHSOUND"] and UnitIsDeadOrGhost("player") and UnitIsDead("player") then
+    if GetTime() > (EavesDrop.lastDeath or 0) + 4 then
+      EavesDrop.lastDeath = GetTime()
+    else
+      return
+    end
     local _, xx = PlaySound(98429)
-    C_Timer.NewTimer(2, function () StopSound(xx, 500) end)
+    C_Timer.NewTimer(2, function() StopSound(xx, 500) end)
   end
 end
 

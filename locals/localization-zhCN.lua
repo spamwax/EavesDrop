@@ -133,6 +133,8 @@ if L then
     L["MHFilterD"] = "设置一个最小值，不显示数额在该值以下的治疗，以避免类似图腾或祝福的效果在EavesDrop中显示得过为频繁"
     L["MDFilter"] = "损坏过滤器"
     L["MDFilterD"] = "控制需要在EAVESDROP中显示的最小伤害量, 适合过滤掉频繁出现的小伤害，如奉献等。"
+    L["BWONSAMDI"] = "邦桑迪见到你了！"
+    L["BWONSAMDID"] = "在你死后播放邦桑迪的声音"
     L["MBlacklist"] = "黑名单: 要隐藏任何法术，请输入其名称或法术编号（每行一个）"
     L["MBlacklistD"] = "示例：以下任何一行都会将“|cd0ff7d0a判断|r”列入黑名单:\n判断\n275773\n275773 -- 判断"
     L["MMFilter"] = "法力获得过滤"
@@ -154,4 +156,7 @@ if L then
     L["MBuffTruncNone"] = "无"
     L["MBuffTruncTrunc"] = "去尾"
     L["MBuffTruncShorten"] = "首字母"
+
+    -- Other
+    L["YOUDIED"] = "你死了！"
 end
