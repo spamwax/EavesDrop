@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # Create a symbolic link to this file in .git/hooks
 
+GREEN=$'\e[1;32m'
+RED=$'\e[0;31m'
+CYAN=$'\e[1;34m'
+GRAY=$'\e[1;33m'
+NC=$'\e[0m'
+
 retail_wago=$(head -n 4 .github/workflows/upload2wago.sh | tail -n 1 | cut -d '=' -f 2)
 retail_patch=${retail_wago//./0}
 wotlk_wago=$(head -n 5 .github/workflows/upload2wago.sh | tail -n 1 | cut -d '=' -f 2)
@@ -51,20 +57,21 @@ if [ "$mainline_addon_version" != "$retail_addon_version" ]; then
     error=1
 fi
 
+pat='(\s*--\s+@?(end-)?debug@?)|(\s*--\s*(end-)?debug@?)|(\s*\S+.*--@(end-)?debug@)|(\s*--@(end-)?debug[\s\S]+@)|(--@\s+(end-)?debug@)|(\s*--\s+@(end-)?debug@)|(--\s*@(end-)?debug(?:(((?!@).)+|\b)))$'
 for file in $(git diff --name-only --cached); do
     if [[ $file != *.lua ]]; then
-        echo "Skipping @debug@ sanity checks for $file"
+        echo -e "${GRAY}Skipping${NC} @debug@ sanity checks for$CYAN $file $NC"
         continue
     fi
-    # (^.*--@(end-)?debug[^@])|(^.*--(end-)?debug@)|(^\s*\S+.*--@(end-)?debug@)|(^.*--\s+@(end-)?debug)|(^.*--\s+(end-)?debug)
-    # if grep -P '^(\s*\S+.*--@(end-)?debug@)|(.*--@(end-)?debug(?:(((?!@).)+|\b)))+$' "$file"; then
-    if grep -P '(^.*--@(end-)?debug[^@])|(^.*--(end-)?debug@)|(^\s*\S+.*--@(end-)?debug@)|(^.*--\s+@(end-)?debug)|(^.*--\s+(end-)?debug)' "$file"; then
-        grep --with-filename -n -P '(^.*--@(end-)?debug[^@])|(^.*--(end-)?debug@)|(^\s*\S+.*--@(end-)?debug@)|(^.*--\s+@(end-)?debug)|(^.*--\s+(end-)?debug)' "$file"
-        echo -e "\033[0;31mThere is at least one typo with @debug@/@end-debug@"
-        echo ""
-        error=1
-        break
+    echo -e "Checking '@debug@' sanity checks for $CYAN$file $NC"
+    if grep -qP "$pat" "$file"; then
+        grep --color=always --with-filename -n -P "$pat" "$file"
+        echo " "
+        error=2
     fi
 done
 
+if [[ "$error" == 2 ]]; then
+    echo -e "\033[0;31mThere is at least one typo with @debug@/@end-debug@"
+fi
 exit $error

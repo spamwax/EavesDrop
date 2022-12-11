@@ -19,7 +19,9 @@ local string_format = string.format
 
 ----------------------
 -- append date and time to event
-local function geteventtime(arg1) return string.format('|cffffffff%s|r\n%s', date('%x %I:%M:%S'), arg1 or '') end
+local function geteventtime(arg1)
+  return string.format("|cffffffff%s|r\n%s", date("%x %I:%M:%S"), arg1 or "")
+end
 
 ------------------------------
 -- Copy table to table
@@ -78,23 +80,23 @@ function EavesDrop:TrackStat(type, hitheal, spell, icon, school, amount, crit, m
   end
 
   -- set crit type
-  if (crit) then
+  if crit then
     critkey = CRIT
   else
     critkey = NONCRIT
   end
 
   -- check if type exists
-  if (chardb[type][hitheal] == nil) then chardb[type][hitheal] = {} end
+  if chardb[type][hitheal] == nil then chardb[type][hitheal] = {} end
   -- check if skill/key exists
-  if (chardb[type][hitheal][key] == nil) then
+  if chardb[type][hitheal][key] == nil then
     chardb[type][hitheal][key] = { [CRIT] = {}, [NONCRIT] = {} }
     -- reset sorted table
     sort_table = nil
   end
 
   -- see if its a higher event
-  if ((chardb[type][hitheal][key][critkey].amount == nil) or (amount > chardb[type][hitheal][key][critkey].amount)) then
+  if (chardb[type][hitheal][key][critkey].amount == nil) or (amount > chardb[type][hitheal][key][critkey].amount) then
     chardb[type][hitheal][key][critkey].amount = amount
     chardb[type][hitheal][key][critkey].time = geteventtime(message)
     chardb[type][hitheal][key].icon = icon
@@ -113,9 +115,11 @@ function EavesDrop:ScrollBar_Update()
   -- local size = 0
   local current_table = chardb[display_type][display_sub_type]
   -- if not sorted, sort now
-  if (sort_table == nil) then
+  if sort_table == nil then
     sort_table = {}
-    if current_table then table.foreach(current_table, function(lk) table.insert(sort_table, lk) end) end
+    if current_table then table.foreach(current_table, function(lk)
+      table.insert(sort_table, lk)
+    end) end
     table.sort(sort_table)
   end
   local size = #sort_table
@@ -131,9 +135,11 @@ function EavesDrop:ScrollBar_Update()
     idx = offset + i
     if idx <= size then
       k, key = next(sort_table)
-      for _ = 2, idx do k, key = next(sort_table, k) end
+      for _ = 2, idx do
+        k, key = next(sort_table, k)
+      end
       texture:SetTexture(current_table[key].icon)
-      texture:SetTexCoord(.1, .9, .1, .9)
+      texture:SetTexCoord(0.1, 0.9, 0.1, 0.9)
       skill:SetText(key)
       hit:SetText(EavesDrop.shortenValue(current_table[key][NONCRIT].amount or 0))
       crit:SetText(EavesDrop.shortenValue(current_table[key][CRIT].amount or 0))
@@ -193,16 +199,24 @@ function EavesDrop:SetupHistory()
   r, g, b, a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
   EavesDropHistoryFrame:SetBackdropColor(r, g, b, a)
   if self:IsRetail() then
-    EavesDropHistoryTopBar:SetGradient("VERTICAL", {r = r*.1, g = g*.1, b = b*.1, a = 0} , {r = r*.2, g = g*.2, b = b*.2, a = a})
-    EavesDropHistoryBottomBar:SetGradient("VERTICAL", {r = r * .2, g = g*.2, b = b*.2, a = a} , {r = r*.1, g = g*.1, b = b*.1, a = 0})
+    EavesDropHistoryTopBar:SetGradient(
+      "VERTICAL",
+      { r = r * 0.1, g = g * 0.1, b = b * 0.1, a = 0 },
+      { r = r * 0.2, g = g * 0.2, b = b * 0.2, a = a }
+    )
+    EavesDropHistoryBottomBar:SetGradient(
+      "VERTICAL",
+      { r = r * 0.2, g = g * 0.2, b = b * 0.2, a = a },
+      { r = r * 0.1, g = g * 0.1, b = b * 0.1, a = 0 }
+    )
   else
-    EavesDropHistoryTopBar:SetGradientAlpha("VERTICAL", r * .1, g * .1, b * .1, 0, r * .2, g * .2, b * .2, a)
-    EavesDropHistoryBottomBar:SetGradientAlpha("VERTICAL", r * .2, g * .2, b * .2, a, r * .1, g * .1, b * .1, 0)
+    EavesDropHistoryTopBar:SetGradientAlpha("VERTICAL", r * 0.1, g * 0.1, b * 0.1, 0, r * 0.2, g * 0.2, b * 0.2, a)
+    EavesDropHistoryBottomBar:SetGradientAlpha("VERTICAL", r * 0.2, g * 0.2, b * 0.2, a, r * 0.1, g * 0.1, b * 0.1, 0)
   end
   r, g, b, a = db["BORDER"].r, db["BORDER"].g, db["BORDER"].b, db["BORDER"].a
   EavesDropHistoryFrame:SetBackdropBorderColor(r, g, b, a)
   -- position frame (have to schedule cause UI scale is still 1 for some reason during init)
-  self:ScheduleTimer("PlaceHistoryFrame", .1, self)
+  self:ScheduleTimer("PlaceHistoryFrame", 0.1, self)
 
   if EavesDropStatsDB.global and EavesDropStatsDB.global.Stats then
     copyTable(EavesDropStatsDB.global.Stats, chardb)

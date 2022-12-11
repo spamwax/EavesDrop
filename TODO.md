@@ -7,6 +7,7 @@
 - [ ] Add new spell schools (such as Cosmic) to color options, and start tracking them in `EavesDropStats.lua`
 - [ ] Revisit XML files to better fix/apply `BackdropTemplate`
 - [ ] Check if we are using all combat events and nothing falls through cracks.
+- [ ] Track SPELL_DISPELLED, SPELL_HEAL_ABSORBED?
 - [ ] Use new ScrollableListTemplate?!!!
 - [x] Add a pre-commit check to ensure all @debug@ and @end-debug@ are correctly spelled/used.
 - [ ] Add a pre-commit check to ensure for every @debug@ we have a proper @end-debug@. Should be run after previous pre-commit check
