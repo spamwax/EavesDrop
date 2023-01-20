@@ -198,21 +198,16 @@ function EavesDrop:SetupHistory()
   -- Frame
   r, g, b, a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
   EavesDropHistoryFrame:SetBackdropColor(r, g, b, a)
-  if self:IsRetail() then
-    EavesDropHistoryTopBar:SetGradient(
-      "VERTICAL",
-      { r = r * 0.1, g = g * 0.1, b = b * 0.1, a = 0 },
-      { r = r * 0.2, g = g * 0.2, b = b * 0.2, a = a }
-    )
-    EavesDropHistoryBottomBar:SetGradient(
-      "VERTICAL",
-      { r = r * 0.2, g = g * 0.2, b = b * 0.2, a = a },
-      { r = r * 0.1, g = g * 0.1, b = b * 0.1, a = 0 }
-    )
-  else
-    EavesDropHistoryTopBar:SetGradientAlpha("VERTICAL", r * 0.1, g * 0.1, b * 0.1, 0, r * 0.2, g * 0.2, b * 0.2, a)
-    EavesDropHistoryBottomBar:SetGradientAlpha("VERTICAL", r * 0.2, g * 0.2, b * 0.2, a, r * 0.1, g * 0.1, b * 0.1, 0)
-  end
+  EavesDropHistoryTopBar:SetGradient(
+    "VERTICAL",
+    { r = r * 0.1, g = g * 0.1, b = b * 0.1, a = 0 },
+    { r = r * 0.2, g = g * 0.2, b = b * 0.2, a = a }
+  )
+  EavesDropHistoryBottomBar:SetGradient(
+    "VERTICAL",
+    { r = r * 0.2, g = g * 0.2, b = b * 0.2, a = a },
+    { r = r * 0.1, g = g * 0.1, b = b * 0.1, a = 0 }
+  )
   r, g, b, a = db["BORDER"].r, db["BORDER"].g, db["BORDER"].b, db["BORDER"].a
   EavesDropHistoryFrame:SetBackdropBorderColor(r, g, b, a)
   -- position frame (have to schedule cause UI scale is still 1 for some reason during init)

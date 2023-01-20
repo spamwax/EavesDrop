@@ -206,10 +206,9 @@ local function isBlacklisted(spell, ...)
 end
 
 function EavesDrop:IsClassic()
-  return
-    (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
-      or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
-      or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC)
+  return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
+    or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
+    or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC)
 end
 function EavesDrop:IsRetail()
   return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
@@ -500,21 +499,16 @@ function EavesDrop:PerformDisplayOptions()
   local r, g, b, a = db["FRAME"].r, db["FRAME"].g, db["FRAME"].b, db["FRAME"].a
   -- main frame
   EavesDropFrame:SetBackdropColor(r, g, b, a)
-  if self:IsRetail() then
-    EavesDropTopBar:SetGradient(
-      "VERTICAL",
-      { r = r * 0.1, g = g * 0.1, b = b * 0.1, a = 0 },
-      { r = r * 0.2, g = g * 0.2, b = b * 0.2, a = a }
-    )
-    EavesDropBottomBar:SetGradient(
-      "VERTICAL",
-      { r = r * 0.2, g = g * 0.2, b = b * 0.2, a = a },
-      { r = r * 0.1, g = g * 0.1, b = b * 0.1, a = 0 }
-    )
-  else
-    EavesDropTopBar:SetGradientAlpha("VERTICAL", r * 0.1, g * 0.1, b * 0.1, 0, r * 0.2, g * 0.2, b * 0.2, a)
-    EavesDropBottomBar:SetGradientAlpha("VERTICAL", r * 0.2, g * 0.2, b * 0.2, a, r * 0.1, g * 0.1, b * 0.1, 0)
-  end
+  EavesDropTopBar:SetGradient(
+    "VERTICAL",
+    { r = r * 0.1, g = g * 0.1, b = b * 0.1, a = 0 },
+    { r = r * 0.2, g = g * 0.2, b = b * 0.2, a = a }
+  )
+  EavesDropBottomBar:SetGradient(
+    "VERTICAL",
+    { r = r * 0.2, g = g * 0.2, b = b * 0.2, a = a },
+    { r = r * 0.1, g = g * 0.1, b = b * 0.1, a = 0 }
+  )
   EavesDropTopBar:SetWidth(totalw - 10)
   EavesDropBottomBar:SetWidth(totalw - 10)
   r, g, b, a = db["BORDER"].r, db["BORDER"].g, db["BORDER"].b, db["BORDER"].a
@@ -786,7 +780,16 @@ function EavesDrop:CombatEvent(_, _)
     text = tostring(shortenValue(amount))
     texture = select(3, GetSpellInfo(spellId))
     --@debug@
-    if _absorbed and _absorbed ~= 0 then print("|cff00ff00--> _absorbed|r (NON-Absorb event)", _absorbed) end
+    if _absorbed and _absorbed ~= 0 then
+      print(
+        string_format(
+          "|cff00ff00--> _absorbed|r (NON-Absorb event): amount: %d, absorbed: %d, diff: %d",
+          amount,
+          _absorbed,
+          amount - _absorbed
+        )
+      )
+    end
     --@end-debug@
 
     if toPlayer or toPet then
@@ -942,11 +945,11 @@ function EavesDrop:CombatEvent(_, _)
     -- self:Print(event, sourceName, destName)
     --@debug@
     if event == "HEALABSORB" then
+      print("|cffaabbff HEALABSORB event ==============================|r")
       local load = { select(12, CombatLogGetCurrentEventInfo()) }
       for idx, v in ipairs(load) do
         print(string_format("Arg%s: %s", tostring(idx), tostring(v)))
       end
-      print("|cffaabbff==============================|r")
     end
     print(
       string_format(
@@ -968,7 +971,7 @@ function EavesDrop:PLAYER_XP_UPDATE(_, unitID)
 
   --@debug@
   local debug = false
-  print(false, string_format("========= %s =========>", unitID))
+  print(debug, string_format("========= %s =========>", unitID))
   if PLAYER_CURRENT_LEVEL ~= UnitLevel("player") then
     print(debug, "----")
     print(debug, string.format("LEVEL CHANGED"))
