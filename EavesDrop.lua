@@ -775,7 +775,7 @@ function EavesDrop:CombatEvent(_, _)
     end
     ------------heals----------------
   elseif etype == "HEAL" then
-    local _absorbed
+    local _absorbed --luacheck: ignore
     spellId, spellName, spellSchool, amount, overHeal, _absorbed, critical = select(12, CombatLogGetCurrentEventInfo())
     text = tostring(shortenValue(amount))
     texture = select(3, GetSpellInfo(spellId))
