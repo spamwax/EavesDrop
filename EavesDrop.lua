@@ -780,7 +780,7 @@ function EavesDrop:CombatEvent(_, _)
     text = tostring(shortenValue(amount))
     texture = select(3, GetSpellInfo(spellId))
     --@debug@
-    if _absorbed and _absorbed ~= 0 then
+    --[[     if _absorbed and _absorbed ~= 0 then
       print(
         string_format(
           "|cff00ff00--> _absorbed|r (NON-Absorb event): amount: %d, absorbed: %d, diff: %d",
@@ -789,7 +789,7 @@ function EavesDrop:CombatEvent(_, _)
           amount - _absorbed
         )
       )
-    end
+    end ]]
     --@end-debug@
 
     if toPlayer or toPet then
