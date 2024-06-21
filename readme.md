@@ -1,7 +1,5 @@
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/spamwax/EavesDrop/ci?color=blue&logo=github&style=for-the-badge)](https://github.com/spamwax/EavesDrop/actions/workflows/ci.yml)
+[![GitHub Workflow Status](https://github.com/spamwax/EavesDrop/actions/workflows/bigwigs_pkg.yml/badge.svg?branch=main)](https://github.com/spamwax/EavesDrop/actions)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/spamwax?style=for-the-badge&logo=github&color=green)](https://github.com/sponsors/spamwax?frequency=one-time)
-
-## To test the addon in Dragonflight Beta servers switch to [dragon](https://github.com/spamwax/EavesDrop/tree/dragon) branch and download the zip file from the `Code` dropdown menu.
 
 <p><img src="misc/eaves1.png" alt="screenshot1" width="22%"/>
 <img src="misc/eaves2.png" alt="screenshot2" width="25%"/></p>
