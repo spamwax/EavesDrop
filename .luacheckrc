@@ -57,6 +57,7 @@ globals = {
   -- WoW
   "C_Timer",
   "C_ClassColor",
+  "C_Spell",
   "ALL",
   "ACCEPT",
   "ALWAYS",
