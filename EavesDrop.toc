@@ -1,4 +1,4 @@
-## Interface: 100207
+## Interface: 110000
 ## Name: EavesDrop
 ## Title: EavesDrop
 ## Notes: A simple combat log that displays events similar to SCT
@@ -14,6 +14,10 @@
 ## X-Wago-ID: WqKQw1Nx
 ## X-Curse-Project-Name: EavesDrop
 ## X-Curse-Project-ID: 2812
+## IconTexture: Interface\Icons\inv_mousehearthstone
+## X-Credits: Grayhoof, spamwax, Domzae
+## Notes-zhCN: 一个简单的战斗日志，显示所有伤害、增益等……
+## Notes-koKR: 모든 데미지, 버프 등을 표시하는 간단한 전투 로그입니다.
 
 embeds.xml
 

@@ -63,7 +63,7 @@ end
 -- API calls
 local UnitName = UnitName
 local UnitXP = UnitXP
-local GetSpellInfo = GetSpellInfo
+local GetSpellTexture = C_Spell.GetSpellTexture and C_Spell.GetSpellTexture or GetSpellTexture
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 
@@ -209,6 +209,7 @@ function EavesDrop:IsClassic()
   return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
     or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
     or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC)
+    or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CATACLYSM_CLASSIC)
 end
 function EavesDrop:IsRetail()
   return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
@@ -288,8 +289,13 @@ function EavesDrop:OnInitialize()
 
   self:PerformDisplayOptions()
 
-  if self.IsRetail() then
+  local tww = select(4, GetBuildInfo()) -- REMOVE this on release of TWW, it's just a hack to test the addon on Beta server
+  if tww >= 110000 then
+    PLAYER_MAX_LEVEL = 80
+  elseif self.IsRetail() then
     PLAYER_MAX_LEVEL = 70
+  elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CATACLYSM_CLASSIC then
+    PLAYER_MAX_LEVEL = 85
   elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC then
     PLAYER_MAX_LEVEL = 80
   elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
@@ -671,7 +677,7 @@ function EavesDrop:CombatEvent(_, _)
     else
       spellId, spellName, _, amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing =
         select(12, CombatLogGetCurrentEventInfo())
-      texture = select(3, GetSpellInfo(spellId))
+      texture = GetSpellTexture(spellId)
       outtype, intype = "TSPELL", "PSPELL"
       whiteDMG = false
     end
@@ -742,7 +748,7 @@ function EavesDrop:CombatEvent(_, _)
     spellId, spellName, _, auraType, _ = select(12, CombatLogGetCurrentEventInfo())
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) then return end
-    texture = select(3, GetSpellInfo(spellId))
+    texture = GetSpellTexture(spellId)
     if toPlayer and db[auraType] then
       self:DisplayEvent(
         INCOMING,
@@ -760,7 +766,7 @@ function EavesDrop:CombatEvent(_, _)
     spellId, spellName, _, auraType, _ = select(12, CombatLogGetCurrentEventInfo())
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) then return end
-    texture = select(3, GetSpellInfo(spellId))
+    texture = GetSpellTexture(spellId)
     if toPlayer and db[auraType .. "FADE"] then
       self:DisplayEvent(
         INCOMING,
@@ -778,7 +784,8 @@ function EavesDrop:CombatEvent(_, _)
     local _absorbed --luacheck: ignore
     spellId, spellName, spellSchool, amount, overHeal, _absorbed, critical = select(12, CombatLogGetCurrentEventInfo())
     text = tostring(shortenValue(amount))
-    texture = select(3, GetSpellInfo(spellId))
+    -- texture = select(3, GetSpellInfo(spellId))
+    texture = GetSpellTexture(spellId)
     --@debug@
     --[[     if _absorbed and _absorbed ~= 0 then
       print(
@@ -836,7 +843,7 @@ function EavesDrop:CombatEvent(_, _)
       tcolor = "TMELEE"
     else
       spellId, spellName, _, missType, _, amount = select(12, CombatLogGetCurrentEventInfo())
-      texture = select(3, GetSpellInfo(spellId))
+      texture = GetSpellTexture(spellId)
       tcolor = "TSPELL"
     end
     text = _G[missType]
@@ -881,7 +888,7 @@ function EavesDrop:CombatEvent(_, _)
       spellId, spellName, _, amount, powerType, extraAmount = select(12, CombatLogGetCurrentEventInfo())
       -- If spell is blacklisted, don't show it
       if isBlacklisted(spellName, spellId) then return end
-      texture = select(3, GetSpellInfo(spellId))
+      texture = GetSpellTexture(spellId)
       if toPlayer then
         totHealingIn = totHealingIn + amount
         text = string_format("-%d %s", amount, string_nil(POWER_STRINGS[powerType]))
@@ -904,7 +911,7 @@ function EavesDrop:CombatEvent(_, _)
       spellId, spellName, _, amount, _, powerType = select(12, CombatLogGetCurrentEventInfo())
       -- If spell is blacklisted, don't show it
       if isBlacklisted(spellName, spellId) then return end
-      texture = select(3, GetSpellInfo(spellId))
+      texture = GetSpellTexture(spellId)
       if toPlayer then
         if amount < db["MFILTER"] then return end
         color = db["PGAIN"]
@@ -1497,7 +1504,7 @@ function EavesDrop:ParseReflect(
   ...
 )
   local spellId, spellName, _, amount, school, _, _, _, critical, _, _ = select(1, ...)
-  local texture = select(3, GetSpellInfo(spellId))
+  local texture = GetSpellTexture(spellId)
   local text
   local messsage = CombatLog_OnEvent(
     Blizzard_CombatLog_CurrentSettings,
@@ -1581,8 +1588,8 @@ end
 function EavesDrop:ShowHistory()
   if not EavesDropHistoryFrame:IsShown() then
     EavesDropHistoryFrame:Show()
+    PlaySound(888)
   else
     EavesDropHistoryFrame:Hide()
   end
-  PlaySound(888)
 end
