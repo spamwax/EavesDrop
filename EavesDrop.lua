@@ -1127,10 +1127,11 @@ function EavesDrop:PLAYER_REGEN_ENABLED()
   self:DisplayEvent(MISC, L["EndCombat"], nil, db["MISC"])
   if db["SUMMARY"] == true then
     local duration = round(GetTime() - timeStart, 1)
-    local DPS = round(totDamageOut / duration, 1) or 0
-    local HPS = round(totHealingOut / duration, 1) or 0
-    local IDPS = round(totDamageIn / duration, 1) or 0
-    local IHPS = round(totHealingIn / duration, 1) or 0
+    local _nz = duration ~= 0
+    local DPS = _nz and round(totDamageOut / duration, 1) or 0
+    local HPS = _nz and round(totHealingOut / duration, 1) or 0
+    local IDPS = _nz and round(totDamageIn / duration, 1) or 0
+    local IHPS = _nz and round(totHealingIn / duration, 1) or 0
     local strSummary = convertRGBtoHEXString(db["MISC"], duration .. " " .. L["IncombatSummary"])
       .. "\n"
       .. convertRGBtoHEXString(db["PHIT"], L["IncomingDamge"] .. ": " .. totDamageIn .. " (" .. IDPS .. ")")
