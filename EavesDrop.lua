@@ -801,8 +801,8 @@ function EavesDrop:CombatEvent(_, _)
 
     local a, o = false, false
     local updatedAmount = amount
-      -- If spell is blacklisted, don't show it
-      if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"]) then return end
+    -- If spell is blacklisted, don't show it
+    if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"]) then return end
     if db["OVERHEAL"] and overHeal and overHeal > 0 then
       o = true
       updatedAmount = updatedAmount - overHeal
@@ -831,7 +831,7 @@ function EavesDrop:CombatEvent(_, _)
     -- if db["OVERHEAL"] and overHeal > 0 then
     --   text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
     -- end
-      if critical then text = critchar .. text .. critchar end
+    if critical then text = critchar .. text .. critchar end
     -- print(1, db["HEALABSORB"], _absorbed)
     if toPlayer or toPet then
       totHealingIn = totHealingIn + amount
@@ -973,7 +973,7 @@ function EavesDrop:CombatEvent(_, _)
   else
     -- self:Print(event, sourceName, destName)
     --@debug@
-    if event == "HEALABSORB" then
+    if etype == "HEALABSORB" then
       print("|cffaabbff HEALABSORB event ==============================|r")
       local load = { select(12, CombatLogGetCurrentEventInfo()) }
       for idx, v in ipairs(load) do
@@ -1188,7 +1188,7 @@ function EavesDrop:PLAYER_DEAD()
   if GetTime() < (EavesDrop.lastDeath or 0) + 2 then return end
   EavesDrop.lastDeath = GetTime()
   --@debug@
-  print("*****", date("%I:%M:%S"))
+  print("*****", date("%H:%M:%S"))
   print("PLAYER_DEAD fired at ", GetTime())
   print("Processing PLAYER_DEAD event")
   print("*****")
@@ -1227,17 +1227,22 @@ function EavesDrop:DisplayEvent(inout, text, texture, color, message, spellname)
   pEvent.color = color or tempcolor
   -- Messages probably already have a timestamp, so let's clear that up
   if db["TIMESTAMP"] == true and message then
-    -- Check if we have a timestamp here and remove to use our own
+    -- Check if we have a timestamp here and clean it up before using it.
     local timecutoff = string.find(message, "> ")
 
+    local combat_message, timestamp
     -- If we did, skip those two characters "> "
-    if timecutoff then message = strsub(message, timecutoff + 2) end
-
-    pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%I:%M:%S"), message)
+    if timecutoff then
+      combat_message = strsub(message, timecutoff + 2)
+      timestamp = strsub(message, 1, timecutoff - 1)
+      pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", timestamp, combat_message)
+    else
+      pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%H:%M:%S"), message)
+    end
   elseif db["TIMESTAMP"] == true and text then
-    pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%I:%M:%S"), text)
+    pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%H:%M:%S"), text)
   elseif db["TIMESTAMP"] == true then
-    pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%I:%M:%S"), tooltiptext or "")
+    pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%H:%M:%S"), tooltiptext or "")
   elseif spellname then
     pEvent.tooltipText = spellname
   else

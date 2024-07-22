@@ -20,7 +20,7 @@ local string_format = string.format
 ----------------------
 -- append date and time to event
 local function geteventtime(arg1)
-  return string.format("|cffffffff%s|r\n%s", date("%x %I:%M:%S"), arg1 or "")
+  return string.format("|cffffffff%s|r\n%s", date("%x %H:%M:%S"), arg1 or "")
 end
 
 ------------------------------
