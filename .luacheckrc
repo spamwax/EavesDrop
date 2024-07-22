@@ -110,6 +110,7 @@ globals = {
   "Enum",
   "HONOR",
   "XP",
+  "ESSENCE",
   "CombatLog_OnEvent",
   "IsShiftKeyDown",
   "IsControlKeyDown",
@@ -140,6 +141,8 @@ globals = {
   "GetCurrentCombatTextEventInfo",
   "IsAddOnLoaded",
   "hooksecurefunc",
+  "GetSpellTexture",
+  "GetBuildInfo",
 
   -- Ace3
   "LibStub",
