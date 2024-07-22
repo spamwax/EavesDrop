@@ -798,27 +798,43 @@ function EavesDrop:CombatEvent(_, _)
     text = tostring(shortenValue(amount))
     -- texture = select(3, GetSpellInfo(spellId))
     texture = GetSpellTexture(spellId)
-    --@debug@
-    --[[     if _absorbed and _absorbed ~= 0 then
-      print(
-        string_format(
-          "|cff00ff00--> _absorbed|r (NON-Absorb event): amount: %d, absorbed: %d, diff: %d",
-          amount,
-          _absorbed,
-          amount - _absorbed
-        )
-      )
-    end ]]
-    --@end-debug@
 
-    if toPlayer or toPet then
-      totHealingIn = totHealingIn + amount
+    local a, o = false, false
+    local updatedAmount = amount
       -- If spell is blacklisted, don't show it
       if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"]) then return end
-      if db["OVERHEAL"] and overHeal > 0 then
-        text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
+    if db["OVERHEAL"] and overHeal and overHeal > 0 then
+      o = true
+      updatedAmount = updatedAmount - overHeal
+    end
+    if db["HEALABSORB"] and _absorbed and _absorbed > 0 then
+      a = true
+      --@debug@
+      print(string_format("amount: %d, absorbed: %d", amount, _absorbed))
+      --@end-debug@
+      if updatedAmount == 0 then
+        overHeal = overHeal - _absorbed
+      else
+        updatedAmount = updatedAmount - _absorbed
       end
+      -- updatedAmount = updatedAmount - _absorbed
+    end
+
+    if a and o then
+      text = string_format("%s (%s) {%s}", shortenValue(updatedAmount), shortenValue(_absorbed), shortenValue(overHeal))
+    elseif a then
+      text = string_format("%s (%s)", shortenValue(updatedAmount), shortenValue(_absorbed))
+    elseif o then
+      text = string_format("%s {%s}", shortenValue(updatedAmount), shortenValue(overHeal))
+    end
+
+    -- if db["OVERHEAL"] and overHeal > 0 then
+    --   text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
+    -- end
       if critical then text = critchar .. text .. critchar end
+    -- print(1, db["HEALABSORB"], _absorbed)
+    if toPlayer or toPet then
+      totHealingIn = totHealingIn + amount
       if db["HEALERID"] == true and not fromPlayer and not fromPet then
         text = text .. " (" .. (sourceName or "Unknown") .. ")"
       end
@@ -833,12 +849,6 @@ function EavesDrop:CombatEvent(_, _)
       text = "+" .. text
     elseif fromPlayer or fromPet then
       totHealingOut = totHealingOut + amount
-      -- If spell is blacklisted or its amount is small, don't show it
-      if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"]) then return end
-      if db["OVERHEAL"] and overHeal > 0 then
-        text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
-      end
-      if critical then text = critchar .. text .. critchar end
       color = db["THEAL"]
       if self:TrackStat(inout, "heal", spellName, texture, SCHOOL_STRINGS[spellSchool], amount, critical, message) then
         text = newhigh .. text .. newhigh

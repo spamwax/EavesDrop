@@ -288,6 +288,14 @@ function EavesDrop:SetupOptions()
             get = getOption,
             set = setOption,
           },
+          HEALABSORB = {
+            name = L["EHealAbsorbs"],
+            type = "toggle",
+            desc = L["EHealAbsorbsD"],
+            order = 16,
+            get = getOption,
+            set = setOption,
+          },
           HEALERID = {
             name = L["EHealers"],
             type = "toggle",
@@ -936,6 +944,7 @@ function EavesDrop:GetDefaultConfig()
       ["FADEFRAME"] = false,
       ["FLIP"] = false,
       ["OVERHEAL"] = false,
+      ["HEALABSORB"] = false,
       ["HEALERID"] = false,
       ["HISTORY"] = true,
       ["TEXTSIZE"] = 14,
