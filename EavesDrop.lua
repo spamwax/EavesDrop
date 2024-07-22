@@ -603,6 +603,21 @@ end
 function EavesDrop:CombatEvent(_, _)
   -- local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags,
   local _, event, _, _, sourceName, sourceFlags, _, _, destName, destFlags, _ = CombatLogGetCurrentEventInfo()
+
+  -- Ensure the event is related to player and his pet
+  local toPlayer, fromPlayer, toPet, fromPet
+  if sourceName and not CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_NONE) then
+    fromPlayer = CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MINE)
+    fromPet = CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MY_PET)
+  end
+  if destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) then
+    toPlayer = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MINE)
+    toPet = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MY_PET)
+  end
+
+  if not fromPlayer and not toPlayer and not fromPet and not toPet then return end
+  if (not fromPlayer and not toPlayer) and (toPet or fromPet) and not db["PET"] then return end
+
   local etype = COMBAT_EVENTS[event]
   if not etype then return end
 
@@ -619,19 +634,6 @@ function EavesDrop:CombatEvent(_, _)
     self:ParseReflect(CombatLogGetCurrentEventInfo())
     return
   end
-
-  local toPlayer, fromPlayer, toPet, fromPet
-  if sourceName and not CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_NONE) then
-    fromPlayer = CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MINE)
-    fromPet = CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MY_PET)
-  end
-  if destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) then
-    toPlayer = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MINE)
-    toPet = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MY_PET)
-  end
-
-  if not fromPlayer and not toPlayer and not fromPet and not toPet then return end
-  if (not fromPlayer and not toPlayer) and (toPet or fromPet) and not db["PET"] then return end
 
   local amount, school, resisted, blocked, absorbed, critical, glancing, crushing
   local spellId, spellName, spellSchool, missType, powerType, extraAmount, overHeal
