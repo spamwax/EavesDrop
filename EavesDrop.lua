@@ -82,6 +82,14 @@ local print = function(...)
   end
 end
 
+--- Returns true if s is either nil or an empty string
+---
+---@param s string
+---@return boolean
+local function isEmptyString(s) --luacheck: ignore
+  return s == nil or s == ""
+end
+
 -- Combat log locals
 local maxXP = UnitXPMax("player")
 local pxp = UnitXP("player")
@@ -161,6 +169,8 @@ local POWER_STRINGS = {
   [Enum.PowerType.ArcaneCharges] = ARCANE_CHARGES_POWER,
   [Enum.PowerType.Fury] = FURY,
   [Enum.PowerType.Pain] = PAIN,
+  [Enum.PowerType.Essence] = L["Essence"],
+  [Enum.PowerType.AlternateMount] = L["Vigor"],
 }
 
 -- set table default size sense table.insert no longer does
