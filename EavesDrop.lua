@@ -979,14 +979,16 @@ function EavesDrop:CombatEvent(_, _)
   else
     -- self:Print(event, sourceName, destName)
     --@debug@
+    local _d = false
     if etype == "HEALABSORB" then
-      print("|cffaabbff HEALABSORB event ==============================|r")
+      print(_d, "|cffaabbff HEALABSORB event ==============================|r")
       local load = { select(12, CombatLogGetCurrentEventInfo()) }
       for idx, v in ipairs(load) do
-        print(string_format("Arg%s: %s", tostring(idx), tostring(v)))
+        print(_d, string_format("Arg%s: %s", tostring(idx), tostring(v)))
       end
     end
     print(
+      _d,
       string_format(
         "Event: %s, |cffff0000source: %s, |cffF48CBAdest: %s|r",
         tostring(event),
@@ -1325,6 +1327,9 @@ function EavesDrop:UpdateEvents()
       end
       --@end-debug@
       text:SetText(value.text or "")
+      if not value or not value.color or not value.color.r or not value.color.g or not value.color.b then
+        DevTools_Dump(value)
+      end
       text:SetTextColor(value.color.r, value.color.g, value.color.b, 1)
       frame.delay = delay
       frame.alpha = 1
