@@ -299,20 +299,26 @@ function EavesDrop:OnInitialize()
 
   self:PerformDisplayOptions()
 
-  local tww = select(4, GetBuildInfo()) -- REMOVE this on release of TWW, it's just a hack to test the addon on Beta server
-  if tww >= 110000 then
-    PLAYER_MAX_LEVEL = 80
-  elseif self.IsRetail() then
-    PLAYER_MAX_LEVEL = 70
-  elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CATACLYSM_CLASSIC then
-    PLAYER_MAX_LEVEL = 85
-  elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC then
-    PLAYER_MAX_LEVEL = 80
-  elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
-    PLAYER_MAX_LEVEL = 70
-  elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC then
+  if _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC then
     PLAYER_MAX_LEVEL = 60
+  else
+    PLAYER_MAX_LEVEL = GetMaxLevelForExpansionLevel(GetExpansionLevel())
   end
+
+  -- local tww = select(4, GetBuildInfo()) -- REMOVE this on release of TWW, it's just a hack to test the addon on Beta server
+  -- if tww >= 110000 then
+  --   PLAYER_MAX_LEVEL = 80
+  -- elseif self.IsRetail() then
+  --   PLAYER_MAX_LEVEL = 70
+  -- elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CATACLYSM_CLASSIC then
+  --   PLAYER_MAX_LEVEL = 85
+  -- elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC then
+  --   PLAYER_MAX_LEVEL = 80
+  -- elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+  --   PLAYER_MAX_LEVEL = 70
+  -- elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC then
+  --   PLAYER_MAX_LEVEL = 60
+  -- end
 
   PLAYER_CURRENT_LEVEL = UnitLevel("player")
   maxXP = UnitXPMax("player")

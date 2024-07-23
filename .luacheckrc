@@ -143,6 +143,8 @@ globals = {
   "hooksecurefunc",
   "GetSpellTexture",
   "GetBuildInfo",
+  "GetExpansionLevel",
+  "GetMaxLevelForExpansionLevel",
 
   -- Ace3
   "LibStub",
