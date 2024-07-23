@@ -799,6 +799,7 @@ function EavesDrop:SetupOptions()
               end
             end,
           },
+          -- Heal
           HFILTER = {
             name = L["MHFilter"],
             type = "range",
@@ -807,9 +808,10 @@ function EavesDrop:SetupOptions()
             get = getOption,
             set = setOption,
             min = 0,
-            max = 2000,
-            step = 25,
+            max = not EavesDrop:IsRetail() and 100000 or 2000,
+            step = not EavesDrop:IsRetail() and 10000 or 25,
           },
+          -- Power Gain
           MFILTER = {
             name = L["MMFilter"],
             type = "range",
@@ -821,6 +823,7 @@ function EavesDrop:SetupOptions()
             max = 2000,
             step = 25,
           },
+          -- Damage
           DFILTER = {
             name = L["MDFilter"],
             type = "range",
@@ -829,8 +832,8 @@ function EavesDrop:SetupOptions()
             get = getOption,
             set = setOption,
             min = 0,
-            max = 2000,
-            step = 25,
+            max = not EavesDrop:IsRetail() and 100000 or 2000,
+            step = not EavesDrop:IsRetail() and 10000 or 25,
           },
           TRUNCATETYPE = {
             name = L["MBuffTruncType"],
