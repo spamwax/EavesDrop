@@ -802,6 +802,7 @@ function EavesDrop:CombatEvent(_, _)
     local _absorbed --luacheck: ignore
     spellId, spellName, spellSchool, amount, overHeal, _absorbed, critical = select(12, CombatLogGetCurrentEventInfo())
     text = tostring(shortenValue(amount))
+    local original_overheal = overHeal
     -- texture = select(3, GetSpellInfo(spellId))
     texture = GetSpellTexture(spellId)
 
@@ -824,6 +825,29 @@ function EavesDrop:CombatEvent(_, _)
         updatedAmount = updatedAmount - _absorbed
       end
       -- updatedAmount = updatedAmount - _absorbed
+    end
+
+    -- Is this a bug in game?!!!
+    if overHeal < 0 or updatedAmount < 0 or amount < overHeal or amount < _absorbed then
+      --@debug@
+      print(string_format("|cffff0000Found An Issue|r"))
+      print(string_format("ORIGINAL: Amount: %d, _absorbed: %d, overHeal: %d", amount, _absorbed, original_overheal))
+      print(
+        string_format("ADJUSTED: Amount: %d, _absorbed: %d, overHeal: %d", updatedAmount, _absorbed, original_overheal)
+      )
+      print(
+        string_format(
+          "Negative values:\noverHeal: %s, updatedAmount: %s, amount<overHeal: %s amount<absorbed: %s",
+          overHeal < 0,
+          updatedAmount < 0,
+          amount < overHeal,
+          amount < _absorbed
+        )
+      )
+      --@end-debug@
+      -- Until we figure this out, we will just show what game reported to us.
+      overHeal = original_overheal
+      updatedAmount = amount
     end
 
     if a and o then
