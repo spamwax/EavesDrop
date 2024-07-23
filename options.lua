@@ -808,8 +808,8 @@ function EavesDrop:SetupOptions()
             get = getOption,
             set = setOption,
             min = 0,
-            max = not EavesDrop:IsRetail() and 100000 or 2000,
-            step = not EavesDrop:IsRetail() and 10000 or 25,
+            max = EavesDrop:IsRetail() and 100000 or 2000,
+            step = EavesDrop:IsRetail() and 1000 or 25,
           },
           -- Power Gain
           MFILTER = {
@@ -832,8 +832,8 @@ function EavesDrop:SetupOptions()
             get = getOption,
             set = setOption,
             min = 0,
-            max = not EavesDrop:IsRetail() and 100000 or 2000,
-            step = not EavesDrop:IsRetail() and 10000 or 25,
+            max = EavesDrop:IsRetail() and 100000 or 2000,
+            step = EavesDrop:IsRetail() and 1000 or 25,
           },
           TRUNCATETYPE = {
             name = L["MBuffTruncType"],
