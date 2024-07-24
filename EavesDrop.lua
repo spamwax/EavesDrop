@@ -1351,9 +1351,11 @@ function EavesDrop:UpdateEvents()
       end
       --@end-debug@
       text:SetText(value.text or "")
+      --@debug@
       if not value or not value.color or not value.color.r or not value.color.g or not value.color.b then
         DevTools_Dump(value)
       end
+      --@end-debug@
       text:SetTextColor(value.color.r, value.color.g, value.color.b, 1)
       frame.delay = delay
       frame.alpha = 1
