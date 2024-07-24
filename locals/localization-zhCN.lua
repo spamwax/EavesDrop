@@ -1,4 +1,4 @@
-﻿local L = LibStub("AceLocale-3.0"):NewLocale("EavesDrop", "zhCN", false)
+local L = LibStub("AceLocale-3.0"):NewLocale("EavesDrop", "zhCN", false)
 
 if L then
     --main
@@ -22,6 +22,8 @@ if L then
     L["History"] = "显示EavesDrop历史记录"
     L["IncombatSummary"] = "秒战斗"
     L["NewLevel"] = "恭喜! 新关卡 %d"
+    L["Vigor"] = "活力"
+    L["Essence"] = "本质"
 
     --events
     L["Events"] = "事件显示开启/关闭"
@@ -53,6 +55,8 @@ if L then
     L["EOverhealingD"] = "显示你的过量治疗"
     L["EHealers"] = "治疗者姓名"
     L["EHealersD"] = "显示谁治疗了你与你治疗了谁"
+    L["EHealAbsorbs"] = "治疗吸收"
+    L["EHealAbsorbsD"] = "显示治疗吸收并相应调整净治疗和过度治疗。"
     L["ESummary"] = "战斗摘要"
     L["ESummaryD"] = "显示每场战斗遭遇的伤害与治疗摘要"
 

@@ -22,6 +22,8 @@ if L then
     L["History"] = "Show EavesDrop History"
     L["IncombatSummary"] = "seconds in combat"
     L["NewLevel"] = "Gratz! New Level %d"
+    L["Vigor"] = "Vigor"
+    L["Essence"] = "Essence"
 
     --events
     L["Events"] = "Events"
@@ -53,6 +55,8 @@ if L then
     L["EOverhealingD"] = "Display your overhealing."
     L["EHealers"] = "Healer ID"
     L["EHealersD"] = "Display who healed you and who you heal."
+    L["EHealAbsorbs"] = "Healing Absorbs"
+    L["EHealAbsorbsD"] = "Display healing absorbs and adjust net healing and overheals accordingly."
     L["ESummary"] = "Combat Summary"
     L["ESummaryD"] = "Display a short summary of damage and healing per combat encounter."
 

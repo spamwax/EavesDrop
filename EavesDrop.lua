@@ -63,7 +63,7 @@ end
 -- API calls
 local UnitName = UnitName
 local UnitXP = UnitXP
-local GetSpellInfo = GetSpellInfo
+local GetSpellTexture = C_Spell.GetSpellTexture and C_Spell.GetSpellTexture or GetSpellTexture
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 
@@ -80,6 +80,14 @@ local print = function(...)
   else
     print(...)
   end
+end
+
+--- Returns true if s is either nil or an empty string
+---
+---@param s string
+---@return boolean
+local function isEmptyString(s) --luacheck: ignore
+  return s == nil or s == ""
 end
 
 -- Combat log locals
@@ -161,6 +169,8 @@ local POWER_STRINGS = {
   [Enum.PowerType.ArcaneCharges] = ARCANE_CHARGES_POWER,
   [Enum.PowerType.Fury] = FURY,
   [Enum.PowerType.Pain] = PAIN,
+  [Enum.PowerType.Essence] = L["Essence"],
+  [Enum.PowerType.AlternateMount] = L["Vigor"],
 }
 
 -- set table default size sense table.insert no longer does
@@ -209,6 +219,7 @@ function EavesDrop:IsClassic()
   return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
     or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
     or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC)
+    or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CATACLYSM_CLASSIC)
 end
 function EavesDrop:IsRetail()
   return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
@@ -288,15 +299,26 @@ function EavesDrop:OnInitialize()
 
   self:PerformDisplayOptions()
 
-  if self.IsRetail() then
-    PLAYER_MAX_LEVEL = 70
-  elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC then
-    PLAYER_MAX_LEVEL = 80
-  elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
-    PLAYER_MAX_LEVEL = 70
-  elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC then
+  if _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC then
     PLAYER_MAX_LEVEL = 60
+  else
+    PLAYER_MAX_LEVEL = GetMaxLevelForExpansionLevel(GetExpansionLevel())
   end
+
+  -- local tww = select(4, GetBuildInfo()) -- REMOVE this on release of TWW, it's just a hack to test the addon on Beta server
+  -- if tww >= 110000 then
+  --   PLAYER_MAX_LEVEL = 80
+  -- elseif self.IsRetail() then
+  --   PLAYER_MAX_LEVEL = 70
+  -- elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CATACLYSM_CLASSIC then
+  --   PLAYER_MAX_LEVEL = 85
+  -- elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC then
+  --   PLAYER_MAX_LEVEL = 80
+  -- elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+  --   PLAYER_MAX_LEVEL = 70
+  -- elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC then
+  --   PLAYER_MAX_LEVEL = 60
+  -- end
 
   PLAYER_CURRENT_LEVEL = UnitLevel("player")
   maxXP = UnitXPMax("player")
@@ -587,6 +609,21 @@ end
 function EavesDrop:CombatEvent(_, _)
   -- local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags,
   local _, event, _, _, sourceName, sourceFlags, _, _, destName, destFlags, _ = CombatLogGetCurrentEventInfo()
+
+  -- Ensure the event is related to player and his pet
+  local toPlayer, fromPlayer, toPet, fromPet
+  if sourceName and not CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_NONE) then
+    fromPlayer = CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MINE)
+    fromPet = CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MY_PET)
+  end
+  if destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) then
+    toPlayer = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MINE)
+    toPet = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MY_PET)
+  end
+
+  if not fromPlayer and not toPlayer and not fromPet and not toPet then return end
+  if (not fromPlayer and not toPlayer) and (toPet or fromPet) and not db["PET"] then return end
+
   local etype = COMBAT_EVENTS[event]
   if not etype then return end
 
@@ -603,19 +640,6 @@ function EavesDrop:CombatEvent(_, _)
     self:ParseReflect(CombatLogGetCurrentEventInfo())
     return
   end
-
-  local toPlayer, fromPlayer, toPet, fromPet
-  if sourceName and not CombatLog_Object_IsA(sourceFlags, COMBATLOG_OBJECT_NONE) then
-    fromPlayer = CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MINE)
-    fromPet = CombatLog_Object_IsA(sourceFlags, COMBATLOG_FILTER_MY_PET)
-  end
-  if destName and not CombatLog_Object_IsA(destFlags, COMBATLOG_OBJECT_NONE) then
-    toPlayer = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MINE)
-    toPet = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MY_PET)
-  end
-
-  if not fromPlayer and not toPlayer and not fromPet and not toPet then return end
-  if (not fromPlayer and not toPlayer) and (toPet or fromPet) and not db["PET"] then return end
 
   local amount, school, resisted, blocked, absorbed, critical, glancing, crushing
   local spellId, spellName, spellSchool, missType, powerType, extraAmount, overHeal
@@ -671,7 +695,7 @@ function EavesDrop:CombatEvent(_, _)
     else
       spellId, spellName, _, amount, _, school, resisted, blocked, absorbed, critical, glancing, crushing =
         select(12, CombatLogGetCurrentEventInfo())
-      texture = select(3, GetSpellInfo(spellId))
+      texture = GetSpellTexture(spellId)
       outtype, intype = "TSPELL", "PSPELL"
       whiteDMG = false
     end
@@ -742,7 +766,7 @@ function EavesDrop:CombatEvent(_, _)
     spellId, spellName, _, auraType, _ = select(12, CombatLogGetCurrentEventInfo())
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) then return end
-    texture = select(3, GetSpellInfo(spellId))
+    texture = GetSpellTexture(spellId)
     if toPlayer and db[auraType] then
       self:DisplayEvent(
         INCOMING,
@@ -760,7 +784,7 @@ function EavesDrop:CombatEvent(_, _)
     spellId, spellName, _, auraType, _ = select(12, CombatLogGetCurrentEventInfo())
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) then return end
-    texture = select(3, GetSpellInfo(spellId))
+    texture = GetSpellTexture(spellId)
     if toPlayer and db[auraType .. "FADE"] then
       self:DisplayEvent(
         INCOMING,
@@ -778,28 +802,67 @@ function EavesDrop:CombatEvent(_, _)
     local _absorbed --luacheck: ignore
     spellId, spellName, spellSchool, amount, overHeal, _absorbed, critical = select(12, CombatLogGetCurrentEventInfo())
     text = tostring(shortenValue(amount))
-    texture = select(3, GetSpellInfo(spellId))
-    --@debug@
-    --[[     if _absorbed and _absorbed ~= 0 then
+    local original_overheal = overHeal
+    -- texture = select(3, GetSpellInfo(spellId))
+    texture = GetSpellTexture(spellId)
+
+    local a, o = false, false
+    local updatedAmount = amount
+    -- If spell is blacklisted, don't show it
+    if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"]) then return end
+    if db["OVERHEAL"] and overHeal and overHeal > 0 then
+      o = true
+      updatedAmount = updatedAmount - overHeal
+    end
+    if db["HEALABSORB"] and _absorbed and _absorbed > 0 then
+      a = true
+      --@debug@
+      print(string_format("amount: %d, absorbed: %d", amount, _absorbed))
+      --@end-debug@
+      if updatedAmount == 0 then
+        overHeal = overHeal - _absorbed
+      else
+        updatedAmount = updatedAmount - _absorbed
+      end
+      -- updatedAmount = updatedAmount - _absorbed
+    end
+
+    -- Is this a bug in game?!!!
+    if overHeal < 0 or updatedAmount < 0 or amount < overHeal or amount < _absorbed then
+      --@debug@
+      print(string_format("|cffff0000Found An Issue|r"))
+      print(string_format("ORIGINAL: Amount: %d, _absorbed: %d, overHeal: %d", amount, _absorbed, original_overheal))
+      print(string_format("ADJUSTED: Amount: %d, _absorbed: %d, overHeal: %d", updatedAmount, _absorbed, overHeal))
       print(
         string_format(
-          "|cff00ff00--> _absorbed|r (NON-Absorb event): amount: %d, absorbed: %d, diff: %d",
-          amount,
-          _absorbed,
-          amount - _absorbed
+          "Negative values:\noverHeal: %s, updatedAmount: %s, amount<overHeal: %s amount<absorbed: %s",
+          tostring(overHeal < 0),
+          tostring(updatedAmount < 0),
+          tostring(amount < overHeal),
+          tostring(amount < _absorbed)
         )
       )
-    end ]]
-    --@end-debug@
+      --@end-debug@
+      -- Until we figure this out, we will just show what game reported to us.
+      overHeal = original_overheal
+      updatedAmount = amount
+    end
 
+    if a and o then
+      text = string_format("%s (%s) {%s}", shortenValue(updatedAmount), shortenValue(_absorbed), shortenValue(overHeal))
+    elseif a then
+      text = string_format("%s (%s)", shortenValue(updatedAmount), shortenValue(_absorbed))
+    elseif o then
+      text = string_format("%s {%s}", shortenValue(updatedAmount), shortenValue(overHeal))
+    end
+
+    -- if db["OVERHEAL"] and overHeal > 0 then
+    --   text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
+    -- end
+    if critical then text = critchar .. text .. critchar end
+    -- print(1, db["HEALABSORB"], _absorbed)
     if toPlayer or toPet then
       totHealingIn = totHealingIn + amount
-      -- If spell is blacklisted, don't show it
-      if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"]) then return end
-      if db["OVERHEAL"] and overHeal > 0 then
-        text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
-      end
-      if critical then text = critchar .. text .. critchar end
       if db["HEALERID"] == true and not fromPlayer and not fromPet then
         text = text .. " (" .. (sourceName or "Unknown") .. ")"
       end
@@ -814,12 +877,6 @@ function EavesDrop:CombatEvent(_, _)
       text = "+" .. text
     elseif fromPlayer or fromPet then
       totHealingOut = totHealingOut + amount
-      -- If spell is blacklisted or its amount is small, don't show it
-      if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"]) then return end
-      if db["OVERHEAL"] and overHeal > 0 then
-        text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
-      end
-      if critical then text = critchar .. text .. critchar end
       color = db["THEAL"]
       if self:TrackStat(inout, "heal", spellName, texture, SCHOOL_STRINGS[spellSchool], amount, critical, message) then
         text = newhigh .. text .. newhigh
@@ -836,7 +893,7 @@ function EavesDrop:CombatEvent(_, _)
       tcolor = "TMELEE"
     else
       spellId, spellName, _, missType, _, amount = select(12, CombatLogGetCurrentEventInfo())
-      texture = select(3, GetSpellInfo(spellId))
+      texture = GetSpellTexture(spellId)
       tcolor = "TSPELL"
     end
     text = _G[missType]
@@ -881,7 +938,7 @@ function EavesDrop:CombatEvent(_, _)
       spellId, spellName, _, amount, powerType, extraAmount = select(12, CombatLogGetCurrentEventInfo())
       -- If spell is blacklisted, don't show it
       if isBlacklisted(spellName, spellId) then return end
-      texture = select(3, GetSpellInfo(spellId))
+      texture = GetSpellTexture(spellId)
       if toPlayer then
         totHealingIn = totHealingIn + amount
         text = string_format("-%d %s", amount, string_nil(POWER_STRINGS[powerType]))
@@ -904,7 +961,7 @@ function EavesDrop:CombatEvent(_, _)
       spellId, spellName, _, amount, _, powerType = select(12, CombatLogGetCurrentEventInfo())
       -- If spell is blacklisted, don't show it
       if isBlacklisted(spellName, spellId) then return end
-      texture = select(3, GetSpellInfo(spellId))
+      texture = GetSpellTexture(spellId)
       if toPlayer then
         if amount < db["MFILTER"] then return end
         color = db["PGAIN"]
@@ -944,14 +1001,16 @@ function EavesDrop:CombatEvent(_, _)
   else
     -- self:Print(event, sourceName, destName)
     --@debug@
-    if event == "HEALABSORB" then
-      print("|cffaabbff HEALABSORB event ==============================|r")
+    local _d = false
+    if etype == "HEALABSORB" then
+      print(_d, "|cffaabbff HEALABSORB event ==============================|r")
       local load = { select(12, CombatLogGetCurrentEventInfo()) }
       for idx, v in ipairs(load) do
-        print(string_format("Arg%s: %s", tostring(idx), tostring(v)))
+        print(_d, string_format("Arg%s: %s", tostring(idx), tostring(v)))
       end
     end
     print(
+      _d,
       string_format(
         "Event: %s, |cffff0000source: %s, |cffF48CBAdest: %s|r",
         tostring(event),
@@ -1120,10 +1179,11 @@ function EavesDrop:PLAYER_REGEN_ENABLED()
   self:DisplayEvent(MISC, L["EndCombat"], nil, db["MISC"])
   if db["SUMMARY"] == true then
     local duration = round(GetTime() - timeStart, 1)
-    local DPS = round(totDamageOut / duration, 1) or 0
-    local HPS = round(totHealingOut / duration, 1) or 0
-    local IDPS = round(totDamageIn / duration, 1) or 0
-    local IHPS = round(totHealingIn / duration, 1) or 0
+    local _nz = duration ~= 0
+    local DPS = _nz and round(totDamageOut / duration, 1) or 0
+    local HPS = _nz and round(totHealingOut / duration, 1) or 0
+    local IDPS = _nz and round(totDamageIn / duration, 1) or 0
+    local IHPS = _nz and round(totHealingIn / duration, 1) or 0
     local strSummary = convertRGBtoHEXString(db["MISC"], duration .. " " .. L["IncombatSummary"])
       .. "\n"
       .. convertRGBtoHEXString(db["PHIT"], L["IncomingDamge"] .. ": " .. totDamageIn .. " (" .. IDPS .. ")")
@@ -1158,7 +1218,7 @@ function EavesDrop:PLAYER_DEAD()
   if GetTime() < (EavesDrop.lastDeath or 0) + 2 then return end
   EavesDrop.lastDeath = GetTime()
   --@debug@
-  print("*****", date("%I:%M:%S"))
+  print("*****", date("%H:%M:%S"))
   print("PLAYER_DEAD fired at ", GetTime())
   print("Processing PLAYER_DEAD event")
   print("*****")
@@ -1197,17 +1257,22 @@ function EavesDrop:DisplayEvent(inout, text, texture, color, message, spellname)
   pEvent.color = color or tempcolor
   -- Messages probably already have a timestamp, so let's clear that up
   if db["TIMESTAMP"] == true and message then
-    -- Check if we have a timestamp here and remove to use our own
+    -- Check if we have a timestamp here and clean it up before using it.
     local timecutoff = string.find(message, "> ")
 
+    local combat_message, timestamp
     -- If we did, skip those two characters "> "
-    if timecutoff then message = strsub(message, timecutoff + 2) end
-
-    pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%I:%M:%S"), message)
+    if timecutoff then
+      combat_message = strsub(message, timecutoff + 2)
+      timestamp = strsub(message, 1, timecutoff - 1)
+      pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", timestamp, combat_message)
+    else
+      pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%H:%M:%S"), message)
+    end
   elseif db["TIMESTAMP"] == true and text then
-    pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%I:%M:%S"), text)
+    pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%H:%M:%S"), text)
   elseif db["TIMESTAMP"] == true then
-    pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%I:%M:%S"), tooltiptext or "")
+    pEvent.tooltipText = string_format("|cffffffff%s|r\n%s", date("%H:%M:%S"), tooltiptext or "")
   elseif spellname then
     pEvent.tooltipText = spellname
   else
@@ -1284,6 +1349,11 @@ function EavesDrop:UpdateEvents()
       end
       --@end-debug@
       text:SetText(value.text or "")
+      --@debug@
+      if not value or not value.color or not value.color.r or not value.color.g or not value.color.b then
+        DevTools_Dump(value)
+      end
+      --@end-debug@
       text:SetTextColor(value.color.r, value.color.g, value.color.b, 1)
       frame.delay = delay
       frame.alpha = 1
@@ -1497,7 +1567,7 @@ function EavesDrop:ParseReflect(
   ...
 )
   local spellId, spellName, _, amount, school, _, _, _, critical, _, _ = select(1, ...)
-  local texture = select(3, GetSpellInfo(spellId))
+  local texture = GetSpellTexture(spellId)
   local text
   local messsage = CombatLog_OnEvent(
     Blizzard_CombatLog_CurrentSettings,
@@ -1581,8 +1651,8 @@ end
 function EavesDrop:ShowHistory()
   if not EavesDropHistoryFrame:IsShown() then
     EavesDropHistoryFrame:Show()
+    PlaySound(888)
   else
     EavesDropHistoryFrame:Hide()
   end
-  PlaySound(888)
 end

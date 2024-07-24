@@ -533,8 +533,10 @@
 			</OnMouseDown>
 			<OnEnter>
 				EavesDropTab:SetAlpha(1);
-				GameTooltip:SetOwner(self, EavesDrop.ToolTipAnchor);
-				GameTooltip:SetText(self.tooltipText, nil, 1);
+				if ( self.tooltipText ) then
+					GameTooltip:SetOwner(self, EavesDrop.ToolTipAnchor);
+					GameTooltip:SetText(self.tooltipText, nil, 1);
+				end
 			</OnEnter>
 			<OnLeave>
 				EavesDropTab:SetAlpha(0);

@@ -1,8 +1,13 @@
+-- ^^ Example for addon options settings?
+-- https://discord.com/channels/327414731654692866/1014994401644269670/1234228949459144765
+-- https://github.com/tg123/myslot/commit/23f7863661310f40dab63dcf55b0f8ed3fadf667
+
 local L = LibStub("AceLocale-3.0"):GetLocale("EavesDrop", true)
 local EavesDrop = EavesDrop
 
 local media = LibStub("LibSharedMedia-3.0")
 
+local GetSpellName = C_Spell.GetSpellName and C_Spell.GetSpellName or GetSpellName
 -- common functions for options callbacks
 local function getOption(info)
   return (info.arg and EavesDrop.db.profile[info.arg] or EavesDrop.db.profile[info[#info]])
@@ -108,7 +113,7 @@ local setBlacklistOption = function(info, inp)
           return
         elseif tonumber(aura_name) and tonumber(aura_id) then -- number, number
           id = tonumber(aura_name)
-          name = GetSpellInfo(id)
+          name = GetSpellName(id)
           if not name then
             print(string.format("EavesDrop: |cffff0000Invalid spell ID:|r %d", id))
             return
@@ -121,7 +126,7 @@ local setBlacklistOption = function(info, inp)
           end
         elseif tonumber(aura_name) and not tonumber(aura_id) then -- number, string
           id = tonumber(aura_name)
-          name = GetSpellInfo(id)
+          name = GetSpellName(id)
           if name then
             key = id
             value = name
@@ -138,7 +143,7 @@ local setBlacklistOption = function(info, inp)
         if tonumber(aura_name) then
           -- it's spell id
           id = tonumber(aura_name)
-          name = GetSpellInfo(id)
+          name = GetSpellName(id)
           if name then
             key = id
             value = name
@@ -280,6 +285,14 @@ function EavesDrop:SetupOptions()
             type = "toggle",
             desc = L["EOverhealingD"],
             order = 13,
+            get = getOption,
+            set = setOption,
+          },
+          HEALABSORB = {
+            name = L["EHealAbsorbs"],
+            type = "toggle",
+            desc = L["EHealAbsorbsD"],
+            order = 16,
             get = getOption,
             set = setOption,
           },
@@ -786,6 +799,7 @@ function EavesDrop:SetupOptions()
               end
             end,
           },
+          -- Heal
           HFILTER = {
             name = L["MHFilter"],
             type = "range",
@@ -794,9 +808,10 @@ function EavesDrop:SetupOptions()
             get = getOption,
             set = setOption,
             min = 0,
-            max = 2000,
-            step = 25,
+            max = EavesDrop:IsRetail() and 100000 or 2000,
+            step = EavesDrop:IsRetail() and 1000 or 25,
           },
+          -- Power Gain
           MFILTER = {
             name = L["MMFilter"],
             type = "range",
@@ -808,6 +823,7 @@ function EavesDrop:SetupOptions()
             max = 2000,
             step = 25,
           },
+          -- Damage
           DFILTER = {
             name = L["MDFilter"],
             type = "range",
@@ -816,8 +832,8 @@ function EavesDrop:SetupOptions()
             get = getOption,
             set = setOption,
             min = 0,
-            max = 2000,
-            step = 25,
+            max = EavesDrop:IsRetail() and 100000 or 2000,
+            step = EavesDrop:IsRetail() and 1000 or 25,
           },
           TRUNCATETYPE = {
             name = L["MBuffTruncType"],
@@ -896,12 +912,12 @@ function EavesDrop:GetDefaultConfig()
       ["PBUFF"] = { r = 0.7, g = 0.7, b = 0.0 },
       ["PDEBUFF"] = { r = 0.0, g = 0.5, b = 0.5 },
       [SPELL_SCHOOL0_CAP] = { r = 1, g = 0, b = 0 },
-      [SPELL_SCHOOL1_CAP] = { r = 1, g = 1, b = 0 },
-      [SPELL_SCHOOL2_CAP] = { r = 1, g = 0.3, b = 0 },
-      [SPELL_SCHOOL3_CAP] = { r = 0.5, g = 1, b = 0.2 },
-      [SPELL_SCHOOL4_CAP] = { r = 0.4, g = 0.6, b = 0.9 },
-      [SPELL_SCHOOL5_CAP] = { r = 0.4, g = 0.4, b = 0.5 },
-      [SPELL_SCHOOL6_CAP] = { r = 0.8, g = 0.8, b = 1 },
+      [SPELL_SCHOOL1_CAP] = { r = 1, g = 0.9, b = 0.5 },
+      [SPELL_SCHOOL2_CAP] = { r = 1, g = 0.5, b = 0 },
+      [SPELL_SCHOOL3_CAP] = { r = 0.3, g = 1, b = 0.3 },
+      [SPELL_SCHOOL4_CAP] = { r = 0.5, g = 1, b = 1 },
+      [SPELL_SCHOOL5_CAP] = { r = 0.5, g = 0.5, b = 1 },
+      [SPELL_SCHOOL6_CAP] = { r = 1, g = 0.5, b = 1 },
       ["NUMLINES"] = 10,
       ["FADETIME"] = 10,
       ["LINEHEIGHT"] = 20,
@@ -931,6 +947,7 @@ function EavesDrop:GetDefaultConfig()
       ["FADEFRAME"] = false,
       ["FLIP"] = false,
       ["OVERHEAL"] = false,
+      ["HEALABSORB"] = false,
       ["HEALERID"] = false,
       ["HISTORY"] = true,
       ["TEXTSIZE"] = 14,
@@ -951,5 +968,6 @@ end
 
 function EavesDrop:OpenMenu()
   -- LibStub("AceConfigDialog-3.0"):Open("EavesDrop")
-  InterfaceOptionsFrame_OpenToCategory("EavesDrop")
+  -- InterfaceOptionsFrame_OpenToCategory("EavesDrop")
+  Settings.OpenToCategory("EavesDrop")
 end

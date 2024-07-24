@@ -7,53 +7,39 @@ CYAN=$'\e[1;34m'
 GRAY=$'\e[1;33m'
 NC=$'\e[0m'
 
-retail_wago=$(head -n 4 .github/workflows/upload2wago.sh | tail -n 1 | cut -d '=' -f 2)
-retail_patch=${retail_wago//./0}
-wotlk_wago=$(head -n 5 .github/workflows/upload2wago.sh | tail -n 1 | cut -d '=' -f 2)
-wotlk_patch=${wotlk_wago//./0}
+mainline_wago=$(head -n 4 .github/workflows/upload2wago.sh | tail -n 1 | cut -d '=' -f 2)
+mainline_patch=${mainline_wago//./0}
+cata_wago=$(head -n 5 .github/workflows/upload2wago.sh | tail -n 1 | cut -d '=' -f 2)
+cata_patch=${cata_wago//./0}
+
 
 mainline_toc=$(head -n 1 EavesDrop_Mainline.toc | cut -d ' ' -f 3)
-retail_toc=$(head -n 1 EavesDrop.toc | cut -d ' ' -f 3)
-wotlk_toc=$(head -n 1 EavesDrop_Wrath.toc | cut -d ' ' -f 3)
+cata_toc=$(head -n 1 EavesDrop_Cata.toc | cut -d ' ' -f 3)
 
 error=0
 
-if [ "$retail_patch" != "$mainline_toc" ]; then
+if [ "$mainline_patch" != "$mainline_toc" ]; then
     echo "Retail client Interface version is $mainline_toc"
-    echo "which doesn't match with wago.io metadata: $retail_wago"
+    echo "which doesn't match with wago.io metadata: $mainline_wago"
     echo "Check EavesDrop_Mainline.toc and .github/workflows/upload2wago.sh"
     echo
     error=1
 fi
 
-if [ "$wotlk_patch" != "$wotlk_toc" ]; then
-    echo "WOTLK client Interface version is $wotlk_toc"
-    echo "which doesn't match with wago.io metadata: $wotlk_wago"
-    echo "Check EavesDrop_Wrath.toc and .github/workflows/upload2wago.sh"
-    echo
-    error=1
-fi
-
-if [ "$mainline_toc" != "$retail_toc" ]; then
-    echo "EavesDrop_Mainline.toc & Eavesdrop.toc have different Interface values"
-    echo "$mainline_toc <> $retail_toc"
+if [ "$cata_patch" != "$cata_toc" ]; then
+    echo "CATA client Interface version is $cata_toc"
+    echo "which doesn't match with wago.io metadata: $cata_wago"
+    echo "Check EavesDrop_Cata.toc and .github/workflows/upload2wago.sh"
     echo
     error=1
 fi
 
 mainline_addon_version=$(head -n 5 EavesDrop_Mainline.toc | tail -n 1 | cut -d ' ' -f 3)
-retail_addon_version=$(head -n 5 EavesDrop.toc | tail -n 1 | cut -d ' ' -f 3)
-wotlk_addon_version=$(head -n 5 EavesDrop_Wrath.toc | tail -n 1 | cut -d ' ' -f 3)
+cata_addon_version=$(head -n 5 EavesDrop_Cata.toc | tail -n 1 | cut -d ' ' -f 3)
 
-if [ "$mainline_addon_version" != "$wotlk_addon_version" ]; then
-    echo "Addon version mismatch between WOTLK and Retail: $wotlk_addon_version <> $mainline_addon_version"
+if [ "$mainline_addon_version" != "$cata_addon_version" ]; then
+    echo "Addon version mismatch between CATA and Retail: $cata_addon_version <> $mainline_addon_version"
     echo
-    error=1
-fi
-
-if [ "$mainline_addon_version" != "$retail_addon_version" ]; then
-    echo "Addon version mismatch between EavesDrop_Mainline.toc"
-    echo "and EavesDrop.toc: $mainline_addon_version <> $retail_addon_version"
     error=1
 fi
 

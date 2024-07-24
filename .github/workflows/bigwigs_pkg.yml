@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dragon
+      - tww-beta
     tags:
       - "*"
       - "!**-alpha**"

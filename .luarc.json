@@ -83,6 +83,7 @@
         "ENERGY",
         "Enum",
         "HONOR",
+        "ESSENCE",
         "XP",
         "CombatLog_OnEvent",
         "IsShiftKeyDown",
@@ -104,6 +105,12 @@
         "GetSpellInfo",
         "GetCurrentCombatTextEventInfo",
         "hooksecurefunc",
+        "GetSpellTexture",
+        "GetBuildInfo",
+        "GetExpansionLevel",
+        "GetMaxLevelForExpansionLevel",
+        "GetSpellName",
+        "Settings",
         // Ace3
         "LibStub",
         // EavesDrop

@@ -1,4 +1,4 @@
-﻿local L = LibStub("AceLocale-3.0"):NewLocale("EavesDrop", "koKR")
+local L = LibStub("AceLocale-3.0"):NewLocale("EavesDrop", "koKR")
 
 if L then
     --main
@@ -22,6 +22,8 @@ if L then
     L["History"] = "기록 보기"
     L["IncombatSummary"] = "전투 시간"
     L["NewLevel"] = "축하합니다! 새로운 수준 %d"
+    L["Vigor"] = "활기"
+    L["Essence"] = "본질"
 
     --events
     L["Events"] = "이벤트"
@@ -53,6 +55,8 @@ if L then
     L["EOverhealingD"] = "플레이어의 생명력을 초과하는 치유량 표시"
     L["EHealers"] = "힐러 표시"
     L["EHealersD"] = "플레이어에게 힐을 준 대상, 플레이어가 힐을 준 대상 표시"
+    L["EHealAbsorbs"] = "치유 흡수"
+    L["EHealAbsorbsD"] = "치유 표시는 순 치유량을 흡수하고 조정하며 그에 따라 초과 치유량을 조정합니다."
     L["ESummary"] = "전투 요약"
     L["ESummaryD"] = "매 전투시 공격 및 치유에 대한 요약을 보여줍니다."
 
