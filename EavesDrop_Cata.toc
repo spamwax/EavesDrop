@@ -1,9 +1,9 @@
 ## Interface: 40400
 ## Name: EavesDrop
-## Title: EavesDrop
-## Notes: A simple combat log that displays events similar to SCT
+## Title: |TInterface/AddOns/EavesDrop/Media/Textures/mouse:16:16|t EavesDrop
+## Notes: A simple combat log that displays events such as|ndamage, heal, buffs, XP/reputation and more.|nBy |cFFF48CBAspamwax|r
 ## Version: @project-version@ 
-## Author: Grayhoof (Edited by Domzae, Updated for retail & classic by |cFFF48CBAspamwax|r)
+## Author: Grayhoof (Edited by Domzae, Updated for retail & classic by spamwax)
 ## SavedVariables: EavesDropDB
 ## SavedVariablesPerCharacter: EavesDropStatsDB
 ## X-Website: https://github.com/spamwax/EavesDrop

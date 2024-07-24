@@ -1,7 +1,7 @@
 ## Interface: 110000
 ## Name: EavesDrop
 ## Title: EavesDrop
-## Notes: A simple combat log that displays events similar to SCT (by |cFFF48CBAspamwax|r)
+## Notes: A simple combat log that displays events such as|ndamage, heal, buffs, XP/reputation and more.|nBy |cFFF48CBAspamwax|r
 ## Version: @project-version@
 ## Author: Grayhoof (Edited by Domzae, Updated for retail & classic by spamwax)
 ## SavedVariables: EavesDropDB
