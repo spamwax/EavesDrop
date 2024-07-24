@@ -145,6 +145,8 @@ globals = {
   "GetBuildInfo",
   "GetExpansionLevel",
   "GetMaxLevelForExpansionLevel",
+  "GetSpellName",
+  "Settings",
 
   -- Ace3
   "LibStub",
