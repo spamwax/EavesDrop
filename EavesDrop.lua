@@ -832,16 +832,14 @@ function EavesDrop:CombatEvent(_, _)
       --@debug@
       print(string_format("|cffff0000Found An Issue|r"))
       print(string_format("ORIGINAL: Amount: %d, _absorbed: %d, overHeal: %d", amount, _absorbed, original_overheal))
-      print(
-        string_format("ADJUSTED: Amount: %d, _absorbed: %d, overHeal: %d", updatedAmount, _absorbed, original_overheal)
-      )
+      print(string_format("ADJUSTED: Amount: %d, _absorbed: %d, overHeal: %d", updatedAmount, _absorbed, overHeal))
       print(
         string_format(
           "Negative values:\noverHeal: %s, updatedAmount: %s, amount<overHeal: %s amount<absorbed: %s",
-          overHeal < 0,
-          updatedAmount < 0,
-          amount < overHeal,
-          amount < _absorbed
+          tostring(overHeal < 0),
+          tostring(updatedAmount < 0),
+          tostring(amount < overHeal),
+          tostring(amount < _absorbed)
         )
       )
       --@end-debug@
