@@ -4,9 +4,9 @@
 <p><img src="misc/eaves1.png" alt="screenshot1" width="22%"/>
 <img src="misc/eaves2.png" alt="screenshot2" width="25%"/></p>
 
-This is my attempt to keep [Grayhoof](https://www.wowinterface.com/downloads/author-14368.html)'s addon alive as I am kind of addicted to it since 2008!
+This is my attempt to keep [Grayhoof](https://www.wowinterface.com/downloads/author-14368.html)'s addon alive.
 
-The goal is to make it work under latest game version (currently 10.x). Please report any issues or bugs on the project's [Github page](https://github.com/spamwax/EavesDrop).
+The goal is to make it work under latest game version (currently 11.x). Please report any issues or bugs on the project's [Github page](https://github.com/spamwax/EavesDrop).
 
 ## What does it do?
 A simple combat log that shows events (such as damae, heal, buff/debuff...), using icons and colors to make it easy to find

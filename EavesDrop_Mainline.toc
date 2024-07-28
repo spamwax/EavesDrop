@@ -1,4 +1,4 @@
-## Interface: 110000
+## Interface: 110002
 ## Name: EavesDrop
 ## Title: EavesDrop
 ## Notes: A simple combat log that displays events such as|ndamage, heal, buffs, XP/reputation and more.|nBy |cFFF48CBAspamwax|r
