@@ -799,68 +799,120 @@ function EavesDrop:CombatEvent(_, _)
     end
     ------------heals----------------
   elseif etype == "HEAL" then
-    local _absorbed --luacheck: ignore
-    spellId, spellName, spellSchool, amount, overHeal, _absorbed, critical = select(12, CombatLogGetCurrentEventInfo())
+    local absorbed --luacheck: ignore
+    spellId, spellName, spellSchool, amount, overHeal, absorbed, critical = select(12, CombatLogGetCurrentEventInfo())
     text = tostring(shortenValue(amount))
     local original_overheal = overHeal
     -- texture = select(3, GetSpellInfo(spellId))
     texture = GetSpellTexture(spellId)
 
+    local _dshow = true
     local a, o = false, false
-    local updatedAmount = amount
-    -- If spell is blacklisted, don't show it
-    if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"]) then return end
-    if db["OVERHEAL"] and overHeal and overHeal > 0 then
-      o = true
-      updatedAmount = updatedAmount - overHeal
-    end
-    if db["HEALABSORB"] and _absorbed and _absorbed > 0 then
-      a = true
-      --@debug@
-      print(string_format("amount: %d, absorbed: %d", amount, _absorbed))
-      --@end-debug@
-      if updatedAmount == 0 then
-        overHeal = overHeal - _absorbed
-      else
-        updatedAmount = updatedAmount - _absorbed
+    -- local updatedAmount = amount
+    local realHeal_All, realOverheal, realHeal_noOverheal, realHeal_noAbsorbed, realHeal_noOverheal_noAbsorb
+
+    if absorbed and absorbed > 0 then
+      print(_dshow, string_format("amount: %d, overHeal: %d, absorbed: %d", amount, overHeal, absorbed))
+      if amount == 0 and overHeal and overHeal == 0 then -- Every bit of heal was taken by absorb debuff.
+        realHeal_All = absorbed
+        realHeal_noOverheal = realHeal_All
+        realHeal_noAbsorbed = 0
+        realHeal_noOverheal_noAbsorb = 0
+        realOverheal = 0
       end
-      -- updatedAmount = updatedAmount - _absorbed
+      if amount ~= 0 then
+        if overHeal ~= 0 then
+          realHeal_All = amount
+          realHeal_noOverheal = amount - overHeal
+          if realHeal_noOverheal == 0 then
+            if amount > absorbed then
+              realHeal_noOverheal_noAbsorb = realHeal_All - absorbed
+              realOverheal = overHeal - absorbed
+              realHeal_noAbsorbed = amount - absorbed
+            else
+              realHeal_noOverheal_noAbsorb = 0
+              realHeal_noAbsorbed = 0
+              realOverheal = overHeal
+            end
+          else
+            if realHeal_noOverheal > absorbed then
+              realHeal_noOverheal_noAbsorb = realHeal_noOverheal - absorbed
+              realHeal_noAbsorbed = realHeal_All - absorbed
+              realOverheal = overHeal
+            else
+              realHeal_noOverheal_noAbsorb = realHeal_noOverheal
+              realHeal_noAbsorbed = realHeal_All - absorbed
+              realOverheal = overHeal
+            end
+          end
+        else
+          realHeal_All = amount + absorbed
+          realHeal_noOverheal = realHeal_All
+          realHeal_noAbsorbed = amount
+          realHeal_noOverheal_noAbsorb = realHeal_noOverheal - absorbed
+          realOverheal = 0
+        end
+      end
+    else
+      realHeal_All = amount
+      realHeal_noOverheal = amount - overHeal
+      realHeal_noAbsorbed = realHeal_All
+      realHeal_noOverheal_noAbsorb = realHeal_noOverheal
+      realOverheal = overHeal
     end
 
+    -- if spellName ~= "Holy Shock" then
+    --   print(_dshow, string_format("== amount: %d, overHeal: %d, absorbed: %d", amount, overHeal, absorbed))
+    -- end
+    -- If spell is blacklisted, don't show it
+    if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"] and absorbed < db["HFILTER"]) then return end
+    if db["OVERHEAL"] and overHeal and overHeal > 0 then o = true end
+    if db["HEALABSORB"] and absorbed and absorbed > 0 then a = true end
+
     -- Is this a bug in game?!!!
-    if overHeal < 0 or updatedAmount < 0 or amount < overHeal or amount < _absorbed then
+    if realHeal_All < 0 or realHeal_noOverheal < 0 or realHeal_noOverheal_noAbsorb < 0 or realOverheal < 0 then
       --@debug@
-      print(string_format("|cffff0000Found An Issue|r"))
-      print(string_format("ORIGINAL: Amount: %d, _absorbed: %d, overHeal: %d", amount, _absorbed, original_overheal))
-      print(string_format("ADJUSTED: Amount: %d, _absorbed: %d, overHeal: %d", updatedAmount, _absorbed, overHeal))
+      print(_dshow, string_format("|cffff0000Found An Issue|r"))
       print(
+        _dshow,
+        string_format("ORIGINAL: Amount: %d, absorbed: %d, overHeal: %d", amount, absorbed, original_overheal)
+      )
+      print(
+        _dshow,
         string_format(
-          "Negative values:\noverHeal: %s, updatedAmount: %s, amount<overHeal: %s amount<absorbed: %s",
-          tostring(overHeal < 0),
-          tostring(updatedAmount < 0),
-          tostring(amount < overHeal),
-          tostring(amount < _absorbed)
+          "ADJUSTED: realHeal_All: %d, realHeal_noOverheal: %d\nrealHeal_noOverheal_noAbsorb: %d, realOverheal: %d",
+          realHeal_All,
+          realHeal_noOverheal,
+          realHeal_noOverheal_noAbsorb,
+          realOverheal
         )
       )
       --@end-debug@
       -- Until we figure this out, we will just show what game reported to us.
-      overHeal = original_overheal
-      updatedAmount = amount
+      -- overHeal = original_overheal
+      -- updatedAmount = amount
     end
 
     if a and o then
-      text = string_format("%s (%s) {%s}", shortenValue(updatedAmount), shortenValue(_absorbed), shortenValue(overHeal))
+      text = string_format(
+        "%s (%s) {%s}",
+        shortenValue(realHeal_noOverheal_noAbsorb),
+        shortenValue(absorbed),
+        shortenValue(realOverheal)
+      )
     elseif a then
-      text = string_format("%s (%s)", shortenValue(updatedAmount), shortenValue(_absorbed))
+      text = string_format("%s (%s)", shortenValue(realHeal_noAbsorbed), shortenValue(absorbed))
     elseif o then
-      text = string_format("%s {%s}", shortenValue(updatedAmount), shortenValue(overHeal))
+      text = string_format("%s {%s}", shortenValue(realHeal_noOverheal), shortenValue(realOverheal))
+    else
+      text = shortenValue(realHeal_All)
     end
 
     -- if db["OVERHEAL"] and overHeal > 0 then
     --   text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
     -- end
     if critical then text = critchar .. text .. critchar end
-    -- print(1, db["HEALABSORB"], _absorbed)
+    -- print(1, db["HEALABSORB"], absorbed)
     if toPlayer or toPet then
       totHealingIn = totHealingIn + amount
       if db["HEALERID"] == true and not fromPlayer and not fromPet then
@@ -1018,6 +1070,7 @@ function EavesDrop:CombatEvent(_, _)
         tostring(destName)
       )
     )
+    print(_d, "|cff0000ee================================================|r")
     --@end-debug@
   end
 end
