@@ -215,6 +215,17 @@ local function isBlacklisted(spell, ...)
   return false
 end
 
+EavesDrop.DEBUG = true
+local f = select(2, IsAddOnLoaded("DevTool"))
+function EavesDrop:AddToInspector(data, strName)
+  if f and self.DEBUG then
+    print("AddOn DevTool is loaded!")
+  else
+    print("NOT LOADED")
+  end
+  if f then DevTool:AddData(data, strName) end
+end
+
 function EavesDrop:IsClassic()
   return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
     or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
@@ -801,7 +812,7 @@ function EavesDrop:CombatEvent(_, _)
   elseif etype == "HEAL" then
     local absorbed --luacheck: ignore
     spellId, spellName, spellSchool, amount, overHeal, absorbed, critical = select(12, CombatLogGetCurrentEventInfo())
-    text = tostring(shortenValue(amount))
+    -- text = tostring(shortenValue(amount))
     local original_overheal = overHeal
     -- texture = select(3, GetSpellInfo(spellId))
     texture = GetSpellTexture(spellId)
@@ -809,84 +820,38 @@ function EavesDrop:CombatEvent(_, _)
     local _dshow = true
     local a, o = false, false
     -- local updatedAmount = amount
-    local realHeal_All, realOverheal, realHeal_noOverheal, realHeal_noAbsorbed, realHeal_noOverheal_noAbsorb
+    local realHeal_All, netHeal
 
     if absorbed and absorbed > 0 then
-      print(_dshow, string_format("amount: %d, overHeal: %d, absorbed: %d", amount, overHeal, absorbed))
-      if amount == 0 and overHeal and overHeal == 0 then -- Every bit of heal was taken by absorb debuff.
-        realHeal_All = absorbed
-        realHeal_noOverheal = realHeal_All
-        realHeal_noAbsorbed = 0
-        realHeal_noOverheal_noAbsorb = 0
-        realOverheal = 0
-      end
-      if amount ~= 0 then
-        if overHeal ~= 0 then
-          realHeal_All = amount
-          realHeal_noOverheal = amount - overHeal
-          if realHeal_noOverheal == 0 then
-            if amount > absorbed then
-              realHeal_noOverheal_noAbsorb = realHeal_All - absorbed
-              realOverheal = overHeal - absorbed
-              realHeal_noAbsorbed = amount - absorbed
-            else
-              realHeal_noOverheal_noAbsorb = 0
-              realHeal_noAbsorbed = 0
-              realOverheal = overHeal
-            end
-          else
-            if realHeal_noOverheal > absorbed then
-              realHeal_noOverheal_noAbsorb = realHeal_noOverheal - absorbed
-              realHeal_noAbsorbed = realHeal_All - absorbed
-              realOverheal = overHeal
-            else
-              realHeal_noOverheal_noAbsorb = realHeal_noOverheal
-              realHeal_noAbsorbed = realHeal_All - absorbed
-              realOverheal = overHeal
-            end
-          end
-        else
-          realHeal_All = amount + absorbed
-          realHeal_noOverheal = realHeal_All
-          realHeal_noAbsorbed = amount
-          realHeal_noOverheal_noAbsorb = realHeal_noOverheal - absorbed
-          realOverheal = 0
-        end
-      end
+      realHeal_All = amount + absorbed
     else
       realHeal_All = amount
-      realHeal_noOverheal = amount - overHeal
-      realHeal_noAbsorbed = realHeal_All
-      realHeal_noOverheal_noAbsorb = realHeal_noOverheal
-      realOverheal = overHeal
     end
+    netHeal = realHeal_All
 
     -- if spellName ~= "Holy Shock" then
-    --   print(_dshow, string_format("== amount: %d, overHeal: %d, absorbed: %d", amount, overHeal, absorbed))
+    print(_dshow, string_format("== amount: %d, overHeal: %d, absorbed: %d", amount, overHeal, absorbed))
     -- end
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"] and absorbed < db["HFILTER"]) then return end
-    if db["OVERHEAL"] and overHeal and overHeal > 0 then o = true end
-    if db["HEALABSORB"] and absorbed and absorbed > 0 then a = true end
+    if db["OVERHEAL"] and overHeal and overHeal > 0 then
+      o = true
+      netHeal = realHeal_All - overHeal
+    end
+    if db["HEALABSORB"] and absorbed and absorbed > 0 then
+      a = true
+      netHeal = netHeal - absorbed
+    end
 
     -- Is this a bug in game?!!!
-    if realHeal_All < 0 or realHeal_noOverheal < 0 or realHeal_noOverheal_noAbsorb < 0 or realOverheal < 0 then
+    if realHeal_All < 0 or netHeal < 0 then
       --@debug@
       print(_dshow, string_format("|cffff0000Found An Issue|r"))
       print(
         _dshow,
         string_format("ORIGINAL: Amount: %d, absorbed: %d, overHeal: %d", amount, absorbed, original_overheal)
       )
-      print(
-        _dshow,
-        string_format(
-          "ADJUSTED: realHeal_All: %d, realHeal_noOverheal: %d\nrealHeal_noOverheal_noAbsorb: %d, realOverheal: %d",
-          realHeal_All,
-          realHeal_noOverheal,
-          realHeal_noOverheal_noAbsorb,
-          realOverheal
-        )
-      )
+      print(_dshow, string_format("ADJUSTED: realHeal_All: %d, netHeal: %d", realHeal_All, netHeal))
       --@end-debug@
       -- Until we figure this out, we will just show what game reported to us.
       -- overHeal = original_overheal
@@ -894,18 +859,13 @@ function EavesDrop:CombatEvent(_, _)
     end
 
     if a and o then
-      text = string_format(
-        "%s (%s) {%s}",
-        shortenValue(realHeal_noOverheal_noAbsorb),
-        shortenValue(absorbed),
-        shortenValue(realOverheal)
-      )
+      text = string_format("%s (%s) {%s}", shortenValue(netHeal), shortenValue(absorbed), shortenValue(overHeal))
     elseif a then
-      text = string_format("%s (%s)", shortenValue(realHeal_noAbsorbed), shortenValue(absorbed))
+      text = string_format("%s (%s)", shortenValue(netHeal), shortenValue(absorbed))
     elseif o then
-      text = string_format("%s {%s}", shortenValue(realHeal_noOverheal), shortenValue(realOverheal))
+      text = string_format("%s {%s}", shortenValue(netHeal), shortenValue(overHeal))
     else
-      text = shortenValue(realHeal_All)
+      text = shortenValue(netHeal)
     end
 
     -- if db["OVERHEAL"] and overHeal > 0 then
@@ -936,6 +896,7 @@ function EavesDrop:CombatEvent(_, _)
       text = "+" .. text
       if db["HEALERID"] == true then text = (destName or "Unknown") .. ": " .. text end
     end
+    EavesDrop:AddToInspector(color, "to_DisplayEvent")
     self:DisplayEvent(inout, text, texture, color, message, spellName)
     ------------misses----------------
   elseif etype == "MISS" then
@@ -954,8 +915,9 @@ function EavesDrop:CombatEvent(_, _)
     if isBlacklisted(spellName, spellId) then return end
     --@debug@
     if missType == "DEFLECT" or missType == "BLOCK" then
-      local f = select(2, IsAddOnLoaded("ViragDevTool"))
-      if f then ViragDevTool:AddData({ CombatLogGetCurrentEventInfo() }, "value_EavesDrop:UpdateEvents") end
+      -- local f = select(2, IsAddOnLoaded("ViragDevTool"))
+      EavesDrop:AddToInspector({ CombatLogGetCurrentEventInfo() }, "deflectCLEU")
+      -- if f then ViragDevTool:AddData({ CombatLogGetCurrentEventInfo() }, "value_EavesDrop:UpdateEvents") end
       print(" ")
       print(
         string_format(
@@ -1307,7 +1269,13 @@ function EavesDrop:DisplayEvent(inout, text, texture, color, message, spellname)
   pEvent.type = inout
   pEvent.text = text
   pEvent.texture = texture
-  pEvent.color = color or tempcolor
+  --@debug@
+  if not color or color == {} then
+    print(true, string_format("|cffff0000color is empty!|r"))
+    EavesDrop:AddToInspector({ color, message, spellname, text, inout }, "colorIssue:DisplayEvent")
+  end
+  --@end-debug@
+  pEvent.color = color -- or tempcolor
   -- Messages probably already have a timestamp, so let's clear that up
   if db["TIMESTAMP"] == true and message then
     -- Check if we have a timestamp here and clean it up before using it.
@@ -1397,17 +1365,24 @@ function EavesDrop:UpdateEvents()
         print("-----------")
         print("******")
         print(" ")
-        local f = select(2, IsAddOnLoaded("ViragDevTool"))
-        if f then ViragDevTool:AddData(value, "value_EavesDrop:UpdateEvents") end
+        -- local f = select(2, IsAddOnLoaded("ViragDevTool"))
+        -- if f then ViragDevTool:AddData(value, "value_EavesDrop:UpdateEvents") end
+        EavesDrop:AddToInspector(value, "value_NoText:UpdateEvents")
       end
       --@end-debug@
       text:SetText(value.text or "")
       --@debug@
       if not value or not value.color or not value.color.r or not value.color.g or not value.color.b then
-        DevTools_Dump(value)
+        -- DevTools_Dump(value)
+        EavesDrop:AddToInspector(value, "colorIssue:UpdateEvents")
+        text:SetTextColor(tempcolor.r, tempcolor.g, tempcolor.b, 1)
+        -- value.color = tempcolor
+      else
+        text:SetTextColor(value.color.r, value.color.g, value.color.b, 1)
       end
       --@end-debug@
-      text:SetTextColor(value.color.r, value.color.g, value.color.b, 1)
+      --
+
       frame.delay = delay
       frame.alpha = 1
       if db["TOOLTIPS"] == true then
