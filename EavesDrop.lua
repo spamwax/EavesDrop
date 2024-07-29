@@ -824,9 +824,11 @@ function EavesDrop:CombatEvent(_, _)
     end
     netHeal = realHeal_All
 
+    -- Update total values before applying ignore/filter settings
+    if toPlayer or toPet then totHealingIn = totHealingIn + netHeal end
+    if fromPlayer or fromPet then totHealingOut = totHealingOut + netHeal end
+
     -- print(_dshow, string_format("== amount: %d, overHeal: %d, absorbed: %d", amount, overHeal, absorbed))
-    -- If spell is blacklisted, don't show it
-    if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"] and absorbed < db["HFILTER"]) then return end
     if db["OVERHEAL"] and overHeal and overHeal > 0 then
       o = true
       netHeal = realHeal_All - overHeal
@@ -862,7 +864,6 @@ function EavesDrop:CombatEvent(_, _)
 
     if critical then text = critchar .. text .. critchar end
     if toPlayer or toPet then
-      totHealingIn = totHealingIn + amount
       if db["HEALERID"] == true and not fromPlayer and not fromPet then
         text = text .. " (" .. (sourceName or "Unknown") .. ")"
       end
@@ -876,7 +877,6 @@ function EavesDrop:CombatEvent(_, _)
       end
       text = "+" .. text
     elseif fromPlayer or fromPet then
-      totHealingOut = totHealingOut + amount
       color = db["THEAL"]
       if self:TrackStat(inout, "heal", spellName, texture, SCHOOL_STRINGS[spellSchool], amount, critical, message) then
         text = newhigh .. text .. newhigh
@@ -884,6 +884,8 @@ function EavesDrop:CombatEvent(_, _)
       text = "+" .. text
       if db["HEALERID"] == true then text = (destName or "Unknown") .. ": " .. text end
     end
+    -- If spell is blacklisted or too small, don't show it
+    if isBlacklisted(spellName, spellId) or netHeal < db["HFILTER"] then return end
     self:DisplayEvent(inout, text, texture, color, message, spellName)
     ------------misses----------------
   elseif etype == "MISS" then
@@ -940,8 +942,6 @@ function EavesDrop:CombatEvent(_, _)
   elseif etype == "DRAIN" then
     if db["GAINS"] then
       spellId, spellName, _, amount, powerType, extraAmount = select(12, CombatLogGetCurrentEventInfo())
-      -- If spell is blacklisted, don't show it
-      if isBlacklisted(spellName, spellId) then return end
       texture = GetSpellTexture(spellId)
       if toPlayer then
         totHealingIn = totHealingIn + amount
@@ -957,6 +957,8 @@ function EavesDrop:CombatEvent(_, _)
         -- text = string_format("%d %s", amount, string_nil(POWER_STRINGS[powerType]))
         -- color = db["TSPELL"]
       end
+      -- If spell is blacklisted, don't show it
+      if isBlacklisted(spellName, spellId) or amount < db["HFILTER"] then return end
       self:DisplayEvent(inout, text, texture, color, message, spellName)
     end
     ------------power gains----------------
