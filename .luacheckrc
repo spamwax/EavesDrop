@@ -183,4 +183,5 @@ globals = {
 
   -- Deubg
   "ViragDevTool",
+  "DevTool",
 }

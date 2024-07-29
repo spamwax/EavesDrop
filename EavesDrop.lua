@@ -215,16 +215,13 @@ local function isBlacklisted(spell, ...)
   return false
 end
 
-EavesDrop.DEBUG = true
-local f = select(2, IsAddOnLoaded("DevTool"))
+--@debug@
+EavesDrop.DEBUG = false
 function EavesDrop:AddToInspector(data, strName)
-  if f and self.DEBUG then
-    print("AddOn DevTool is loaded!")
-  else
-    print("NOT LOADED")
-  end
-  if f then DevTool:AddData(data, strName) end
+  local f = select(2, IsAddOnLoaded("DevTool"))
+  if f and self.DEBUG then DevTool:AddData(data, strName) end
 end
+--@end-debug@
 
 function EavesDrop:IsClassic()
   return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
@@ -812,9 +809,7 @@ function EavesDrop:CombatEvent(_, _)
   elseif etype == "HEAL" then
     local absorbed --luacheck: ignore
     spellId, spellName, spellSchool, amount, overHeal, absorbed, critical = select(12, CombatLogGetCurrentEventInfo())
-    -- text = tostring(shortenValue(amount))
     local original_overheal = overHeal
-    -- texture = select(3, GetSpellInfo(spellId))
     texture = GetSpellTexture(spellId)
 
     local _dshow = true
@@ -829,9 +824,7 @@ function EavesDrop:CombatEvent(_, _)
     end
     netHeal = realHeal_All
 
-    -- if spellName ~= "Holy Shock" then
-    print(_dshow, string_format("== amount: %d, overHeal: %d, absorbed: %d", amount, overHeal, absorbed))
-    -- end
+    -- print(_dshow, string_format("== amount: %d, overHeal: %d, absorbed: %d", amount, overHeal, absorbed))
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) or (amount < db["HFILTER"] and absorbed < db["HFILTER"]) then return end
     if db["OVERHEAL"] and overHeal and overHeal > 0 then
@@ -854,8 +847,7 @@ function EavesDrop:CombatEvent(_, _)
       print(_dshow, string_format("ADJUSTED: realHeal_All: %d, netHeal: %d", realHeal_All, netHeal))
       --@end-debug@
       -- Until we figure this out, we will just show what game reported to us.
-      -- overHeal = original_overheal
-      -- updatedAmount = amount
+      netHeal = amount
     end
 
     if a and o then
@@ -868,11 +860,7 @@ function EavesDrop:CombatEvent(_, _)
       text = shortenValue(netHeal)
     end
 
-    -- if db["OVERHEAL"] and overHeal > 0 then
-    --   text = string_format("%s {%s}", shortenValue(amount - overHeal), shortenValue(overHeal))
-    -- end
     if critical then text = critchar .. text .. critchar end
-    -- print(1, db["HEALABSORB"], absorbed)
     if toPlayer or toPet then
       totHealingIn = totHealingIn + amount
       if db["HEALERID"] == true and not fromPlayer and not fromPet then
@@ -896,7 +884,6 @@ function EavesDrop:CombatEvent(_, _)
       text = "+" .. text
       if db["HEALERID"] == true then text = (destName or "Unknown") .. ": " .. text end
     end
-    EavesDrop:AddToInspector(color, "to_DisplayEvent")
     self:DisplayEvent(inout, text, texture, color, message, spellName)
     ------------misses----------------
   elseif etype == "MISS" then
@@ -910,14 +897,17 @@ function EavesDrop:CombatEvent(_, _)
       tcolor = "TSPELL"
     end
     text = _G[missType]
-    if missType == "ABSORB" and amount then totHealingIn = totHealingIn + amount end
+    if missType == "ABSORB" and amount then
+      --@debug@
+      print(string_format("|cffff0000MISS type is heal absorb!|r"))
+      --@end-debug@
+      totHealingIn = totHealingIn + amount
+    end
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) then return end
     --@debug@
     if missType == "DEFLECT" or missType == "BLOCK" then
-      -- local f = select(2, IsAddOnLoaded("ViragDevTool"))
       EavesDrop:AddToInspector({ CombatLogGetCurrentEventInfo() }, "deflectCLEU")
-      -- if f then ViragDevTool:AddData({ CombatLogGetCurrentEventInfo() }, "value_EavesDrop:UpdateEvents") end
       print(" ")
       print(
         string_format(
@@ -1274,7 +1264,7 @@ function EavesDrop:DisplayEvent(inout, text, texture, color, message, spellname)
     --@debug@
     print(true, string_format("|cffff0000color is empty!|r"))
     EavesDrop:AddToInspector({ color, message, spellname, text, inout }, "colorIssue:DisplayEvent")
-  --@end-debug@
+    --@end-debug@
     pEvent.r = tempcolor.r
     pEvent.g = tempcolor.g
     pEvent.b = tempcolor.b
@@ -1380,7 +1370,7 @@ function EavesDrop:UpdateEvents()
       --@end-debug@
       text:SetText(value.text or "")
       if not value or not value.r or not value.g or not value.b then
-      --@debug@
+        --@debug@
         print("|cffff0000value doesn't have color info!|r")
         EavesDrop:AddToInspector(value, "colorIssue:UpdateEvents")
         --@end-debug@
