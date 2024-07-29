@@ -13,7 +13,8 @@
 - [x] Add a pre-commit check to ensure all @debug@ and @end-debug@ are correctly spelled/used.
 - [ ] Add a pre-commit check to ensure for every @debug@ we have a proper @end-debug@. Should be run after previous pre-commit check
 - [ ] Add option to apply healing school color
-- [ ] Adjust values of small heal/damage filters based on current expansion
+- [x] Adjust values of small heal/damage filters based on current expansion
+- [x] Calculate total heal/dmg correctly! Right now events that are filtered or have small values do not get counted!
 
 
 ### Misc

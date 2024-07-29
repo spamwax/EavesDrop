@@ -763,10 +763,8 @@ function EavesDrop:CombatEvent(_, _)
     elseif toPet then
       text = "-" .. text
     end
-    -- If spell is blacklisted, don't show it
-    if isBlacklisted(spellName, spellId) then return end
-    -- If damage is too small, just ignore it.
-    if amount < db["DFILTER"] then return end
+    -- If spell is blacklisted or too small, don't show it
+    if isBlacklisted(spellName, spellId) or amount < db["DFILTER"] then return end
 
     self:DisplayEvent(inout, text, texture, color, message, spellName)
     ------------buff/debuff gain----------------
@@ -899,12 +897,7 @@ function EavesDrop:CombatEvent(_, _)
       tcolor = "TSPELL"
     end
     text = _G[missType]
-    if missType == "ABSORB" and amount then
-      --@debug@
-      print(string_format("|cffff0000MISS type is heal absorb!|r"))
-      --@end-debug@
-      totHealingIn = totHealingIn + amount
-    end
+    if missType == "ABSORB" and amount then totHealingIn = totHealingIn + amount end
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) then return end
     --@debug@
@@ -943,6 +936,19 @@ function EavesDrop:CombatEvent(_, _)
     if db["GAINS"] then
       spellId, spellName, _, amount, powerType, extraAmount = select(12, CombatLogGetCurrentEventInfo())
       texture = GetSpellTexture(spellId)
+      --@debug@
+      print(string_format("|cffff0000DRAIN!|r"))
+      print(
+        string_format(
+          "INC: %s, OUT: %s, amount: %s, extraAmount: %s",
+          tostring(inout == INCOMING),
+          tostring(inout == OUTGOING),
+          tostring(amount),
+          tostring(extraAmount)
+        )
+      )
+      print(string_format("powerType: %s, STRING: %s", tostring(powerType), tostring(POWER_STRINGS[powerType])))
+      --@end-debug@
       if toPlayer then
         totHealingIn = totHealingIn + amount
         text = string_format("-%d %s", amount, string_nil(POWER_STRINGS[powerType]))
@@ -952,6 +958,12 @@ function EavesDrop:CombatEvent(_, _)
         text = string_format("+%d %s", extraAmount, string_nil(POWER_STRINGS[powerType]))
         color = db["PGAIN"]
       elseif fromPlayer then
+        --@debug@
+        print(
+          string_format("|cff00ff00DRAIN happened|r with fromPlayer! %s %s", tostring(amount), tostring(extraAmount))
+        )
+        print(string_format("spellId: %d, spellname: %s", spellId, spellName))
+        --@end-debug@
         return
         -- for showing your drain damage
         -- text = string_format("%d %s", amount, string_nil(POWER_STRINGS[powerType]))
