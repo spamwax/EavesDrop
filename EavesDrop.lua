@@ -1269,13 +1269,23 @@ function EavesDrop:DisplayEvent(inout, text, texture, color, message, spellname)
   pEvent.type = inout
   pEvent.text = text
   pEvent.texture = texture
-  --@debug@
+
   if not color or color == {} then
+    --@debug@
     print(true, string_format("|cffff0000color is empty!|r"))
     EavesDrop:AddToInspector({ color, message, spellname, text, inout }, "colorIssue:DisplayEvent")
-  end
   --@end-debug@
-  pEvent.color = color -- or tempcolor
+    pEvent.r = tempcolor.r
+    pEvent.g = tempcolor.g
+    pEvent.b = tempcolor.b
+    pEvent.a = tempcolor.a
+  else
+    pEvent.r = color.r
+    pEvent.g = color.g
+    pEvent.b = color.b
+    pEvent.a = color.a or 1.0
+  end
+
   -- Messages probably already have a timestamp, so let's clear that up
   if db["TIMESTAMP"] == true and message then
     -- Check if we have a timestamp here and clean it up before using it.
@@ -1365,23 +1375,19 @@ function EavesDrop:UpdateEvents()
         print("-----------")
         print("******")
         print(" ")
-        -- local f = select(2, IsAddOnLoaded("ViragDevTool"))
-        -- if f then ViragDevTool:AddData(value, "value_EavesDrop:UpdateEvents") end
         EavesDrop:AddToInspector(value, "value_NoText:UpdateEvents")
       end
       --@end-debug@
       text:SetText(value.text or "")
+      if not value or not value.r or not value.g or not value.b then
       --@debug@
-      if not value or not value.color or not value.color.r or not value.color.g or not value.color.b then
-        -- DevTools_Dump(value)
+        print("|cffff0000value doesn't have color info!|r")
         EavesDrop:AddToInspector(value, "colorIssue:UpdateEvents")
+        --@end-debug@
         text:SetTextColor(tempcolor.r, tempcolor.g, tempcolor.b, 1)
-        -- value.color = tempcolor
       else
-        text:SetTextColor(value.color.r, value.color.g, value.color.b, 1)
+        text:SetTextColor(value.r, value.g, value.b, value.a or 1)
       end
-      --@end-debug@
-      --
 
       frame.delay = delay
       frame.alpha = 1
