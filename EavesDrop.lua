@@ -218,8 +218,8 @@ end
 --@debug@
 EavesDrop.DEBUG = false
 function EavesDrop:AddToInspector(data, strName)
-  local f = select(2, IsAddOnLoaded("DevTool"))
-  if f and self.DEBUG then DevTool:AddData(data, strName) end
+  local l, f = select(2, C_AddOns.IsAddOnLoaded("DevTool"))
+  if l and f and self.DEBUG then DevTool:AddData(data, strName) end
 end
 --@end-debug@
 

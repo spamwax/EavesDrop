@@ -58,6 +58,7 @@ globals = {
   "C_Timer",
   "C_ClassColor",
   "C_Spell",
+  "C_AddOns",
   "ALL",
   "ACCEPT",
   "ALWAYS",
