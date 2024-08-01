@@ -883,7 +883,7 @@ function EavesDrop:CombatEvent(_, _)
       if db["HEALERID"] == true then text = (destName or "Unknown") .. ": " .. text end
     end
     -- If spell is blacklisted or too small, don't show it
-    if isBlacklisted(spellName, spellId) or netHeal < db["HFILTER"] then return end
+    if isBlacklisted(spellName, spellId) or realHeal_All < db["HFILTER"] then return end
     self:DisplayEvent(inout, text, texture, color, message, spellName)
     ------------misses----------------
   elseif etype == "MISS" then
