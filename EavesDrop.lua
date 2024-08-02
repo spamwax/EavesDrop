@@ -891,7 +891,6 @@ function EavesDrop:CombatEvent(_, _)
       text = "+" .. text
       if db["HEALERID"] == true then text = (destName or "Unknown") .. ": " .. text end
       totHealingOut = totHealingOut + realHeal_All
-      if spellName == "Pain and Gain" then print("pain&gain is OUTGOING", fromPlayer, fromPet, toPlayer, toPet) end
     end
     -- If spell is blacklisted or too small, don't show it
     if isBlacklisted(spellName, spellId) or realHeal_All < db["HFILTER"] then return end
