@@ -909,20 +909,22 @@ function EavesDrop:CombatEvent(_, _)
     text = _G[missType]
     if missType == "ABSORB" and amount then
       if fromPlayer or fromPet then
-        totHealingOut = totHealingOut + amount
-      else
         totHealingIn = totHealingIn + amount
+      else
+        totHealingOut = totHealingOut + amount
       end
       --@debug@
       print(
+        false,
         string_format(
-          "Heal in |cffffff00ABSORB|r is: %s (%d)\n  fromPlayer %s, fromPet %s, toPlayer %s, toPet: %s",
+          "Heal in |cffffff00ABSORB|r is: |cff00aa00%s|r (%d)\n  fromPlayer %s, fromPet %s, toPlayer %s, toPet: %s\n  event: %s",
           spellName or "SWING_MISSED",
           amount,
           tostring(fromPlayer),
           tostring(fromPet),
           tostring(toPlayer),
-          tostring(toPet)
+          tostring(toPet),
+          event
         )
       )
       --@end-debug@
