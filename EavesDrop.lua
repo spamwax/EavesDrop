@@ -707,6 +707,16 @@ function EavesDrop:CombatEvent(_, _)
       outtype, intype = "TSPELL", "PSPELL"
       whiteDMG = false
     end
+
+    -- local a, o = false, false
+    local realDamage_All, netDamage = amount
+
+    if blocked and blocked > 0 then realDamage_All = realDamage_All + blocked end
+    if resisted and resisted > 0 then realDamage_All = realDamage_All + resisted end
+    if absorbed and absorbed > 0 then realDamage_All = realDamage_All + absorbed end
+
+    netDamage = realDamage_All
+
     text = tostring(shortenValue(amount))
 
     if critical then text = critchar .. text .. critchar end
@@ -714,22 +724,14 @@ function EavesDrop:CombatEvent(_, _)
     if glancing then text = glancechar .. text .. glancechar end
     if resisted then text = string_format("%s (%s)", text, shortenValue(resisted)) end
     if blocked then text = string_format("%s (%s)", text, shortenValue(blocked)) end
-    if absorbed then
-      text = string_format("%s (%s)", text, shortenValue(absorbed))
-      totHealingIn = totHealingIn + absorbed
-    end
+    if absorbed then text = string_format("%s (%s)", text, shortenValue(absorbed)) end
+    -- totHealingIn = totHealingIn + absorbed
     local school_new = getSpellSchoolCoreType(school or 1)
     school = school_new
 
     local trackIcon = texture
     if event == "SWING_DAMAGE" or event == "RANGE_DAMAGE" then trackIcon = swordTexture end
     if fromPlayer or fromPet then
-      --@debug@
-      --if fromPet then print("from: ", texture, amount) end
-      --@end-debug@
-      if self:TrackStat(inout, "hit", spellName, trackIcon, SCHOOL_STRINGS[school], amount, critical, message) then
-        text = newhigh .. text .. newhigh
-      end
       if fromPet then
         outtype = "PETI"
         color = self:SpellColor(db[outtype], SCHOOL_STRINGS[school])
@@ -738,16 +740,19 @@ function EavesDrop:CombatEvent(_, _)
       else
         color = self:SpellColor(db[outtype], SCHOOL_STRINGS[school])
       end
-      if not toPlayer then -- Don't count self damag in total
-        totDamageOut = totDamageOut + amount
+      if not toPlayer and not toPet then -- Don't count self damage in total
+        totDamageOut = totDamageOut + netDamage
       else
-        inout = -inout -- Show self damag under player column
+        inout = -inout -- Show self damage under player column
+        totDamageIn = totDamageIn + netDamage
+        if absorbed then totHealingOut = totHealingOut + absorbed end
+      end
+      if self:TrackStat(inout, "hit", spellName, trackIcon, SCHOOL_STRINGS[school], netDamage, critical, message) then
+        text = newhigh .. text .. newhigh
       end
     elseif toPlayer or toPet then
-      --@debug@
-      --if toPet then print("to: ",texture, amount) end
-      --@end-debug@
-      if self:TrackStat(inout, "hit", spellName, trackIcon, SCHOOL_STRINGS[school], amount, critical, message) then
+      if absorbed then totHealingOut = totHealingOut + absorbed end
+      if self:TrackStat(inout, "hit", spellName, trackIcon, SCHOOL_STRINGS[school], netDamage, critical, message) then
         text = newhigh .. text .. newhigh
       end
       if toPet and not whiteDMG then
@@ -759,12 +764,12 @@ function EavesDrop:CombatEvent(_, _)
         color = self:SpellColor(db[intype], SCHOOL_STRINGS[school])
       end
       text = "-" .. text
-      totDamageIn = totDamageIn + amount
+      totDamageIn = totDamageIn + netDamage
     elseif toPet then
       text = "-" .. text
     end
     -- If spell is blacklisted or too small, don't show it
-    if isBlacklisted(spellName, spellId) or amount < db["DFILTER"] then return end
+    if isBlacklisted(spellName, spellId) or netDamage < db["DFILTER"] then return end
 
     self:DisplayEvent(inout, text, texture, color, message, spellName)
     ------------buff/debuff gain----------------
@@ -976,7 +981,7 @@ function EavesDrop:CombatEvent(_, _)
       --@end-debug@
       if toPlayer then
         if not fromPlayer and not fromPet then
-        totHealingIn = totHealingIn + amount
+          totHealingIn = totHealingIn + amount
         else
           totHealingOut = totHealingOut + amount
         end
