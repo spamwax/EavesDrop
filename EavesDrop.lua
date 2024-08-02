@@ -812,7 +812,6 @@ function EavesDrop:CombatEvent(_, _)
 
     local _dshow = true
     local a, o = false, false
-    -- local updatedAmount = amount
     local realHeal_All, netHeal
 
     if absorbed and absorbed > 0 then
@@ -822,11 +821,6 @@ function EavesDrop:CombatEvent(_, _)
     end
     netHeal = realHeal_All
 
-    -- Update total values before applying ignore/filter settings
-    if toPlayer or toPet then totHealingIn = totHealingIn + netHeal end
-    if fromPlayer or fromPet then totHealingOut = totHealingOut + netHeal end
-
-    -- print(_dshow, string_format("== amount: %d, overHeal: %d, absorbed: %d", amount, overHeal, absorbed))
     if db["OVERHEAL"] and overHeal and overHeal > 0 then
       o = true
       netHeal = realHeal_All - overHeal
@@ -862,25 +856,37 @@ function EavesDrop:CombatEvent(_, _)
 
     if critical then text = critchar .. text .. critchar end
     if toPlayer or toPet then
+      if
+        self:TrackStat(inout, "heal", spellName, texture, SCHOOL_STRINGS[spellSchool], realHeal_All, critical, message)
+      then
+        text = newhigh .. text .. newhigh
+      end
       if db["HEALERID"] == true and not fromPlayer and not fromPet then
         text = text .. " (" .. (sourceName or "Unknown") .. ")"
       end
       color = db["PHEAL"]
-      if self:TrackStat(inout, "heal", spellName, texture, SCHOOL_STRINGS[spellSchool], amount, critical, message) then
-        text = newhigh .. text .. newhigh
-      end
       if fromPlayer and not toPet then -- Show self healing under player column & with correct color.
         color = db["THEAL"]
         inout = -inout
       end
+      -- Add healing to total healing received (incoming) if it is from others
+      if not fromPlayer and not fromPet then
+        totHealingIn = totHealingIn + realHeal_All
+      else -- otherwise add self healing (from player or his pet) to total healing done (outgoing)
+        totHealingOut = totHealingOut + realHeal_All
+      end
       text = "+" .. text
     elseif fromPlayer or fromPet then
       color = db["THEAL"]
-      if self:TrackStat(inout, "heal", spellName, texture, SCHOOL_STRINGS[spellSchool], amount, critical, message) then
+      if
+        self:TrackStat(inout, "heal", spellName, texture, SCHOOL_STRINGS[spellSchool], realHeal_All, critical, message)
+      then
         text = newhigh .. text .. newhigh
       end
       text = "+" .. text
       if db["HEALERID"] == true then text = (destName or "Unknown") .. ": " .. text end
+      totHealingOut = totHealingOut + realHeal_All
+      if spellName == "Pain and Gain" then print("pain&gain is OUTGOING", fromPlayer, fromPet, toPlayer, toPet) end
     end
     -- If spell is blacklisted or too small, don't show it
     if isBlacklisted(spellName, spellId) or realHeal_All < db["HFILTER"] then return end
@@ -897,7 +903,26 @@ function EavesDrop:CombatEvent(_, _)
       tcolor = "TSPELL"
     end
     text = _G[missType]
-    if missType == "ABSORB" and amount then totHealingIn = totHealingIn + amount end
+    if missType == "ABSORB" and amount then
+      if fromPlayer or fromPet then
+        totHealingOut = totHealingOut + amount
+      else
+        totHealingIn = totHealingIn + amount
+      end
+      --@debug@
+      print(
+        string_format(
+          "Heal in |cffffff00ABSORB|r is: %s (%d)\n  fromPlayer %s, fromPet %s, toPlayer %s, toPet: %s",
+          spellName or "SWING_MISSED",
+          amount,
+          tostring(fromPlayer),
+          tostring(fromPet),
+          tostring(toPlayer),
+          tostring(toPet)
+        )
+      )
+      --@end-debug@
+    end
     -- If spell is blacklisted, don't show it
     if isBlacklisted(spellName, spellId) then return end
     --@debug@
@@ -950,7 +975,11 @@ function EavesDrop:CombatEvent(_, _)
       print(string_format("powerType: %s, STRING: %s", tostring(powerType), tostring(POWER_STRINGS[powerType])))
       --@end-debug@
       if toPlayer then
+        if not fromPlayer and not fromPet then
         totHealingIn = totHealingIn + amount
+        else
+          totHealingOut = totHealingOut + amount
+        end
         text = string_format("-%d %s", amount, string_nil(POWER_STRINGS[powerType]))
         color = db["PGAIN"]
       elseif fromPlayer and extraAmount then
@@ -969,6 +998,16 @@ function EavesDrop:CombatEvent(_, _)
         -- text = string_format("%d %s", amount, string_nil(POWER_STRINGS[powerType]))
         -- color = db["TSPELL"]
       end
+      --@debug@
+      print(
+        string_format(
+          "Heal in |cffffff00DRAIN|r is: %s amount: %s extraAmount: %s",
+          spellName,
+          tostring(amount),
+          tostring(extraAmount)
+        )
+      )
+      --@end-debug@
       -- If spell is blacklisted, don't show it
       if isBlacklisted(spellName, spellId) or amount < db["HFILTER"] then return end
       self:DisplayEvent(inout, text, texture, color, message, spellName)
