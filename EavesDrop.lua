@@ -259,7 +259,7 @@ end
 local function cleanstring(s)
   s = gsub(s, "|r", "")
   s = gsub(s, "|c........", "")
-  s = gsub(s, "|Hunit:([%w%s*%-*:]*)|h", "")
+  s = gsub(s, "|Hunit:([%w%s*%-*:%']*)|h", "")
   s = gsub(s, "|Haction:([%w_*]*)|h", "")
   s = gsub(s, "|Hitem:(%d+)|h", "")
   s = gsub(s, "|Hicon:%d+:dest|h", "")
@@ -1039,7 +1039,7 @@ function EavesDrop:CombatEvent(_, _)
     texture = nil
     if (playerRelated or petRelated) and not toPlayer then
       local _color
-      if toPet and not toPlayer then _color = { r = 1, g = 0.27, b = 0.2, a = 1 } end
+      if toPet then _color = { r = 1, g = 0.27, b = 0.2, a = 1 } end
       text = deathchar .. destName .. deathchar
       self:DisplayEvent(MISC, text, texture, _color or db["DEATH"], message)
     end
