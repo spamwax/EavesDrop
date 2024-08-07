@@ -725,7 +725,16 @@ function EavesDrop:CombatEvent(_, _)
     if resisted then text = string_format("%s (%s)", text, shortenValue(resisted)) end
     if blocked then text = string_format("%s (%s)", text, shortenValue(blocked)) end
     if absorbed then text = string_format("%s (%s)", text, shortenValue(absorbed)) end
-    -- totHealingIn = totHealingIn + absorbed
+    -- print(
+    --   string_format(
+    --     "|cff000099ABSORB in DAMAGE|r event!\n  absorbed: %s, fromPlayer:%s fromPet: %s toPlayer: %s toPet: %s",
+    --     tostring(absorbed),
+    --     tostring(fromPlayer),
+    --     tostring(fromPet),
+    --     tostring(toPlayer),
+    --     tostring(toPet)
+    --   )
+    -- )
     local school_new = getSpellSchoolCoreType(school or 1)
     school = school_new
 
@@ -927,10 +936,9 @@ function EavesDrop:CombatEvent(_, _)
           event
         )
       )
+      print(false, string_format("  missType: %s, _G[missType]: %s", tostring(missType), tostring(_G[missType])))
       --@end-debug@
     end
-    -- If spell is blacklisted, don't show it
-    if isBlacklisted(spellName, spellId) then return end
     --@debug@
     if missType == "DEFLECT" or missType == "BLOCK" then
       EavesDrop:AddToInspector({ CombatLogGetCurrentEventInfo() }, "deflectCLEU")
@@ -961,6 +969,8 @@ function EavesDrop:CombatEvent(_, _)
       if missType == "REFLECT" then self:SetReflect(sourceName, spellName) end
       color = db["PMISS"]
     end
+    -- If spell is blacklisted, don't show it
+    if isBlacklisted(spellName, spellId) then return end
     self:DisplayEvent(inout, text, texture, color, message, spellName)
     ------------leech and drains----------------
   elseif etype == "DRAIN" then
@@ -1065,11 +1075,25 @@ function EavesDrop:CombatEvent(_, _)
     -- self:Print(event, sourceName, destName)
     --@debug@
     local _d = false
+    local healAbsorbParamNames = {
+      "spellId",
+      "spellName",
+      "spellSchool",
+      "extraGUID",
+      "extraName",
+      "extraFlags",
+      "extraRaidFlags",
+      "extraSpellID",
+      "extraSpellName",
+      "extraSchool",
+      "absorbedAmount",
+      "totalAmount",
+    }
     if etype == "HEALABSORB" then
       print(_d, "|cffaabbff HEALABSORB event ==============================|r")
       local load = { select(12, CombatLogGetCurrentEventInfo()) }
       for idx, v in ipairs(load) do
-        print(_d, string_format("Arg%s: %s", tostring(idx), tostring(v)))
+        print(_d, string_format("%d) %s: %s", idx + 11, healAbsorbParamNames[idx], tostring(v)))
       end
     end
     print(
