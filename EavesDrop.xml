@@ -94,15 +94,15 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnMouseDown>
-       	if button == "LeftButton" and IsShiftKeyDown() and self.tooltipText then
+       	        if button == "LeftButton" and IsShiftKeyDown() and self.tooltipText then
 					EavesDrop:SendToChat(self.tooltipText)
-			  elseif IsAltKeyDown() then
-			  	if button == "LeftButton" then
-			  		EavesDrop:OpenMenu()
-			  	elseif button == "RightButton" then
-       			EavesDrop:ShowHistory()
-       		end
-			  end
+			    elseif IsAltKeyDown() then
+			  	    if button == "LeftButton" then
+			  		    EavesDrop:OpenMenu()
+			  	    elseif button == "RightButton" then
+       			        EavesDrop:ShowHistory()
+       		        end
+			    end
 			</OnMouseDown>
 		</Scripts>
 	</Frame>
@@ -167,11 +167,11 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnMouseDown>
-       	if button == "LeftButton" and IsShiftKeyDown() and self.tooltipText2 then
-					EavesDrop:SendToChat(self.tooltipText2)
-			  elseif button == "RightButton" and IsShiftKeyDown() and self.tooltipText1 then
-					EavesDrop:SendToChat(self.tooltipText1)
-			  end
+				if button == "LeftButton" and IsShiftKeyDown() and self.tooltipText2 then
+				    EavesDrop:SendToChat(self.tooltipText2)
+				elseif button == "RightButton" and IsShiftKeyDown() and self.tooltipText1 then
+				    EavesDrop:SendToChat(self.tooltipText1)
+				end
 			</OnMouseDown>
 		</Scripts>
 	</Frame>
@@ -883,14 +883,14 @@
 			 	end
 			</OnDragStart>
 			<OnDragStop>
-				self:StopMovingOrSizing();
+                self:StopMovingOrSizing();
 				local x, y = self:GetLeft(), self:GetTop()
-        local es = self:GetEffectiveScale()
-        local ps = UIParent:GetScale()
-        x = x*es - GetScreenWidth()*ps/2
-        y = y*es - GetScreenHeight()*ps/2
-        EavesDrop.db.profile.hx, EavesDrop.db.profile.hy = x, y
-			</OnDragStop>
+        		local es = self:GetEffectiveScale()
+                local ps = UIParent:GetScale()
+                x = x*es - GetScreenWidth()*ps/2
+                y = y*es - GetScreenHeight()*ps/2
+                EavesDrop.db.profile.hx, EavesDrop.db.profile.hy = x, y
+            </OnDragStop>
 		</Scripts>
 	</Frame>
 </Ui>
