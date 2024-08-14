@@ -16,8 +16,8 @@
 ## X-Curse-Project-ID: 2812
 ## IconTexture: Interface\AddOns\EavesDrop\Media\Textures\mouse.blp
 ## X-Credits: Grayhoof, spamwax, Domzae
-## Notes-zhCN: 一个简单的战斗日志，显示所有伤害、增益等……
-## Notes-koKR: 모든 데미지, 버프 등을 표시하는 간단한 전투 로그입니다.
+## Notes-zhCN: 一个简单的战斗日志，显示所有伤害、增益等...|n作者 |cFFF48CBAspamwax|r
+## Notes-koKR: 모든 피해, 버프, 힐 등을 보여주는 간단한 전투 기록.|n작성자 |cFFF48CBAspamwax|r
 
 embeds.xml
 
