@@ -86,7 +86,6 @@
 			<OnEnter>
 				self:SetBackdropColor(1, 1, 1, 0.33);
 				GameTooltip:SetOwner(self, EavesDrop.ToolTipAnchor);
-				<!-- GameTooltip:SetText(self.tooltipText, nil, 1); -->
 				GameTooltip:SetText(self.tooltipText, nil, 1);
 			</OnEnter>
 			<OnLeave>
@@ -390,12 +389,12 @@
 					<OnClick>
 						PlaySound(827);
 						if IsShiftKeyDown() then
-		            EavesDrop:ScrollToBottom()
-		        elseif IsControlKeyDown() then
+		            		EavesDrop:ScrollToBottom()
+		        		elseif IsControlKeyDown() then
     						EavesDrop:FindCombatDown()
-		        else
-		            EavesDrop:ScrollDown()
-		        end
+		        		else
+		            		EavesDrop:ScrollDown()
+		        		end
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, EavesDrop.ToolTipAnchor);
@@ -425,14 +424,14 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-							PlaySound(827);
-							if IsShiftKeyDown() then
-			            EavesDrop:ScrollToTop()
-			        elseif IsControlKeyDown() then
-    							EavesDrop:FindCombatUp()
-			        else
-			            EavesDrop:ScrollUp()
-			        end
+						PlaySound(827);
+						if IsShiftKeyDown() then
+			            	EavesDrop:ScrollToTop()
+			        	elseif IsControlKeyDown() then
+    						EavesDrop:FindCombatUp()
+			        	else
+			            	EavesDrop:ScrollUp()
+			        	end
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, EavesDrop.ToolTipAnchor);
@@ -467,13 +466,13 @@
 				EavesDropTab:SetAlpha(0);
 			</OnLeave>
 			<OnMouseDown>
-       	if IsAltKeyDown() then
-			  	if button == "LeftButton" then
-			  		EavesDrop:OpenMenu()
-			  	elseif button == "RightButton" then
-       			EavesDrop:ShowHistory()
-       		end
-			  end
+				if IsAltKeyDown() then
+			  		if button == "LeftButton" then
+			  			EavesDrop:OpenMenu()
+			  		elseif button == "RightButton" then
+       					EavesDrop:ShowHistory()
+       				end
+			  	end
 			</OnMouseDown>
 		</Scripts>
 	</Frame>
@@ -527,9 +526,9 @@
 			</OnLoad>
 			<OnMouseDown>
 				GameTooltip:Hide();
-       	if button == "RightButton" then
-			  	EavesDrop:OpenMenu()
-			  end
+       	        if button == "RightButton" then
+			  	    EavesDrop:OpenMenu()
+			    end
 			</OnMouseDown>
 			<OnEnter>
 				EavesDropTab:SetAlpha(1);
@@ -550,11 +549,11 @@
 			<OnDragStop>
 				EavesDropFrame:StopMovingOrSizing();
 				local x, y = EavesDropFrame:GetLeft(), EavesDropFrame:GetTop()
-        local es = EavesDropFrame:GetEffectiveScale()
-        local ps = UIParent:GetScale()
-        x = x*es - GetScreenWidth()*ps/2
-        y = y*es - GetScreenHeight()*ps/2
-        EavesDrop.db.profile.x, EavesDrop.db.profile.y = x, y
+                local es = EavesDropFrame:GetEffectiveScale()
+        		local ps = UIParent:GetScale()
+        		x = x*es - GetScreenWidth()*ps/2
+        		y = y*es - GetScreenHeight()*ps/2
+        		EavesDrop.db.profile.x, EavesDrop.db.profile.y = x, y
 			</OnDragStop>
 		</Scripts>
 		<ButtonText name="$parentText" text="EavesDrop">
@@ -862,8 +861,8 @@
 					</OnClick>
 					<OnEnter>
 						if ( self.tooltipText ) then
-							GameTooltip:SetOwner(self, EavesDrop.ToolTipAnchor);
-							GameTooltip:SetText(self.tooltipText, nil, 1);
+						    GameTooltip:SetOwner(self, EavesDrop.ToolTipAnchor);
+						    GameTooltip:SetText(self.tooltipText, nil, 1);
 						end
 					</OnEnter>
 					<OnLeave>
