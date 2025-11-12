@@ -1,3 +1,8 @@
+# 🛑 Addon lockdowns imposed by Blizzard in Midnight
+Given the heavy-handed restrictions imposed on Addons, it is very likely a big portion of EavesDrop's features will be impossible to implement in next Expansion (12.0.0).
+However, I am keeping an eye on changes until the game is released, and if I can still keep the core features of EavesDrop, I will update it. Otherwise I do not want to release a watered-down version of it
+
+
 [![GitHub Workflow Status](https://github.com/spamwax/EavesDrop/actions/workflows/bigwigs_pkg.yml/badge.svg?branch=main)](https://github.com/spamwax/EavesDrop/actions)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/spamwax?style=for-the-badge&logo=github&color=green)](https://github.com/sponsors/spamwax?frequency=one-time)
 
