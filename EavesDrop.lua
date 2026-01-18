@@ -66,7 +66,12 @@ local UnitXP = UnitXP
 local GetSpellTexture = C_Spell.GetSpellTexture and C_Spell.GetSpellTexture or GetSpellTexture
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
-local HAS_COMBATLOG_API = CombatLogGetCurrentEventInfo ~= nil
+
+local _build=select(4,GetBuildInfo())
+local HAS_COMBATLOG_API = false
+if _build < 120000 or CombatLogGetCurrentEventInfo ~= nil then
+  HAS_COMBATLOG_API = true
+end
 
 EavesDrop.showPrints = true
 local print = function(...)
@@ -205,7 +210,7 @@ EavesDrop.blacklist = {}
 -- Returns true if any of input `spell`s is blacklisted
 --
 ---@param spell string|number
----@return boolen
+---@return boolean
 local function isBlacklisted(spell, ...)
   local blacklist = EavesDrop.blacklist
   if blacklist[spell] then return true end
@@ -229,6 +234,7 @@ function EavesDrop:IsClassic()
     or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
     or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_WRATH_CLASSIC)
     or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CATACLYSM_CLASSIC)
+    or (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MISTS_CLASSIC)
 end
 function EavesDrop:IsRetail()
   return (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
@@ -325,6 +331,8 @@ function EavesDrop:OnInitialize()
   --   PLAYER_MAX_LEVEL = 80
   -- elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
   --   PLAYER_MAX_LEVEL = 70
+  -- elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MISTS_CLASSIC then
+  --   PLAYER_MAX_LEVEL = 90
   -- elseif _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC then
   --   PLAYER_MAX_LEVEL = 60
   -- end

@@ -1,4 +1,4 @@
-## Interface: 120001
+## Interface: 120001 , 50503 , 20505 , 11508
 ## Title: EavesDrop
 ## Notes: A simple combat log that displays events such as|ndamage, heal, buffs, XP/reputation and more.|cFFFF0000|nWill NOT|r work in Midnight|nBy |cFFF48CBAspamwax|r
 ## Version: @project-version@

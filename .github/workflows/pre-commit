@@ -13,7 +13,7 @@ cata_wago=$(head -n 5 .github/workflows/upload2wago.sh | tail -n 1 | cut -d '=' 
 cata_patch=${cata_wago//./0}
 
 
-mainline_toc=$(head -n 1 EavesDrop_Mainline.toc | cut -d ' ' -f 3)
+mainline_toc=$(head -n 1 EavesDrop.toc | cut -d ' ' -f 3)
 cata_toc=$(head -n 1 EavesDrop_Cata.toc | cut -d ' ' -f 3)
 
 error=0
@@ -21,7 +21,7 @@ error=0
 if [ "$mainline_patch" != "$mainline_toc" ]; then
     echo "Retail client Interface version is <$mainline_toc>"
     echo "which doesn't match with wago.io metadata: $mainline_wago ($mainline_patch)"
-    echo "Check EavesDrop_Mainline.toc and .github/workflows/upload2wago.sh"
+    echo "Check EavesDrop.toc and .github/workflows/upload2wago.sh"
     echo
     error=1
 fi
@@ -34,7 +34,7 @@ if [ "$cata_patch" != "$cata_toc" ]; then
     error=1
 fi
 
-mainline_addon_version=$(head -n 4 EavesDrop_Mainline.toc | tail -n 1 | cut -d ' ' -f 3)
+mainline_addon_version=$(head -n 4 EavesDrop.toc | tail -n 1 | cut -d ' ' -f 3)
 cata_addon_version=$(head -n 5 EavesDrop_Cata.toc | tail -n 1 | cut -d ' ' -f 3)
 
 if [ "$mainline_addon_version" != "$cata_addon_version" ]; then

@@ -1,9 +1,9 @@
 {
     "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
-    "Lua.workspace.ignoreDir": [
+    "workspace.ignoreDir": [
         "libs"
     ],
-    "Lua.diagnostics.globals": [
+    "diagnostics.globals": [
         // Lua
         "bit.band",
         "bit",
@@ -114,6 +114,11 @@
         "GetMaxLevelForExpansionLevel",
         "GetSpellName",
         "Settings",
+        "ReloadUI",
+        "WOW_PROJECT_MISTS_CLASSIC",
+        "WOW_PROJECT_CLASSIC",
+        "WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
+        "WOW_PROJECT_WRATH_CLASSIC",
         // Ace3
         "LibStub",
         // EavesDrop
