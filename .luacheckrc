@@ -148,6 +148,7 @@ globals = {
   "GetMaxLevelForExpansionLevel",
   "GetSpellName",
   "Settings",
+  "ReloadUI",
 
   -- Ace3
   "LibStub",
