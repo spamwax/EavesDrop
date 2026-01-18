@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # DO NOT MOVE THE NEXT 3 LINES. Their value should always be equivalent to 'Interface' in .toc files
 # A pre-commit git script will use these and compare to .toc files.
-SUPPORTED_RETAIL_PATCH=11.0.2
+SUPPORTED_RETAIL_PATCH=12.0.1
 SUPPORTED_CATA_PATCH=4.4.0
 
 set -x

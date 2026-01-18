@@ -66,6 +66,7 @@ local UnitXP = UnitXP
 local GetSpellTexture = C_Spell.GetSpellTexture and C_Spell.GetSpellTexture or GetSpellTexture
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
+local HAS_COMBATLOG_API = CombatLogGetCurrentEventInfo ~= nil
 
 EavesDrop.showPrints = true
 local print = function(...)
@@ -416,6 +417,10 @@ function EavesDrop:OnInitialize()
 end
 
 function EavesDrop:OnEnable()
+  if not HAS_COMBATLOG_API then
+    self:ShowLockdownNotice()
+    return
+  end
   self:RegisterEvent("PLAYER_DEAD")
   self:UpdateExpEvents()
   self:UpdateRepHonorEvents()
@@ -613,10 +618,59 @@ function EavesDrop:ShowFrame()
   EavesDropTab:SetAlpha(0)
 end
 
+-- Display a one-time lockdown message when combat log APIs are unavailable (Midnight changes)
+function EavesDrop:ShowLockdownNotice()
+  self.lockdown = true
+  EavesDropFrame:Show()
+  if EavesDropFrame.SetBackdropColor then EavesDropFrame:SetBackdropColor(1, 0, 0, 1) end
+  if EavesDropFrame.SetBackdropBorderColor then EavesDropFrame:SetBackdropBorderColor(0, 0, 0, 1) end
+  for i = 1, arrDisplaySize do
+    if arrEventFrames[i] and arrEventFrames[i].frame then arrEventFrames[i].frame:Hide() end
+  end
+  if not self.lockdownText then
+    -- Create image stretched to cover the frame
+    local image = EavesDropFrame:CreateTexture(nil, "ARTWORK")
+    image:SetAllPoints(EavesDropFrame)
+    image:SetTexture("Interface\\AddOns\\EavesDrop\\Media\\Ion.blp")
+    self.lockdownImage = image
+
+    -- Create message text in the middle with margins
+    --local text = EavesDropFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    local text = EavesDropFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    text:SetPoint("CENTER", EavesDropFrame, "CENTER", 0, 0)
+    local frameWidth = EavesDropFrame:GetWidth() or 300 -- (db and db.LINEWIDTH or EavesDropFrame:GetWidth() or 300)
+    text:SetWidth(frameWidth - 10)
+    text:SetJustifyH("CENTER")
+    text:SetJustifyV("MIDDLE")
+    text:SetText("No, I am not lazy! Blizzard has removed AddOns' access to combat events & information in Midnight.\nThanks for using |cFFA84420EavesDrop|r for the last 10 years!")
+    text:SetTextColor(1, 0.776, 0, 1)
+    text:SetShadowOffset(1, -2)
+    text:SetShadowColor(0, 0, 0, 1)
+    self.lockdownText = text
+
+    -- Create disable button at the bottom
+    local button = CreateFrame("Button", nil, EavesDropFrame, "GameMenuButtonTemplate")
+    button:SetSize(120, 25)
+    button:SetPoint("BOTTOM", EavesDropFrame, "BOTTOM", 0, 10)
+    button:SetText("Disable & Reload")
+    button:SetScript("OnClick", function()
+      C_AddOns.DisableAddOn("EavesDrop")
+      ReloadUI()
+    end)
+    self.lockdownButton = button
+  else
+    self.lockdownImage:Show()
+    self.lockdownText:Show()
+    if self.lockdownButton then self.lockdownButton:Show() end
+  end
+end
+
 -- function EavesDrop:CombatEvent(larg1, ...)
 function EavesDrop:CombatEvent(_, _)
   -- local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceFlags2, destGUID, destName, destFlags,
-  local _, event, _, _, sourceName, sourceFlags, _, _, destName, destFlags, _ = CombatLogGetCurrentEventInfo()
+  local _, event, _, sGUID, sourceName, sourceFlags, _, dGUID, destName, destFlags, _ = CombatLogGetCurrentEventInfo()
+
+  local maybeReflect = sGUID == dGUID and event == "SPELL_DAMAGE"
 
   -- Ensure the event is related to player and his pet
   local toPlayer, fromPlayer, toPet, fromPet
@@ -629,8 +683,8 @@ function EavesDrop:CombatEvent(_, _)
     toPet = CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_MY_PET)
   end
 
-  if not fromPlayer and not toPlayer and not fromPet and not toPet then return end
-  if (not fromPlayer and not toPlayer) and (toPet or fromPet) and not db["PET"] then return end
+  if not maybeReflect and not fromPlayer and not toPlayer and not fromPet and not toPet then return end
+  if not maybeReflect and (not fromPlayer and not toPlayer) and (toPet or fromPet) and not db["PET"] then return end
 
   local etype = COMBAT_EVENTS[event]
   if not etype then return end
@@ -640,14 +694,16 @@ function EavesDrop:CombatEvent(_, _)
   end
 
   -- check for reflect damage
-  if
-    event == "SPELL_DAMAGE"
-    and sourceName == destName
-    and CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_HOSTILE)
-  then
+  -- if event == "SPELL_DAMAGE" then
+  --   print(sGUID, dGUID, sourceName)
+  --   print("CombatLog_Object_IsA", CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_HOSTILE))
+  -- end
+  if maybeReflect and CombatLog_Object_IsA(destFlags, COMBATLOG_FILTER_HOSTILE) then
     self:ParseReflect(CombatLogGetCurrentEventInfo())
     return
   end
+
+  if maybeReflect and not fromPlayer and not toPlayer and not fromPet and not toPet then return end
 
   local amount, school, resisted, blocked, absorbed, critical, glancing, crushing
   local spellId, spellName, spellSchool, missType, powerType, extraAmount, overHeal

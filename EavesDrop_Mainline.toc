@@ -1,7 +1,6 @@
-## Interface: 110002
-## Name: EavesDrop
+## Interface: 120001
 ## Title: EavesDrop
-## Notes: A simple combat log that displays events such as|ndamage, heal, buffs, XP/reputation and more.|nBy |cFFF48CBAspamwax|r
+## Notes: A simple combat log that displays events such as|ndamage, heal, buffs, XP/reputation and more.|cFFFF0000|nWill NOT|r work in Midnight|nBy |cFFF48CBAspamwax|r
 ## Version: @project-version@
 ## Author: Grayhoof (Edited by Domzae, Updated for retail & classic by spamwax)
 ## SavedVariables: EavesDropDB
